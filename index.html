@@ -807,7 +807,7 @@ function startTimer(unlockTimestamp){
   function update(){
 
     const now = Math.floor(Date.now()/1000);
-    const diff = unlockTimestamp - now;
+    const diff = Number(unlockTimestamp) - now;
 
     if(diff <= 0){
       document.getElementById("remainingTime").innerHTML = "Unlocked";
@@ -828,7 +828,29 @@ function startTimer(unlockTimestamp){
   timerInterval = setInterval(update,1000);
 }
 
-// 👆👆👆 TIMER CODE END 👆👆👆
+ async function loadLivePrice(){
+  try{
+    const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, provider);
+
+    const price = await c.getDMXPrice();
+    const manual = await c.manualPriceEnabled();
+
+    const formatted = ethers.utils.formatUnits(price,18) + " USDT";
+
+    // User side
+    document.getElementById("livePriceUser").innerHTML = formatted;
+    document.getElementById("priceModeUser").innerHTML =
+      manual ? "Manual" : "Pancake Live";
+
+    // Admin side
+    document.getElementById("livePriceAdmin").innerHTML = formatted;
+    document.getElementById("priceModeAdmin").innerHTML =
+      manual ? "Manual" : "Pancake Live";
+
+  }catch(e){
+    console.log(e);
+  }
+  } 
 
 /* ================= ADMIN FUNCTIONS ================= */
 
@@ -986,41 +1008,6 @@ async function openDownline(){
   document.getElementById("downlineData").innerHTML=html;
   document.getElementById("downlinePopup").style.display="flex";
 }
-
-async function loadLivePrice(){
-
-  if(!provider) return;
-
-  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, provider);
-
-  try{
-
-    const price = await c.getDMXPrice();
-    const manual = await c.manualPriceEnabled();
-
-    const formatted =
-      ethers.utils.formatUnits(price,18) + " USDT";
-
-    const mode =
-      manual ? "Manual Mode" : "Pancake Live";
-
-    // Admin display
-    if(document.getElementById("livePriceAdmin"))
-      document.getElementById("livePriceAdmin").innerHTML = formatted;
-
-    if(document.getElementById("priceModeAdmin"))
-      document.getElementById("priceModeAdmin").innerHTML = mode;
-
-    // User display (if exists)
-    if(document.getElementById("livePriceUser"))
-      document.getElementById("livePriceUser").innerHTML = formatted;
-
-    if(document.getElementById("priceModeUser"))
-      document.getElementById("priceModeUser").innerHTML = mode;
-
-  }catch(e){
-    console.log("Price Load Error:",e);
-  }
   
 async function openHistory(){
 document.getElementById("historyPopup").style.display="flex";
