@@ -66,7 +66,7 @@ margin-bottom:20px;
 color:gold;
 font-size:14px;
 }
-
+  
 .stats{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
@@ -117,6 +117,11 @@ color:gold;
 font-weight:600;
 }
 
+h3 i{
+  margin-right:8px;
+  color:gold;
+}
+  
 input,select{
 width:100%;
 padding:14px;
@@ -190,24 +195,55 @@ border:1px solid #222;
 
 @media(max-width:600px){
 
-/* Stats 2 per row */
-.stats{
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
+/* Logo smaller */
+.logoWrap img{
+  width:32px;
 }
 
-/* Cards 1 per row */
+.logoText{
+  font-size:18px;
+}
+
+/* Stats single column */
+.stats{
+  grid-template-columns:1fr;
+  gap:10px;
+}
+
+/* Smaller stat box */
+.stat{
+  padding:12px;
+  border-radius:14px;
+}
+
+.stat i{
+  font-size:16px;
+}
+
+.stat span{
+  font-size:16px;
+}
+
+/* Cards single column */
 .grid{
   grid-template-columns:1fr;
+  gap:15px;
 }
 
-/* Slight padding reduce */
-.stat{
-  padding:14px;
-}
-
+/* Smaller cards */
 .card{
-  padding:18px;
+  padding:16px;
+  border-radius:14px;
+}
+
+input,select{
+  padding:10px;
+  font-size:13px;
+}
+
+button{
+  padding:12px;
+  font-size:13px;
 }
 
 }
@@ -240,7 +276,7 @@ border:1px solid #222;
 <div class="grid">
 
 <div class="card">
-<h3>Stake</h3>
+<h3><i class="fa-solid fa-coins"></i> Stake</h3>
 <select id="token">
 <option value="USDT">USDT</option>
 <option value="DMX">DMX</option>
@@ -256,20 +292,20 @@ border:1px solid #222;
 </div>
 
 <div class="card">
-<h3>Claim</h3>
+<h3><i class="fa-solid fa-gift"></i> Claim</h3>
 <input id="claimable" readonly>
 <button id="claimBtn" onclick="claimRewards()">Claim</button>
 <button id="restakeBtn" onclick="restakeRewards()">Restake</button>
 </div>
 
 <div class="card">
-<h3>Referral</h3>
+<h3><i class="fa-solid fa-link"></i> Referral</h3>
 <input id="refLink" readonly>
 <button onclick="copyRef()">Copy Link</button>
 </div>
 
 <div class="card">
-<h3>Team</h3>
+<h3><i class="fa-solid fa-sitemap"></i> Team</h3>
 <button onclick="openDownline()">View Downline</button>
 <button onclick="openHistory()">Claim History</button>
 </div>
@@ -277,7 +313,7 @@ border:1px solid #222;
 </div>
 
 <div class="card">
-<h3>Ecosystem</h3>
+<h3><i class="fa-solid fa-network-wired"></i> Ecosystem</h3>
 <div class="contractRow"><span>DMX Token</span><button onclick="viewAddress(DMX)">View</button></div>
 <div class="contractRow"><span>Staking</span><button onclick="viewAddress(STAKING_ADDRESS)">View</button></div>
 <div class="contractRow"><span>LP Pair</span><button onclick="viewAddress(LP)">View</button></div>
@@ -286,7 +322,7 @@ border:1px solid #222;
 
 <div class="adminPanel" id="adminPanel">
 <div class="card">
-<h3>Admin Panel</h3>
+<h3><i class="fa-solid fa-user-shield"></i> Admin Panel</h3>
 <div>Admin Connected</div>
 </div>
 </div>
