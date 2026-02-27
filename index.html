@@ -889,9 +889,24 @@ async function loadRates(){
   const r180 = await c.rewardRates(180*86400);
   const r365 = await c.rewardRates(365*86400);
 
-  document.getElementById("rate90").innerHTML = r90 + " %";
-  document.getElementById("rate180").innerHTML = r180 + " %";
-  document.getElementById("rate365").innerHTML = r365 + " %";
+  const p90 = (r90/100).toFixed(2);
+  const p180 = (r180/100).toFixed(2);
+  const p365 = (r365/100).toFixed(2);
+
+  // Admin display
+  document.getElementById("rate90").innerHTML = p90 + " %";
+  document.getElementById("rate180").innerHTML = p180 + " %";
+  document.getElementById("rate365").innerHTML = p365 + " %";
+
+  // Stake dropdown auto update
+  document.querySelector('#duration option[value="90"]').text =
+    "90 Days - " + p90 + "% Daily";
+
+  document.querySelector('#duration option[value="180"]').text =
+    "180 Days - " + p180 + "% Daily";
+
+  document.querySelector('#duration option[value="365"]').text =
+    "365 Days - " + p365 + "% Daily";
 }
 
 /* ===== MINIMUM ===== */
