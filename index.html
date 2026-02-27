@@ -292,15 +292,16 @@ button{
 <button id="approveBtn" onclick="approveToken()">Approve</button>
 <button id="stakeBtn" onclick="stakeToken()">Stake</button>
 </div>
-
+  
+<div class="card">
+<h3><i class="fa-solid fa-gift"></i> Claim</h3>
+<input id="claimable" readonly>
+  
 <div style="margin-top:10px;font-size:13px;color:#aaa;">
 ⏳ Lock Ends In:
 <span id="remainingTime" style="color:gold;">--</span>
 </div>
   
-<div class="card">
-<h3><i class="fa-solid fa-gift"></i> Claim</h3>
-<input id="claimable" readonly>
 <button id="claimBtn" onclick="claim()">Claim</button>
 <button id="restakeBtn" onclick="restake()">Restake</button>
 </div>
