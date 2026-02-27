@@ -438,7 +438,7 @@ Mode:
     <button onclick="updateDirect()">Update Direct</button>
 
     <h4 style="color:gold;margin-top:15px;">Update Level Bonus %</h4>
-    <input id="levelNumber" placeholder="Level (1-20)">
+    <input id="levelNumber" placeholder="Level (1-25)">
     <input id="levelPercent" placeholder="New Percent">
     <button onclick="updateLevel()">Update Level</button>
 
@@ -1001,7 +1001,7 @@ async function openDownline(){
 
   let html="";
 
-  for(let i=1;i<=20;i++){
+  for(let i=1;i<=25;i++){
 
     const count = await c.getLevelCount(userAddress,i);
 
