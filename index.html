@@ -190,13 +190,24 @@ border:1px solid #222;
 
 @media(max-width:600px){
 
+/* Stats 2 per row */
 .stats{
-grid-template-columns:repeat(2,1fr);
-gap:12px;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
 }
 
+/* Cards 1 per row */
+.grid{
+  grid-template-columns:1fr;
+}
+
+/* Slight padding reduce */
 .stat{
-padding:14px;
+  padding:14px;
+}
+
+.card{
+  padding:18px;
 }
 
 }
