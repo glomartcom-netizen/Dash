@@ -327,82 +327,122 @@ button{
 <div class="contractRow"><span>LP Pair</span><button onclick="viewAddress(LP)">View</button></div>
 <div class="contractRow"><span>Router</span><button onclick="viewAddress(ROUTER)">View</button></div>
 </div>
-
-<<div class="adminPanel" id="adminPanel">
+  
+<!-- ================= ADMIN PANEL START ================= -->
+<div class="adminPanel" id="adminPanel">
   <div class="card">
 
-    <!-- ✅ Badge goes here -->
-    <div style="background:#111;border:1px solid gold;
-    padding:8px 12px;border-radius:8px;
-    margin-bottom:15px;color:gold;font-size:13px;">
+    <div style="
+      background:#111;
+      border:1px solid gold;
+      padding:8px 12px;
+      border-radius:8px;
+      margin-bottom:15px;
+      color:gold;
+      font-size:13px;">
       ✔ Admin Wallet Connected
-    </div>      
-<h3><i class="fa-solid fa-user-shield"></i> Full Admin Control Panel</h3>
+    </div>
 
-<button onclick="pauseStaking()">Pause Staking</button>
-<button onclick="unpauseStaking()">Unpause Staking</button>
+    <h3>
+      <i class="fa-solid fa-user-shield"></i>
+      Full Admin Control Panel
+    </h3>
 
-<hr style="margin:20px 0;border-color:#333;">
+    <!-- Pause -->
+    <button onclick="pauseStaking()">Pause Staking</button>
+    <button onclick="unpauseStaking()">Unpause Staking</button>
 
-<h4 style="color:gold;">Update Reward Rate</h4>
-<select id="adminDuration">
-<option value="90">90 Days</option>
-<option value="180">180 Days</option>
-<option value="365">365 Days</option>
-</select>
-<input id="adminRate" placeholder="Enter percent (example 20 = 0.20%)">
-<button onclick="updateRewardRate()">Update Reward</button>
+    <hr style="margin:20px 0;border-color:#333;">
 
-<hr style="margin:20px 0;border-color:#333;">
+    <!-- ===== PLAN REWARD RATES ===== -->
+    <h4 style="color:gold;">Plan Reward Rates</h4>
 
-<h4 style="color:gold;">Update Minimum Stake</h4>
-<input id="minUSDT" placeholder="New Minimum USDT">
-<button onclick="updateMinUSDT()">Update USDT Minimum</button>
+    <div>
+      90 Days Current: <span id="rate90" style="color:gold;">--</span>
+    </div>
+    <input id="rateInput90" placeholder="New % for 90 Days">
+    <button onclick="updatePlanRate(90)">Update 90 Days</button>
 
-<input id="minDMX" placeholder="New Minimum DMX">
-<button onclick="updateMinDMX()">Update DMX Minimum</button>
+    <hr style="margin:15px 0;border-color:#222;">
 
-<hr style="margin:20px 0;border-color:#333;">
+    <div>
+      180 Days Current: <span id="rate180" style="color:gold;">--</span>
+    </div>
+    <input id="rateInput180" placeholder="New % for 180 Days">
+    <button onclick="updatePlanRate(180)">Update 180 Days</button>
 
-<h4 style="color:gold;">Emergency Withdraw</h4>
-<select id="withdrawToken">
-<option value="USDT">USDT</option>
-<option value="DMX">DMX</option>
-</select>
-<input id="withdrawAmount" placeholder="Amount to withdraw">
-<button onclick="emergencyWithdraw()">Withdraw</button>
+    <hr style="margin:15px 0;border-color:#222;">
 
-<hr style="margin:20px 0;border-color:#333;">
+    <div>
+      365 Days Current: <span id="rate365" style="color:gold;">--</span>
+    </div>
+    <input id="rateInput365" placeholder="New % for 365 Days">
+    <button onclick="updatePlanRate(365)">Update 365 Days</button>
 
-<h4 style="color:gold;">Change Treasury Wallet</h4>
-<input id="newTreasury" placeholder="New Treasury Address">
-<button onclick="updateTreasury()">Update Treasury</button>
+    <hr style="margin:20px 0;border-color:#333;">
 
-<hr style="margin:20px 0;border-color:#333;">
+    <!-- Minimum Stake -->
+    <h4 style="color:gold;">Update Minimum Stake</h4>
+    <input id="minUSDT" placeholder="New Minimum USDT">
+    <button onclick="updateMinUSDT()">Update USDT</button>
 
-<h4 style="color:gold;">Transfer Ownership</h4>
-<input id="newOwner" placeholder="New Owner Address">
-<button onclick="transferOwner()">Transfer Ownership</button>
+    <input id="minDMX" placeholder="New Minimum DMX">
+    <button onclick="updateMinDMX()">Update DMX</button>
 
-<hr style="margin:20px 0;border-color:#333;">
+    <hr style="margin:20px 0;border-color:#333;">
 
-<h4 style="color:gold;">Update Direct Bonus %</h4>
-<input id="directPercent" placeholder="New Direct Percent">
-<button onclick="updateDirect()">Update Direct %</button>
+    <!-- Emergency Withdraw -->
+    <h4 style="color:gold;">Emergency Withdraw</h4>
+    <select id="withdrawToken">
+      <option value="USDT">USDT</option>
+      <option value="DMX">DMX</option>
+    </select>
+    <input id="withdrawAmount" placeholder="Amount">
+    <button onclick="emergencyWithdraw()">Withdraw</button>
 
-<h4 style="color:gold;margin-top:15px;">Update Level Bonus %</h4>
-<input id="levelNumber" placeholder="Level Number (1-20)">
-<input id="levelPercent" placeholder="New Percent">
-<button onclick="updateLevel()">Update Level %</button>
+    <hr style="margin:20px 0;border-color:#333;">
+
+    <!-- Treasury -->
+    <h4 style="color:gold;">Change Treasury Wallet</h4>
+    <input id="newTreasury" placeholder="New Treasury Address">
+    <button onclick="updateTreasury()">Update Treasury</button>
+
+    <hr style="margin:20px 0;border-color:#333;">
+
+    <!-- Ownership -->
+    <h4 style="color:gold;">Transfer Ownership</h4>
+    <input id="newOwner" placeholder="New Owner Address">
+    <button onclick="transferOwner()">Transfer Ownership</button>
+
+    <hr style="margin:20px 0;border-color:#333;">
+
+    <!-- Direct & Level -->
+    <h4 style="color:gold;">Update Direct Bonus %</h4>
+    <input id="directPercent" placeholder="New Direct Percent">
+    <button onclick="updateDirect()">Update Direct</button>
+
+    <h4 style="color:gold;margin-top:15px;">Update Level Bonus %</h4>
+    <input id="levelNumber" placeholder="Level (1-20)">
+    <input id="levelPercent" placeholder="New Percent">
+    <button onclick="updateLevel()">Update Level</button>
+
+    <hr style="margin:20px 0;border-color:#333;">
+
+    <!-- DMX Price -->
+    <h4 style="color:gold;">DMX Price Control</h4>
+    <input id="manualPrice" placeholder="DMX price in USDT (0.25)">
+    <button onclick="setManualPrice()">Set Manual Price</button>
+
+    <select id="priceMode">
+      <option value="true">Enable Manual Price</option>
+      <option value="false">Use Live Pancake Price</option>
+    </select>
+    <button onclick="togglePriceMode()">Update Price Mode</button>
 
   </div>
-      
-    </div>
 </div>
-</div>
-
-</div>
-
+<!-- ================= ADMIN PANEL END ================= -->
+  
 <div class="popup" id="downlinePopup">
 <div class="popupBox">
 <h3>20 Level Downline</h3>
@@ -439,13 +479,16 @@ const STAKE_ABI=[
 "function pauseStaking() external",
 "function unpauseStaking() external",
 "function setRewardRate(uint256,uint256) external",
+"function rewardRates(uint256) view returns(uint256)",
 "function setMinimumUSDT(uint256) external",
 "function setMinimumDMX(uint256) external",
 "function emergencyWithdrawToken(address,uint256) external",
 "function setTreasury(address) external",
 "function transferOwnership(address) external",
 "function setDirectPercent(uint256) external",
-"function setLevelPercent(uint256,uint256) external",  
+"function setLevelPercent(uint256,uint256) external",
+"function setManualPrice(uint256) external",
+"function toggleManualPrice(bool) external",  
 "function getUserInfo(address) view returns(uint256,uint256,uint256,uint256,uint256,uint256)",
 "function getClaimable(address) view returns(uint256)",
 "function getUnlockTime(address) view returns(uint256)",  
@@ -700,11 +743,6 @@ async function restake(){
 
   disable("restakeBtn", false);
 }
-
-async function restake(){
-   ...
-   disable("restakeBtn", false);
-}
   
 // 👇👇👇 PLACE TIMER CODE HERE 👇👇👇
 
@@ -740,97 +778,138 @@ function startTimer(unlockTimestamp){
 
 // 👆👆👆 TIMER CODE END 👆👆👆
 
+/* ================= ADMIN FUNCTIONS ================= */
+
 async function pauseStaking(){
   const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
-  let tx = await c.pauseStaking();
-  await tx.wait();
+  await (await c.pauseStaking()).wait();
   alert("Staking Paused");
 }
 
 async function unpauseStaking(){
   const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
-  let tx = await c.unpauseStaking();
-  await tx.wait();
+  await (await c.unpauseStaking()).wait();
   alert("Staking Unpaused");
 }
 
-async function updateRewardRate(){
-  const duration = document.getElementById("adminDuration").value * 86400;
-  const percent = document.getElementById("adminRate").value;
+/* ===== PLAN RATE CONTROL ===== */
 
+async function updatePlanRate(days){
+  const percent = document.getElementById("rateInput"+days).value;
+  if(!percent) return alert("Enter percent");
+
+  const duration = days * 86400;
   const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
-  let tx = await c.setRewardRate(duration, percent);
-  await tx.wait();
-  alert("Reward Updated");
+
+  await (await c.setRewardRate(duration, percent)).wait();
+
+  alert(days + " Days Rate Updated");
+  loadRates();
 }
+
+async function loadRates(){
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, provider);
+
+  const r90 = await c.rewardRates(90*86400);
+  const r180 = await c.rewardRates(180*86400);
+  const r365 = await c.rewardRates(365*86400);
+
+  document.getElementById("rate90").innerHTML = r90 + " %";
+  document.getElementById("rate180").innerHTML = r180 + " %";
+  document.getElementById("rate365").innerHTML = r365 + " %";
+}
+
+/* ===== MINIMUM ===== */
 
 async function updateMinUSDT(){
   const val = document.getElementById("minUSDT").value;
   const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
-  let tx = await c.setMinimumUSDT(
-    ethers.utils.parseUnits(val,18)
-  );
-  await tx.wait();
+  await (await c.setMinimumUSDT(ethers.utils.parseUnits(val,18))).wait();
   alert("USDT Minimum Updated");
 }
 
 async function updateMinDMX(){
   const val = document.getElementById("minDMX").value;
   const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
-  let tx = await c.setMinimumDMX(
-    ethers.utils.parseUnits(val,18)
-  );
-  await tx.wait();
+  await (await c.setMinimumDMX(ethers.utils.parseUnits(val,18))).wait();
   alert("DMX Minimum Updated");
 }
+
+/* ===== EMERGENCY ===== */
 
 async function emergencyWithdraw(){
   const tokenType = document.getElementById("withdrawToken").value;
   const amt = document.getElementById("withdrawAmount").value;
-  const tokenAddress = tokenType === "USDT" ? USDT : DMX;
+  const tokenAddress = tokenType==="USDT"?USDT:DMX;
 
   const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
-  let tx = await c.emergencyWithdrawToken(
+
+  await (await c.emergencyWithdrawToken(
     tokenAddress,
     ethers.utils.parseUnits(amt,18)
-  );
-  await tx.wait();
+  )).wait();
+
   alert("Withdraw Completed");
 }
+
+/* ===== TREASURY ===== */
 
 async function updateTreasury(){
   const addr = document.getElementById("newTreasury").value;
   const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
-  let tx = await c.setTreasury(addr);
-  await tx.wait();
+  await (await c.setTreasury(addr)).wait();
   alert("Treasury Updated");
 }
+
+/* ===== OWNERSHIP ===== */
 
 async function transferOwner(){
   const addr = document.getElementById("newOwner").value;
   const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
-  let tx = await c.transferOwnership(addr);
-  await tx.wait();
+  await (await c.transferOwnership(addr)).wait();
   alert("Ownership Transferred");
 }
+
+/* ===== DIRECT & LEVEL ===== */
 
 async function updateDirect(){
   const val = document.getElementById("directPercent").value;
   const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
-  let tx = await c.setDirectPercent(val);
-  await tx.wait();
+  await (await c.setDirectPercent(val)).wait();
   alert("Direct Percent Updated");
 }
 
 async function updateLevel(){
   const level = document.getElementById("levelNumber").value;
   const percent = document.getElementById("levelPercent").value;
-
   const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
-  let tx = await c.setLevelPercent(level, percent);
-  await tx.wait();
+  await (await c.setLevelPercent(level, percent)).wait();
   alert("Level Percent Updated");
-  }  
+}
+
+/* ===== DMX PRICE ===== */
+
+async function setManualPrice(){
+  const price = document.getElementById("manualPrice").value;
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+
+  await (await c.setManualPrice(
+    ethers.utils.parseUnits(price,18)
+  )).wait();
+
+  alert("Manual Price Updated");
+}
+
+async function togglePriceMode(){
+  const mode = document.getElementById("priceMode").value==="true";
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+
+  await (await c.toggleManualPrice(mode)).wait();
+
+  alert("Price Mode Updated");
+}
+
+/* ================= END ADMIN ================= */
   
 function openDownline(){
 let html="";
