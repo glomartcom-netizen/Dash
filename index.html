@@ -566,13 +566,14 @@ userAddress=await signer.getAddress();
 document.getElementById("walletDisplay").innerHTML="Connected: "+userAddress;
 document.getElementById("refLink").value=window.location.origin+"?ref="+userAddress;
 
-if(userAddress.toLowerCase()===ADMIN.toLowerCase()){
-document.getElementById("adminPanel").style.display="block";
+if(userAddress.toLowerCase() === ADMIN.toLowerCase()){
+  document.getElementById("adminPanel").style.display = "block";
+  await loadRates();   // 🔥 important
 }
 
 await loadData();
-    await loadLivePrice();
-    setInterval(loadLivePrice,10000);
+await loadLivePrice();
+setInterval(loadLivePrice,10000);
 
 }catch(e){alert(e.message);}
 }
@@ -975,15 +976,6 @@ async function togglePriceMode(){
   alert("Price Mode Updated");
 
   await loadLivePrice(); // 🔥 added
-}
-
-async function togglePriceMode(){
-  const mode = document.getElementById("priceMode").value==="true";
-  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
-
-  await (await c.toggleManualPrice(mode)).wait();
-
-  alert("Price Mode Updated");
 }
 
 /* ================= END ADMIN ================= */
