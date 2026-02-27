@@ -263,6 +263,7 @@ button{
 <div class="container">
 
 <div id="walletDisplay"></div>
+<div id="status" style="margin-bottom:15px;color:gold;"></div>  
 
 <div class="stats">
 <div class="stat"><i class="fa-solid fa-wallet"></i>Total Stake<span id="totalStake">0</span></div>
@@ -278,7 +279,7 @@ button{
 <div class="card">
 <h3><i class="fa-solid fa-coins"></i> Stake</h3>
 <select id="token">
-<option value="USDT BEP20">USDT BEP20</option>
+<option value="USDT">USDT BEP20</option>
 <option value="DMX">DMX</option>
 </select>
 <input id="amount" placeholder="Enter amount">
@@ -547,7 +548,7 @@ async function claim(){
 
     const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
 
-    let reward = await c.getPendingReward(user);
+    let reward = await c.getClaimable(user);
 
     let amount = Number(ethers.utils.formatUnits(reward,18));
 
@@ -592,7 +593,7 @@ async function restake(){
 
     const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
 
-    let claimable = await c.getPendingReward(user);
+    let claimable = await c.getClaimable(user);
 
     let amount = Number(ethers.utils.formatUnits(claimable,18));
 
