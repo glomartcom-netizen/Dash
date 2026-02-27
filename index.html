@@ -278,14 +278,15 @@ button{
 <div class="card">
 <h3><i class="fa-solid fa-coins"></i> Stake</h3>
 <select id="token">
-<option value="USDT">USDT</option>
+<option value="USDT BEP20">USDT BEP20</option>
 <option value="DMX">DMX</option>
 </select>
 <input id="amount" placeholder="Enter amount">
 <select id="duration">
-<option value="90">90 Days</option>
-<option value="180">180 Days</option>
-<option value="365">365 Days</option>
+<option value="" disabled selected>Select Duration</option>
+<option value="90">90 Days (0.20%)</option>
+<option value="180">180 Days (0.25%)</option>
+<option value="365">365 Days (0.30%)</option>
 </select>
 <button id="approveBtn" onclick="approveToken()">Approve</button>
 <button id="stakeBtn" onclick="stakeToken()">Stake</button>
@@ -429,26 +430,66 @@ disable("approveBtn",false);
 }
 
 async function stakeToken(){
-try{
-disable("stakeBtn",true);
-let amt=document.getElementById("amount").value;
-if(!amt||isNaN(amt)) return alert("Invalid amount");
+  try{
 
-let dur=seconds(document.getElementById("duration").value);
-let ref=new URLSearchParams(window.location.search).get("ref")||ethers.constants.AddressZero;
-let c=new ethers.Contract(STAKING_ADDRESS,STAKE_ABI,signer);
+    disable("stakeBtn",true);
 
-let tx;
-if(document.getElementById("token").value==="USDT"){
-tx=await c.stakeUSDT(ethers.utils.parseUnits(amt,18),dur,ref);
-}else{
-tx=await c.stakeDMX(ethers.utils.parseUnits(amt,18),dur,ref);
-}
-await tx.wait();
-alert("Stake Successful");
-loadData();
-}catch(e){alert(e.reason||e.message);}
-disable("stakeBtn",false);
+    let amt = document.getElementById("amount").value;
+
+    if(!amt || isNaN(amt) || Number(amt) <= 0){
+      alert("Enter valid amount");
+      disable("stakeBtn",false);
+      return;
+    }
+
+    let selected = document.getElementById("duration").value;
+
+    if(!selected){
+      alert("Please select duration");
+      disable("stakeBtn",false);
+      return;
+    }
+
+    let dur = seconds(selected);
+
+    const signer = provider.getSigner();
+
+    let ref = new URLSearchParams(window.location.search)
+      .get("ref") || ethers.constants.AddressZero;
+
+    const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+
+    let tx;
+
+    if(document.getElementById("token").value === "USDT"){
+      tx = await c.stakeUSDT(
+        ethers.utils.parseUnits(amt,18),
+        dur,
+        ref
+      );
+    }else{
+      tx = await c.stakeDMX(
+        ethers.utils.parseUnits(amt,18),
+        dur,
+        ref
+      );
+    }
+
+    document.getElementById("status").innerHTML="Staking...";
+    await tx.wait();
+
+    document.getElementById("status").innerHTML="Stake Successful";
+
+    alert("Stake Successful");
+
+    loadData();
+
+  }catch(e){
+    console.log(e);
+    alert(e.reason || e.message || "Stake Failed");
+  }
+
+  disable("stakeBtn",false);
 }
 
 async function claimRewards(){
