@@ -293,6 +293,11 @@ button{
 <button id="stakeBtn" onclick="stakeToken()">Stake</button>
 </div>
 
+<div style="margin-top:10px;font-size:13px;color:#aaa;">
+⏳ Lock Ends In:
+<span id="remainingTime" style="color:gold;">--</span>
+</div>
+  
 <div class="card">
 <h3><i class="fa-solid fa-gift"></i> Claim</h3>
 <input id="claimable" readonly>
@@ -366,6 +371,7 @@ const STAKE_ABI=[
 "function restake() external",
 "function getUserInfo(address) view returns(uint256,uint256,uint256,uint256,uint256,uint256)",
 "function getClaimable(address) view returns(uint256)",
+"function getUnlockTime(address) view returns(uint256)",  
 "event Claimed(address indexed user,uint256 amount,uint256 time)"
 ];
 
@@ -404,7 +410,11 @@ try{
 const c=new ethers.Contract(STAKING_ADDRESS,STAKE_ABI,provider);
 const info=await c.getUserInfo(userAddress);
 const claimable=await c.getClaimable(userAddress);
-
+  
+// 🔥 ADD THIS HERE
+const unlockTime = await c.getUnlockTime(userAddress);
+startTimer(unlockTime);
+  
 document.getElementById("totalStake").innerHTML=ethers.utils.formatUnits(info[0],18);
 document.getElementById("dailyReward").innerHTML=ethers.utils.formatUnits(info[1],18);
 document.getElementById("totalIncome").innerHTML=ethers.utils.formatUnits(info[2],18);
@@ -613,6 +623,45 @@ async function restake(){
 
   disable("restakeBtn", false);
 }
+
+async function restake(){
+   ...
+   disable("restakeBtn", false);
+}
+  
+// 👇👇👇 PLACE TIMER CODE HERE 👇👇👇
+
+let timerInterval;
+
+function startTimer(unlockTimestamp){
+
+  if(timerInterval) clearInterval(timerInterval);
+
+  function update(){
+
+    const now = Math.floor(Date.now()/1000);
+    const diff = unlockTimestamp - now;
+
+    if(diff <= 0){
+      document.getElementById("remainingTime").innerHTML = "Unlocked";
+      clearInterval(timerInterval);
+      return;
+    }
+
+    const days = Math.floor(diff / 86400);
+    const hours = Math.floor((diff % 86400) / 3600);
+    const minutes = Math.floor((diff % 3600) / 60);
+    const seconds = diff % 60;
+
+    document.getElementById("remainingTime").innerHTML =
+      days+"D "+hours+"H "+minutes+"M "+seconds+"S";
+  }
+
+  update();
+  timerInterval = setInterval(update,1000);
+}
+
+// 👆👆👆 TIMER CODE END 👆👆👆
   
 function openDownline(){
 let html="";
