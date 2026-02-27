@@ -431,6 +431,7 @@ disable("approveBtn",false);
 }
 
 async function stakeToken(){
+
   try{
 
     disable("stakeBtn", true);
@@ -451,7 +452,7 @@ async function stakeToken(){
 
     let tokenType = document.getElementById("token").value;
 
-    // Minimum rules
+    // ✅ Minimum Validation
     if(tokenType === "USDT" && Number(amt) < 25){
       alert("Minimum stake is 25 USDT");
       disable("stakeBtn", false);
@@ -464,38 +465,43 @@ async function stakeToken(){
       return;
     }
 
-    let selected = document.getElementById("duration").value;
+    let selectedDuration = document.getElementById("duration").value;
 
-    if(!selected){
+    if(!selectedDuration){
       alert("Please select duration");
       disable("stakeBtn", false);
       return;
     }
 
-    let dur = Number(selected) * 86400;
+    // ✅ Convert days → seconds
+    let durationSeconds = Number(selectedDuration) * 86400;
 
     const signer = provider.getSigner();
-    const user = await signer.getAddress();
 
+    // ✅ Referral
     let ref = new URLSearchParams(window.location.search)
       .get("ref") || ethers.constants.AddressZero;
 
-    const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+    const contract = new ethers.Contract(
+      STAKING_ADDRESS,
+      STAKE_ABI,
+      signer
+    );
 
     document.getElementById("status").innerHTML = "Staking...";
 
     let tx;
 
     if(tokenType === "USDT"){
-      tx = await c.stakeUSDT(
+      tx = await contract.stakeUSDT(
         ethers.utils.parseUnits(amt,18),
-        dur,
+        durationSeconds,
         ref
       );
-    }else{
-      tx = await c.stakeDMX(
+    } else {
+      tx = await contract.stakeDMX(
         ethers.utils.parseUnits(amt,18),
-        dur,
+        durationSeconds,
         ref
       );
     }
@@ -508,30 +514,16 @@ async function stakeToken(){
 
     loadData();
 
-  }catch(e){
+  } catch(e){
+
     console.log(e);
     alert(e.reason || e.message || "Stake Failed");
+
   }
 
   disable("stakeBtn", false);
 }
-    document.getElementById("status").innerHTML="Staking...";
-    await tx.wait();
-
-    document.getElementById("status").innerHTML="Stake Successful";
-
-    alert("Stake Successful");
-
-    loadData();
-
-  }catch(e){
-    console.log(e);
-    alert(e.reason || e.message || "Stake Failed");
-  }
-
-  disable("stakeBtn",false);
-}
-
+  
 async function claim(){
   try{
 
