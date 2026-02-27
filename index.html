@@ -432,13 +432,34 @@ disable("approveBtn",false);
 async function stakeToken(){
   try{
 
-    disable("stakeBtn",true);
+    disable("stakeBtn", true);
+
+    if(!provider){
+      alert("Connect wallet first");
+      disable("stakeBtn", false);
+      return;
+    }
 
     let amt = document.getElementById("amount").value;
 
     if(!amt || isNaN(amt) || Number(amt) <= 0){
       alert("Enter valid amount");
-      disable("stakeBtn",false);
+      disable("stakeBtn", false);
+      return;
+    }
+
+    let tokenType = document.getElementById("token").value;
+
+    // Minimum rules
+    if(tokenType === "USDT" && Number(amt) < 25){
+      alert("Minimum stake is 25 USDT");
+      disable("stakeBtn", false);
+      return;
+    }
+
+    if(tokenType === "DMX" && Number(amt) < 5000){
+      alert("Minimum stake is 5000 DMX");
+      disable("stakeBtn", false);
       return;
     }
 
@@ -446,22 +467,25 @@ async function stakeToken(){
 
     if(!selected){
       alert("Please select duration");
-      disable("stakeBtn",false);
+      disable("stakeBtn", false);
       return;
     }
 
-    let dur = seconds(selected);
+    let dur = Number(selected) * 86400;
 
     const signer = provider.getSigner();
+    const user = await signer.getAddress();
 
     let ref = new URLSearchParams(window.location.search)
       .get("ref") || ethers.constants.AddressZero;
 
     const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
 
+    document.getElementById("status").innerHTML = "Staking...";
+
     let tx;
 
-    if(document.getElementById("token").value === "USDT"){
+    if(tokenType === "USDT"){
       tx = await c.stakeUSDT(
         ethers.utils.parseUnits(amt,18),
         dur,
@@ -475,6 +499,21 @@ async function stakeToken(){
       );
     }
 
+    await tx.wait();
+
+    document.getElementById("status").innerHTML = "Stake Successful";
+
+    alert("Stake Successful");
+
+    loadData();
+
+  }catch(e){
+    console.log(e);
+    alert(e.reason || e.message || "Stake Failed");
+  }
+
+  disable("stakeBtn", false);
+}
     document.getElementById("status").innerHTML="Staking...";
     await tx.wait();
 
@@ -492,30 +531,96 @@ async function stakeToken(){
   disable("stakeBtn",false);
 }
 
-async function claimRewards(){
-try{
-disable("claimBtn",true);
-let c=new ethers.Contract(STAKING_ADDRESS,STAKE_ABI,signer);
-let tx=await c.claim();
-await tx.wait();
-alert("Claimed");
-loadData();
-}catch(e){alert(e.reason||e.message);}
-disable("claimBtn",false);
+async function claim(){
+  try{
+
+    disable("claimBtn", true);
+
+    if(!provider){
+      alert("Connect wallet first");
+      disable("claimBtn", false);
+      return;
+    }
+
+    const signer = provider.getSigner();
+    const user = await signer.getAddress();
+
+    const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+
+    let reward = await c.getPendingReward(user);
+
+    let amount = Number(ethers.utils.formatUnits(reward,18));
+
+    if(amount < 100){
+      alert("Minimum 100 DMX required to claim");
+      disable("claimBtn", false);
+      return;
+    }
+
+    document.getElementById("status").innerHTML = "Claiming...";
+
+    let tx = await c.claim();
+    await tx.wait();
+
+    document.getElementById("status").innerHTML = "Claim Successful";
+
+    alert("Claim Successful");
+
+    loadData();
+
+  }catch(e){
+    console.log(e);
+    alert(e.reason || e.message || "Claim Failed");
+  }
+
+  disable("claimBtn", false);
 }
 
-async function restakeRewards(){
-try{
-disable("restakeBtn",true);
-let c=new ethers.Contract(STAKING_ADDRESS,STAKE_ABI,signer);
-let tx=await c.restake();
-await tx.wait();
-alert("Restaked");
-loadData();
-}catch(e){alert(e.reason||e.message);}
-disable("restakeBtn",false);
-}
+async function restake(){
+  try{
 
+    disable("restakeBtn", true);
+
+    if(!provider){
+      alert("Connect wallet first");
+      disable("restakeBtn", false);
+      return;
+    }
+
+    const signer = provider.getSigner();
+    const user = await signer.getAddress();
+
+    const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+
+    let claimable = await c.getPendingReward(user);
+
+    let amount = Number(ethers.utils.formatUnits(claimable,18));
+
+    if(amount < 5000){
+      alert("Minimum 5000 DMX required to Re-stake");
+      disable("restakeBtn", false);
+      return;
+    }
+
+    document.getElementById("status").innerHTML = "Restaking...";
+
+    let tx = await c.restake();
+    await tx.wait();
+
+    document.getElementById("status").innerHTML = "Re-stake Successful";
+
+    alert("Re-stake Successful");
+
+    loadData();
+
+  }catch(e){
+    console.log(e);
+    alert(e.reason || e.message || "Restake Failed");
+  }
+
+  disable("restakeBtn", false);
+}
+  
 function openDownline(){
 let html="";
 for(let i=1;i<=20;i++){
