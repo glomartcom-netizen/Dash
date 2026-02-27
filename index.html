@@ -328,10 +328,76 @@ button{
 <div class="contractRow"><span>Router</span><button onclick="viewAddress(ROUTER)">View</button></div>
 </div>
 
-<div class="adminPanel" id="adminPanel">
-<div class="card">
-<h3><i class="fa-solid fa-user-shield"></i> Admin Panel</h3>
-<div>Admin Connected</div>
+<<div class="adminPanel" id="adminPanel">
+  <div class="card">
+
+    <!-- ✅ Badge goes here -->
+    <div style="background:#111;border:1px solid gold;
+    padding:8px 12px;border-radius:8px;
+    margin-bottom:15px;color:gold;font-size:13px;">
+      ✔ Admin Wallet Connected
+    </div>      
+<h3><i class="fa-solid fa-user-shield"></i> Full Admin Control Panel</h3>
+
+<button onclick="pauseStaking()">Pause Staking</button>
+<button onclick="unpauseStaking()">Unpause Staking</button>
+
+<hr style="margin:20px 0;border-color:#333;">
+
+<h4 style="color:gold;">Update Reward Rate</h4>
+<select id="adminDuration">
+<option value="90">90 Days</option>
+<option value="180">180 Days</option>
+<option value="365">365 Days</option>
+</select>
+<input id="adminRate" placeholder="Enter percent (example 20 = 0.20%)">
+<button onclick="updateRewardRate()">Update Reward</button>
+
+<hr style="margin:20px 0;border-color:#333;">
+
+<h4 style="color:gold;">Update Minimum Stake</h4>
+<input id="minUSDT" placeholder="New Minimum USDT">
+<button onclick="updateMinUSDT()">Update USDT Minimum</button>
+
+<input id="minDMX" placeholder="New Minimum DMX">
+<button onclick="updateMinDMX()">Update DMX Minimum</button>
+
+<hr style="margin:20px 0;border-color:#333;">
+
+<h4 style="color:gold;">Emergency Withdraw</h4>
+<select id="withdrawToken">
+<option value="USDT">USDT</option>
+<option value="DMX">DMX</option>
+</select>
+<input id="withdrawAmount" placeholder="Amount to withdraw">
+<button onclick="emergencyWithdraw()">Withdraw</button>
+
+<hr style="margin:20px 0;border-color:#333;">
+
+<h4 style="color:gold;">Change Treasury Wallet</h4>
+<input id="newTreasury" placeholder="New Treasury Address">
+<button onclick="updateTreasury()">Update Treasury</button>
+
+<hr style="margin:20px 0;border-color:#333;">
+
+<h4 style="color:gold;">Transfer Ownership</h4>
+<input id="newOwner" placeholder="New Owner Address">
+<button onclick="transferOwner()">Transfer Ownership</button>
+
+<hr style="margin:20px 0;border-color:#333;">
+
+<h4 style="color:gold;">Update Direct Bonus %</h4>
+<input id="directPercent" placeholder="New Direct Percent">
+<button onclick="updateDirect()">Update Direct %</button>
+
+<h4 style="color:gold;margin-top:15px;">Update Level Bonus %</h4>
+<input id="levelNumber" placeholder="Level Number (1-20)">
+<input id="levelPercent" placeholder="New Percent">
+<button onclick="updateLevel()">Update Level %</button>
+
+  </div>
+      
+    </div>
 </div>
 </div>
 
@@ -370,6 +436,16 @@ const STAKE_ABI=[
 "function stakeDMX(uint256,uint256,address) external",
 "function claim() external",
 "function restake() external",
+"function pauseStaking() external",
+"function unpauseStaking() external",
+"function setRewardRate(uint256,uint256) external",
+"function setMinimumUSDT(uint256) external",
+"function setMinimumDMX(uint256) external",
+"function emergencyWithdrawToken(address,uint256) external",
+"function setTreasury(address) external",
+"function transferOwnership(address) external",
+"function setDirectPercent(uint256) external",
+"function setLevelPercent(uint256,uint256) external",  
 "function getUserInfo(address) view returns(uint256,uint256,uint256,uint256,uint256,uint256)",
 "function getClaimable(address) view returns(uint256)",
 "function getUnlockTime(address) view returns(uint256)",  
@@ -663,6 +739,98 @@ function startTimer(unlockTimestamp){
 }
 
 // 👆👆👆 TIMER CODE END 👆👆👆
+
+async function pauseStaking(){
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+  let tx = await c.pauseStaking();
+  await tx.wait();
+  alert("Staking Paused");
+}
+
+async function unpauseStaking(){
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+  let tx = await c.unpauseStaking();
+  await tx.wait();
+  alert("Staking Unpaused");
+}
+
+async function updateRewardRate(){
+  const duration = document.getElementById("adminDuration").value * 86400;
+  const percent = document.getElementById("adminRate").value;
+
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+  let tx = await c.setRewardRate(duration, percent);
+  await tx.wait();
+  alert("Reward Updated");
+}
+
+async function updateMinUSDT(){
+  const val = document.getElementById("minUSDT").value;
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+  let tx = await c.setMinimumUSDT(
+    ethers.utils.parseUnits(val,18)
+  );
+  await tx.wait();
+  alert("USDT Minimum Updated");
+}
+
+async function updateMinDMX(){
+  const val = document.getElementById("minDMX").value;
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+  let tx = await c.setMinimumDMX(
+    ethers.utils.parseUnits(val,18)
+  );
+  await tx.wait();
+  alert("DMX Minimum Updated");
+}
+
+async function emergencyWithdraw(){
+  const tokenType = document.getElementById("withdrawToken").value;
+  const amt = document.getElementById("withdrawAmount").value;
+  const tokenAddress = tokenType === "USDT" ? USDT : DMX;
+
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+  let tx = await c.emergencyWithdrawToken(
+    tokenAddress,
+    ethers.utils.parseUnits(amt,18)
+  );
+  await tx.wait();
+  alert("Withdraw Completed");
+}
+
+async function updateTreasury(){
+  const addr = document.getElementById("newTreasury").value;
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+  let tx = await c.setTreasury(addr);
+  await tx.wait();
+  alert("Treasury Updated");
+}
+
+async function transferOwner(){
+  const addr = document.getElementById("newOwner").value;
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+  let tx = await c.transferOwnership(addr);
+  await tx.wait();
+  alert("Ownership Transferred");
+}
+
+async function updateDirect(){
+  const val = document.getElementById("directPercent").value;
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+  let tx = await c.setDirectPercent(val);
+  await tx.wait();
+  alert("Direct Percent Updated");
+}
+
+async function updateLevel(){
+  const level = document.getElementById("levelNumber").value;
+  const percent = document.getElementById("levelPercent").value;
+
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
+  let tx = await c.setLevelPercent(level, percent);
+  await tx.wait();
+  alert("Level Percent Updated");
+  }  
   
 function openDownline(){
 let html="";
