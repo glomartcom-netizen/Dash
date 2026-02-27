@@ -322,6 +322,14 @@ button{
 
 <div class="card">
 <h3><i class="fa-solid fa-network-wired"></i> Ecosystem</h3>
+  
+ <div style="margin-bottom:15px;font-size:14px;color:#aaa;">
+🔥 Live DMX Price:
+<span id="livePriceUser" style="color:gold;">--</span><br>
+Mode:
+<span id="priceModeUser" style="color:gold;">--</span>
+ </div> 
+  
 <div class="contractRow"><span>DMX Token</span><button onclick="viewAddress(DMX)">View</button></div>
 <div class="contractRow"><span>Staking</span><button onclick="viewAddress(STAKING_ADDRESS)">View</button></div>
 <div class="contractRow"><span>LP Pair</span><button onclick="viewAddress(LP)">View</button></div>
@@ -348,6 +356,14 @@ button{
       Full Admin Control Panel
     </h3>
 
+<!-- 🔥 LIVE PRICE DISPLAY -->
+<div style="margin-bottom:15px;color:#aaa;font-size:14px;">
+🔥 Current DMX Price:
+<span id="livePriceAdmin" style="color:gold;">--</span><br>
+Mode:
+<span id="priceModeAdmin" style="color:gold;">--</span>
+</div>
+    
     <!-- Pause -->
     <button onclick="pauseStaking()">Pause Staking</button>
     <button onclick="unpauseStaking()">Unpause Staking</button>
@@ -470,31 +486,66 @@ const STAKING_ADDRESS="PUT_STAKING_CONTRACT";
 const LP="PUT_LP_ADDRESS";
 const ROUTER="0x10ED43C718714eb63d5aA57B78B54704E256024E";
 
-const ERC20_ABI=["function approve(address,uint256) external returns(bool)"];
-const STAKE_ABI=[
-"function stakeUSDT(uint256,uint256,address) external",
-"function stakeDMX(uint256,uint256,address) external",
-"function claim() external",
-"function restake() external",
-"function pauseStaking() external",
-"function unpauseStaking() external",
-"function setRewardRate(uint256,uint256) external",
-"function rewardRates(uint256) view returns(uint256)",
-"function setMinimumUSDT(uint256) external",
-"function setMinimumDMX(uint256) external",
-"function emergencyWithdrawToken(address,uint256) external",
-"function setTreasury(address) external",
-"function transferOwnership(address) external",
-"function setDirectPercent(uint256) external",
-"function setLevelPercent(uint256,uint256) external",
-"function setManualPrice(uint256) external",
-"function toggleManualPrice(bool) external",  
-"function getUserInfo(address) view returns(uint256,uint256,uint256,uint256,uint256,uint256)",
-"function getClaimable(address) view returns(uint256)",
-"function getUnlockTime(address) view returns(uint256)",  
-"event Claimed(address indexed user,uint256 amount,uint256 time)"
+const ERC20_ABI=[
+const ERC20_ABI = [
+  "function approve(address,uint256) external returns(bool)"
 ];
 
+const STAKE_ABI = [
+
+  // ===== USER =====
+  "function stakeUSDT(uint256,uint256,address) external",
+  "function stakeDMX(uint256,uint256,address) external",
+  "function claim() external",
+  "function restake() external",
+
+  /* ===== OPTIONAL SEPARATE VIEW FUNCTIONS ===== */
+"function totalStakeOf(address) view returns(uint256)",
+"function dailyRewardOf(address) view returns(uint256)",
+"function totalEarnedOf(address) view returns(uint256)",
+"function directIncomeOf(address) view returns(uint256)",
+"function levelIncomeOf(address) view returns(uint256)",
+"function teamCountOf(address) view returns(uint256)",
+
+  // ===== PRICE SYSTEM =====
+  "function getDMXPrice() view returns(uint256)",
+  "function manualPriceEnabled() view returns(bool)",
+  "function setManualPrice(uint256) external",
+  "function toggleManualPrice(bool) external",
+
+  // ===== ADMIN CONTROL =====
+  "function pauseStaking() external",
+  "function unpauseStaking() external",
+
+  // ===== REWARD RATE =====
+  "function setRewardRate(uint256,uint256) external",
+  "function rewardRates(uint256) view returns(uint256)",
+
+  // ===== MINIMUM =====
+  "function setMinimumUSDT(uint256) external",
+  "function setMinimumDMX(uint256) external",
+
+  // ===== EMERGENCY =====
+  "function emergencyWithdrawToken(address,uint256) external",
+
+  // ===== TREASURY & OWNERSHIP =====
+  "function setTreasury(address) external",
+  "function transferOwnership(address) external",
+
+  // ===== REFERRAL =====
+  "function setDirectPercent(uint256) external",
+  "function setLevelPercent(uint256,uint256) external",
+
+  // ===== USER INFO =====
+  "function getUserInfo(address) view returns(uint256,uint256,uint256,uint256,uint256,uint256)",
+  "function getClaimable(address) view returns(uint256)",
+  "function getLevelCount(address,uint256) view returns(uint256)",
+  "function getUnlockTime(address) view returns(uint256)",
+
+  // ===== EVENTS =====
+  "event Claimed(address indexed user,uint256 amount,uint256 time)"
+];
+  
 function disable(id,state){document.getElementById(id).disabled=state;}
 function seconds(d){return Number(d)*86400;}
 
@@ -520,7 +571,9 @@ if(userAddress.toLowerCase()===ADMIN.toLowerCase()){
 document.getElementById("adminPanel").style.display="block";
 }
 
-loadData();
+await loadData();
+    await loadLivePrice();
+    setInterval(loadLivePrice,10000);
 
 }catch(e){alert(e.message);}
 }
@@ -889,15 +942,18 @@ async function updateLevel(){
 
 /* ===== DMX PRICE ===== */
 
-async function setManualPrice(){
-  const price = document.getElementById("manualPrice").value;
+async function togglePriceMode(){
+
+  const mode =
+    document.getElementById("priceMode").value === "true";
+
   const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, signer);
 
-  await (await c.setManualPrice(
-    ethers.utils.parseUnits(price,18)
-  )).wait();
+  await (await c.toggleManualPrice(mode)).wait();
 
-  alert("Manual Price Updated");
+  alert("Price Mode Updated");
+
+  await loadLivePrice(); // 🔥 added
 }
 
 async function togglePriceMode(){
@@ -911,16 +967,62 @@ async function togglePriceMode(){
 
 /* ================= END ADMIN ================= */
   
-function openDownline(){
-let html="";
-for(let i=1;i<=20;i++){
-html+=`<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #333">
-<span>Level ${i}</span><span>0</span></div>`;
-}
-document.getElementById("downlineData").innerHTML=html;
-document.getElementById("downlinePopup").style.display="flex";
+async function openDownline(){
+
+  const c=new ethers.Contract(STAKING_ADDRESS,STAKE_ABI,provider);
+
+  let html="";
+
+  for(let i=1;i<=20;i++){
+
+    const count = await c.getLevelCount(userAddress,i);
+
+    html+=`
+    <div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #333">
+      <span>Level ${i}</span>
+      <span>${count}</span>
+    </div>`;
+  }
+
+  document.getElementById("downlineData").innerHTML=html;
+  document.getElementById("downlinePopup").style.display="flex";
 }
 
+async function loadLivePrice(){
+
+  if(!provider) return;
+
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, provider);
+
+  try{
+
+    const price = await c.getDMXPrice();
+    const manual = await c.manualPriceEnabled();
+
+    const formatted =
+      ethers.utils.formatUnits(price,18) + " USDT";
+
+    const mode =
+      manual ? "Manual Mode" : "Pancake Live";
+
+    // Admin display
+    if(document.getElementById("livePriceAdmin"))
+      document.getElementById("livePriceAdmin").innerHTML = formatted;
+
+    if(document.getElementById("priceModeAdmin"))
+      document.getElementById("priceModeAdmin").innerHTML = mode;
+
+    // User display (if exists)
+    if(document.getElementById("livePriceUser"))
+      document.getElementById("livePriceUser").innerHTML = formatted;
+
+    if(document.getElementById("priceModeUser"))
+      document.getElementById("priceModeUser").innerHTML = mode;
+
+  }catch(e){
+    console.log("Price Load Error:",e);
+  }
+  
 async function openHistory(){
 document.getElementById("historyPopup").style.display="flex";
 try{
