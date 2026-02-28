@@ -645,8 +645,8 @@ async function connectWallet(){
 
     let web3Provider;
 
-    // 1️⃣ Injected wallet first (Wallet Browser / Desktop)
-    if (window.ethereum) {
+    // ===== 1️⃣ Injected Wallet (Desktop / Wallet Browser) =====
+    if (window.ethereum && window.ethereum.isMetaMask) {
 
       await window.ethereum.request({
         method: "eth_requestAccounts"
@@ -657,10 +657,9 @@ async function connectWallet(){
     } 
     else {
 
-      // 2️⃣ WalletConnect fallback (External Mobile Browser)
+      // ===== 2️⃣ WalletConnect (External Browser) =====
       const wc = new WalletConnectProvider.default({
-        rpc: { 56: "https://bsc-dataseed.binance.org/" },
-        qrcode: true
+        rpc: { 56: "https://bsc-dataseed.binance.org/" }
       });
 
       await wc.enable();
@@ -668,25 +667,16 @@ async function connectWallet(){
       web3Provider = new ethers.providers.Web3Provider(wc);
     }
 
-    const network = await web3Provider.getNetwork();
-
-    // Force BSC
-    if(network.chainId !== 56){
-
-      try{
-        await web3Provider.provider.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x38" }]
-        });
-      }catch{
-        alert("Please switch to BNB Smart Chain manually.");
-        return;
-      }
-    }
-
     provider = web3Provider;
     signer = provider.getSigner();
     userAddress = await signer.getAddress();
+
+    const network = await provider.getNetwork();
+
+    if(network.chainId !== 56){
+      alert("Please switch to BNB Smart Chain manually.");
+      return;
+    }
 
     document.getElementById("walletDisplay").innerHTML =
       "Connected: " + userAddress;
@@ -696,12 +686,12 @@ async function connectWallet(){
       setTimeout(loadRates,1000);
     }
 
-    // Delay heavy loading
+    // Delay heavy calls
     setTimeout(async ()=>{
       await loadData();
       await loadLivePrice();
       setInterval(loadLivePrice,10000);
-    },1500);
+    },2000);
 
   }catch(e){
     console.log(e);
