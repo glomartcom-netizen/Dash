@@ -623,34 +623,51 @@ const STAKE_ABI = [
 function disable(id,state){document.getElementById(id).disabled=state;}
 function seconds(d){return Number(d)*86400;}
 
-async function connectWallet(){
-try{
-if(window.ethereum){
-provider=new ethers.providers.Web3Provider(window.ethereum);
-await provider.send("eth_requestAccounts",[]);
-}else{
-const wc=new WalletConnectProvider.default({rpc:{56:"https://bsc-dataseed.binance.org/"}});
-await wc.enable();
-provider=new ethers.providers.Web3Provider(wc);
-}
-const network=await provider.getNetwork();
-if(network.chainId!==56){alert("Switch to BSC Mainnet");return;}
-signer=provider.getSigner();
-userAddress=await signer.getAddress();
+async function connectWallet() {
 
-document.getElementById("walletDisplay").innerHTML="Connected: "+userAddress;
-document.getElementById("refLink").value=window.location.origin+"?ref="+userAddress;
+  try {
 
-if(userAddress.toLowerCase() === ADMIN.toLowerCase()){
-  document.getElementById("adminPanel").style.display = "block";
-  await loadRates();   // 🔥 important
-}
+    if (!window.ethereum) {
+      alert("Open inside MetaMask / Trust Wallet browser");
+      return;
+    }
 
-await loadData();
-await loadLivePrice();
-setInterval(loadLivePrice,10000);
+    // Request accounts (like your working version)
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts"
+    });
 
-}catch(e){alert(e.message);}
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    userAddress = accounts[0];
+
+    const network = await provider.getNetwork();
+    if (network.chainId !== 56) {
+      alert("Switch to BSC Mainnet");
+      return;
+    }
+
+    document.getElementById("walletDisplay").innerHTML =
+      "Connected: " + userAddress;
+
+    document.getElementById("refLink").value =
+      window.location.origin + "?ref=" + userAddress;
+
+    if (userAddress.toLowerCase() === ADMIN.toLowerCase()) {
+      document.getElementById("adminPanel").style.display = "block";
+    }
+
+    // 🔥 Delay heavy loading
+    setTimeout(async () => {
+      await loadData();
+      await loadLivePrice();
+      setInterval(loadLivePrice, 10000);
+    }, 1500);
+
+  } catch (err) {
+    alert("Connection failed: " + err.message);
+    console.log(err);
+  }
 }
 
 async function loadData(){
