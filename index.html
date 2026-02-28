@@ -1287,22 +1287,33 @@ const chains=[{
   rpcUrl:"https://bsc-dataseed.binance.org/"
 }];
 
-const { EthereumClient }=window.Web3ModalEthereum;
-const { Web3Modal }=window.Web3Modal;
+async function initWeb3(){
 
-const ethereumClient=new EthereumClient({
-  chains,
-  projectId
-});
+  if(!window.EthereumClient || !window.Web3Modal){
+    return setTimeout(initWeb3,300);
+  }
 
-web3Modal=new Web3Modal({
-  projectId,
-  themeMode:"dark"
-},ethereumClient);
+  const ethereumClient=new window.EthereumClient({
+    chains,
+    projectId
+  });
+
+  web3Modal=new window.Web3Modal({
+    projectId,
+    themeMode:"dark"
+  },ethereumClient);
+}
+
+initWeb3();
 
 async function connectWallet(){
 
   try{
+
+    if(!web3Modal){
+      alert("Wallet system loading...");
+      return;
+    }
 
     const walletProvider=await web3Modal.connect();
 
