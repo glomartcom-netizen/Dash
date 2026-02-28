@@ -7,11 +7,22 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  
+
+<!-- Ethers -->
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
-<script src="https://unpkg.com/@web3modal/ethereum@2.7.1/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@web3modal/html@2.7.1/dist/index.umd.js"></script>
-  
+
+<!-- Web3Modal (Module Version - CORRECT) -->
+<script type="module">
+  import { EthereumClient } from 
+  "https://unpkg.com/@web3modal/ethereum@2.7.1/dist/index.js";
+
+  import { Web3Modal } from 
+  "https://unpkg.com/@web3modal/html@2.7.1/dist/index.js";
+
+  window.EthereumClient = EthereumClient;
+  window.Web3Modal = Web3Modal;
+</script>
+
 <style>
 *{box-sizing:border-box}
 body{
