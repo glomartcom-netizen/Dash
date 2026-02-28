@@ -643,46 +643,40 @@ async function connectWallet(){
 
   try{
 
-    let web3Provider;
-
-    // 1️⃣ If injected wallet exists
-    if (typeof window.ethereum !== "undefined") {
+    // ===== Desktop / Wallet Browser =====
+    if (window.ethereum && window.ethereum.isMetaMask) {
 
       await window.ethereum.request({
         method: "eth_requestAccounts"
       });
 
-      web3Provider = new ethers.providers.Web3Provider(window.ethereum);
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer = provider.getSigner();
+      userAddress = await signer.getAddress();
 
-    } else {
+      document.getElementById("walletDisplay").innerHTML =
+        "Connected: " + userAddress;
 
-      // 2️⃣ Only if no injection use WalletConnect
-      const wc = new WalletConnectProvider.default({
-        rpc: { 56: "https://bsc-dataseed.binance.org/" }
-      });
-
-      await wc.enable();
-
-      web3Provider = new ethers.providers.Web3Provider(wc);
-    }
-
-    provider = web3Provider;
-    signer = provider.getSigner();
-    userAddress = await signer.getAddress();
-
-    const network = await provider.getNetwork();
-
-    if(network.chainId !== 56){
-      alert("Switch to BNB Smart Chain (BSC)");
       return;
     }
+
+    // ===== External Browser (WalletConnect only) =====
+    const wc = new WalletConnectProvider.default({
+      rpc: { 56: "https://bsc-dataseed.binance.org/" }
+    });
+
+    await wc.enable();
+
+    provider = new ethers.providers.Web3Provider(wc);
+    signer = provider.getSigner();
+    userAddress = await signer.getAddress();
 
     document.getElementById("walletDisplay").innerHTML =
       "Connected: " + userAddress;
 
   }catch(e){
+    alert("Connection failed");
     console.log(e);
-    alert("Connection failed: " + e.message);
   }
 }
   
