@@ -598,8 +598,6 @@ z-index:9999;
   
 <script>
 
-let provider, signer, userAddress;
-
 const ADMIN="0x53ba2d865be750d0e2d4d01bcb0a46ec1684c46b";
 const USDT="0x55d398326f99059fF775485246999027B3197955";
 const DMX="PUT_DMX_TOKEN";
@@ -674,15 +672,7 @@ const STAKE_ABI = [
   
 function disable(id,state){document.getElementById(id).disabled=state;}
 function seconds(d){return Number(d)*86400;}
-
-
-function openWalletModal(){
-  document.getElementById("walletModal").style.display = "flex";
-}
-
-function closeWalletModal(){
-  document.getElementById("walletModal").style.display = "none";
-}
+  
   
 async function loadData(){
 try{
