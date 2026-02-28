@@ -627,26 +627,54 @@ async function connectWallet(){
 
   try{
 
-    if (!window.ethereum){
-      alert("Open inside MetaMask / Trust Wallet browser");
+    // Prevent double connect
+    if(provider){
+      console.log("Already connected");
       return;
     }
 
-    /* ✅ STEP 1: Raw Injection (WORKING METHOD) */
-    const accounts = await window.ethereum.request({
-      method: "eth_requestAccounts"
-    });
+    /* =========================
+       1️⃣ INJECTED WALLET
+    ========================== */
+    if (typeof window.ethereum !== "undefined") {
 
-    const chainId = await window.ethereum.request({
-      method: "eth_chainId"
-    });
+      provider = new ethers.providers.Web3Provider(window.ethereum, "any");
 
-    if (parseInt(chainId, 16) !== 56){
-      alert("Switch to BSC Mainnet");
+      await provider.send("eth_requestAccounts", []);
+
+    } 
+
+    /* =========================
+       2️⃣ WALLET CONNECT (Mobile External)
+    ========================== */
+    else {
+
+      const wcProvider = new WalletConnectProvider.default({
+        rpc: {
+          56: "https://bsc-dataseed.binance.org/"
+        },
+        chainId: 56
+      });
+
+      await wcProvider.enable();
+
+      provider = new ethers.providers.Web3Provider(wcProvider, "any");
+    }
+
+    /* =========================
+       NETWORK CHECK
+    ========================== */
+
+    const network = await provider.getNetwork();
+
+    if(network.chainId !== 56){
+      alert("Please switch to BSC Mainnet");
+      provider = null;
       return;
     }
 
-    userAddress = accounts[0];
+    signer = provider.getSigner();
+    userAddress = await signer.getAddress();
 
     document.getElementById("walletDisplay").innerHTML =
       "Connected: " + userAddress;
@@ -654,27 +682,38 @@ async function connectWallet(){
     document.getElementById("refLink").value =
       window.location.origin + "?ref=" + userAddress;
 
-    /* ✅ STEP 2: Initialize ethers ONLY after success */
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    signer = provider.getSigner();
+    /* =========================
+       ADMIN CHECK
+    ========================== */
 
     if(userAddress.toLowerCase() === ADMIN.toLowerCase()){
       document.getElementById("adminPanel").style.display = "block";
+
+      setTimeout(async ()=>{
+        await loadRates();
+      },1000);
     }
 
-    /* ✅ STEP 3: Delay heavy loading */
-    setTimeout(async () => {
+    /* =========================
+       DELAY HEAVY LOAD
+    ========================== */
+
+    setTimeout(async ()=>{
       await loadData();
       await loadLivePrice();
       setInterval(loadLivePrice,10000);
-    }, 1500);
+    },1500);
 
-  }catch(err){
-    alert("Connection failed: " + err.message);
-    console.log(err);
+    console.log("Connected successfully");
+
+  }catch(e){
+
+    console.log(e);
+    alert("Connection failed: " + (e.message || "Unknown error"));
+
   }
 }
-
+  
 async function loadData(){
 try{
 
