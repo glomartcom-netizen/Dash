@@ -268,7 +268,7 @@ button{
 <div class="stats">
 <div class="stat"><i class="fa-solid fa-wallet"></i>Total Stake<span id="totalStake">0</span></div>
 <div class="stat"><i class="fa-solid fa-bolt"></i>Daily Reward<span id="dailyReward">0</span></div>
-<div class="stat"><i class="fa-solid fa-chart-line"></i>Total Earned<span id="totalIncome">0</span></div>
+<div class="stat"><i class="fa-solid fa-chart-line"></i>Total Earned<span id="totalEarned">0</span></div>
 <div class="stat"><i class="fa-solid fa-user-plus"></i>Direct Income<span id="directIncome">0</span></div>
 <div class="stat"><i class="fa-solid fa-sitemap"></i>Level Income<span id="levelIncome">0</span></div>
 <div class="stat"><i class="fa-solid fa-users"></i>Team Count<span id="teamCount">0</span></div>
@@ -280,7 +280,7 @@ button{
     <span id="directVolume">0</span>
   </div>
 
-  <div class="stat">
+<div class="stat">
     <i class="fa-solid fa-layer-group"></i>
     Level Unlock Remaining
     <span id="levelUnlockRemaining">0 Days</span>
@@ -346,7 +346,7 @@ Mode:
 
   <div style="margin-top:10px;font-size:14px;color:#aaa;">
 🔓 Unlock Expiry:
-<span id="unlockExpiry" style="color:gold;">--</span>
+<span id="LevelunlockExpiry" style="color:gold;">--</span>
   </div>
   
 <div class="contractRow"><span>DMX Token</span><button onclick="viewAddress(DMX)">View</button></div>
@@ -607,12 +607,11 @@ try{
   const info = await c.getUserInfo(userAddress);
   const claimable = await c.getClaimable(userAddress);
 
-  // 🔓 Unlock Time
   const unlockTime = await c.getUnlockTime(userAddress);
-  updateUnlockTimer(unlockTime);
+startTimer(unlockTime); // principal
 
   const levelUnlock = await c.getLevelUnlockExpiry(userAddress);
-  updateLevelUnlockTimer(levelUnlock);
+updateLevelUnlockTimer(levelUnlock); // level
   
   // 🔥 Direct Volume
   const directVol = await c.directVolume(userAddress);
