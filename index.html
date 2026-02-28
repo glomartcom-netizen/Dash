@@ -1265,74 +1265,76 @@ window.open("https://bscscan.com/address/"+addr,"_blank");
 
 <script>
 
-let web3Modal;
+let provider, signer;
+let connecting = false;
 
-const projectId="d1b044ae2663b9697bc5ab584bfb57e5";
-
-const chains=[{
-  chainId:56,
-  name:"BNB Smart Chain",
-  currency:"BNB",
-  explorerUrl:"https://bscscan.com",
-  rpcUrl:"https://bsc-dataseed.binance.org/"
-}];
-
-async function initWeb3(){
-
-  if(!window.EthereumClient || !window.Web3Modal){
-    return setTimeout(initWeb3,300);
+// Detect wallet
+window.addEventListener("load", () => {
+  if(window.ethereum){
+    document.getElementById("detect").innerHTML =
+      "✅ Wallet Detected";
+  } else {
+    document.getElementById("detect").innerHTML =
+      "❌ Open inside MetaMask / Trust Wallet";
   }
+});
 
-  const ethereumClient=new window.EthereumClient({
-    chains,
-    projectId
+// Handle wallet changes
+if(window.ethereum){
+
+  window.ethereum.on("accountsChanged", () => {
+    location.reload();
   });
 
-  web3Modal=new window.Web3Modal({
-    projectId,
-    themeMode:"dark"
-  },ethereumClient);
-}
+  window.ethereum.on("chainChanged", () => {
+    location.reload();
+  });
 
-initWeb3();
+}
 
 async function connectWallet(){
 
+  if(connecting) return;
+  connecting = true;
+
   try{
 
-    if(!web3Modal){
-      alert("Wallet system loading...");
+    if(!window.ethereum){
+      alert("Open inside MetaMask / Trust Wallet browser");
+      connecting = false;
       return;
     }
 
-    const walletProvider=await web3Modal.connect();
+    // Request Account
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts"
+    });
 
-    provider=new ethers.providers.Web3Provider(walletProvider);
-    signer=provider.getSigner();
-    userAddress=await signer.getAddress();
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
 
-    const network=await provider.getNetwork();
+    const network = await provider.getNetwork();
 
-    if(network.chainId!==56){
-      alert("Switch to BNB Smart Chain");
-      return;
+    // Auto switch to BSC
+    if(network.chainId !== 56){
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: "0x38" }]
+      });
     }
 
-    document.getElementById("walletDisplay").innerHTML=
-      "Connected: "+userAddress;
+    const address = accounts[0];
 
-    if(userAddress.toLowerCase()===ADMIN.toLowerCase()){
-      document.getElementById("adminPanel").style.display="block";
-      if(typeof loadRates==="function") await loadRates();
-    }
+    document.getElementById("result").innerHTML =
+      "Connected:<br>" + address +
+      "<br><br>Network: BSC Mainnet (56)";
 
-    if(typeof loadData==="function") await loadData();
-    if(typeof loadLivePrice==="function") await loadLivePrice();
-
-  }catch(e){
-    console.log(e);
-    alert("Connection failed");
+  }catch(err){
+    alert("Connection Failed: " + err.message);
+    console.log(err);
   }
+
+  connecting = false;
 }
 
 </script>
