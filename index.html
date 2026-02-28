@@ -271,7 +271,7 @@ button{
 <div class="stat"><i class="fa-solid fa-chart-line"></i>Total Earned<span id="totalEarned">0</span></div>
 <div class="stat"><i class="fa-solid fa-user-plus"></i>Direct Income<span id="directIncome">0</span></div>
 <div class="stat"><i class="fa-solid fa-sitemap"></i>Level Income<span id="levelIncome">0</span></div>
-<div class="stat"><i class="fa-solid fa-users"></i>Team Count<span id="teamCount">0</span></div>
+<div class="stat"><i class="fa-solid fa-users"></i>Team Volume<span id="teamvolume">0</span></div>
 </div>
   
 <div class="stat">
@@ -311,11 +311,6 @@ button{
 <h3><i class="fa-solid fa-gift"></i> Claim</h3>
 <input id="claimable" readonly>
   
-<div style="margin-top:10px;font-size:13px;color:#aaa;">
-⏳ Lock Ends In:
-<span id="remainingTime" style="color:gold;">--</span>
-</div>
-  
 <button id="claimBtn" onclick="claim()">Claim</button>
 <button id="restakeBtn" onclick="restake()">Restake</button>
 </div>
@@ -330,6 +325,7 @@ button{
 <h3><i class="fa-solid fa-sitemap"></i> Team</h3>
 <button onclick="openDownline()">View Downline</button>
 <button onclick="openHistory()">Claim History</button>
+<button onclick="openStakeHistory()">Stake History</button> 
 </div>
 
 </div>
@@ -343,11 +339,6 @@ button{
 Mode:
 <span id="priceModeUser" style="color:gold;">--</span>
  </div> 
-
-  <div style="margin-top:10px;font-size:14px;color:#aaa;">
-🔓 Unlock Expiry:
-<span id="LevelunlockExpiry" style="color:gold;">--</span>
-  </div>
   
 <div class="contractRow"><span>DMX Token</span><button onclick="viewAddress(DMX)">View</button></div>
 <div class="contractRow"><span>Staking</span><button onclick="viewAddress(STAKING_ADDRESS)">View</button></div>
@@ -494,6 +485,14 @@ Mode:
 </div>
 </div>
 
+ <div class="popup" id="stakeHistoryPopup">
+  <div class="popupBox">
+    <h3>Stake History</h3>
+    <div id="stakeHistoryData"></div>
+    <button onclick="closePopup()">Close</button>
+  </div>
+ </div> 
+
 <script>
 
 let provider, signer, userAddress;
@@ -523,7 +522,7 @@ const STAKE_ABI = [
 "function totalEarnedOf(address) view returns(uint256)",
 "function directIncomeOf(address) view returns(uint256)",
 "function levelIncomeOf(address) view returns(uint256)",
-"function teamCountOf(address) view returns(uint256)",
+"function teamvolumeOf(address) view returns(uint256)",
 "function directVolume(address) view returns(uint256)",  
 
   // ===== PRICE SYSTEM =====
@@ -631,7 +630,7 @@ updateLevelUnlockTimer(levelUnlock); // level
   document.getElementById("levelIncome").innerHTML =
     ethers.utils.formatUnits(info[4],18);
 
-  document.getElementById("teamCount").innerHTML =
+  document.getElementById("teamVolume").innerHTML =
     info[5];
 
   document.getElementById("claimable").value =
@@ -1107,11 +1106,55 @@ document.getElementById("historyData").innerHTML=html||"No history found";
 }catch{
 document.getElementById("historyData").innerHTML="Unable to fetch history";
 }
+
+async function openStakeHistory(){
+
+  document.getElementById("stakeHistoryPopup").style.display="flex";
+
+  try{
+
+    const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, provider);
+
+    const count = await c.getStakeCount(userAddress);
+
+    let html = "";
+
+    for(let i=0; i<count; i++){
+
+      const data = await c.getStakeInfo(userAddress, i);
+
+      const amount = ethers.utils.formatUnits(data[0],18);
+
+      const startDate =
+        new Date(data[1] * 1000).toLocaleDateString();
+
+      const expiryDate =
+        new Date(data[2] * 1000).toLocaleDateString();
+
+      html += `
+      <div style="border-bottom:1px solid #333;padding:10px 0">
+        <strong>Amount:</strong> ${amount} DMX<br>
+        <strong>Start Date:</strong> ${startDate}<br>
+        <strong>Expiry Date:</strong> ${expiryDate}
+      </div>
+      `;
+    }
+
+    document.getElementById("stakeHistoryData").innerHTML =
+      html || "No stake history found";
+
+  }catch(e){
+
+    document.getElementById("stakeHistoryData").innerHTML =
+      "Unable to fetch stake history";
+
+  }
 }
 
 function closePopup(){
 document.getElementById("downlinePopup").style.display="none";
 document.getElementById("historyPopup").style.display="none";
+document.getElementById("stakeHistoryPopup").style.display="none";  
 }
 
 function copyRef(){
