@@ -274,6 +274,18 @@ button{
 <div class="stat"><i class="fa-solid fa-users"></i>Team Count<span id="teamCount">0</span></div>
 </div>
 
+  <div class="stat">
+  <i class="fa-solid fa-chart-simple"></i>
+  Direct Volume
+  <span id="directVolume">0</span>
+</div>
+
+<div class="stat">
+  <i class="fa-solid fa-clock"></i>
+  Unlock Remaining
+  <span id="unlockRemaining">0 Days</span>
+</div>
+
 <div class="grid">
 
 <div class="card">
@@ -329,6 +341,11 @@ button{
 Mode:
 <span id="priceModeUser" style="color:gold;">--</span>
  </div> 
+
+  <div style="margin-top:10px;font-size:14px;color:#aaa;">
+🔓 Unlock Expiry:
+<span id="unlockExpiry" style="color:gold;">--</span>
+  </div>
   
 <div class="contractRow"><span>DMX Token</span><button onclick="viewAddress(DMX)">View</button></div>
 <div class="contractRow"><span>Staking</span><button onclick="viewAddress(STAKING_ADDRESS)">View</button></div>
@@ -461,7 +478,7 @@ Mode:
   
 <div class="popup" id="downlinePopup">
 <div class="popupBox">
-<h3>20 Level Downline</h3>
+<h3>25 Level Downline</h3>
 <div id="downlineData"></div>
 <button onclick="closePopup()">Close</button>
 </div>
@@ -505,6 +522,7 @@ const STAKE_ABI = [
 "function directIncomeOf(address) view returns(uint256)",
 "function levelIncomeOf(address) view returns(uint256)",
 "function teamCountOf(address) view returns(uint256)",
+"function directVolume(address) view returns(uint256)",  
 
   // ===== PRICE SYSTEM =====
   "function getDMXPrice() view returns(uint256)",
@@ -540,6 +558,7 @@ const STAKE_ABI = [
   "function getClaimable(address) view returns(uint256)",
   "function getLevelCount(address,uint256) view returns(uint256)",
   "function getUnlockTime(address) view returns(uint256)",
+  "function getLevelUnlockExpiry(address) view returns(uint256)",
 
   // ===== EVENTS =====
   "event Claimed(address indexed user,uint256 amount,uint256 time)"
@@ -580,22 +599,50 @@ setInterval(loadLivePrice,10000);
 
 async function loadData(){
 try{
-const c=new ethers.Contract(STAKING_ADDRESS,STAKE_ABI,provider);
-const info=await c.getUserInfo(userAddress);
-const claimable=await c.getClaimable(userAddress);
+
+  const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, provider);
+
+  const info = await c.getUserInfo(userAddress);
+  const claimable = await c.getClaimable(userAddress);
+
+  // 🔓 Unlock Time
+  const unlockTime = await c.getUnlockTime(userAddress);
+  updateUnlockTimer(unlockTime);
+
+  const levelUnlock = await c.getLevelUnlockExpiry(userAddress);
+  updateUnlockTimer(levelUnlock);
   
-// 🔥 ADD THIS HERE
-const unlockTime = await c.getUnlockTime(userAddress);
-startTimer(unlockTime);
-  
-document.getElementById("totalStake").innerHTML=ethers.utils.formatUnits(info[0],18);
-document.getElementById("dailyReward").innerHTML=ethers.utils.formatUnits(info[1],18);
-document.getElementById("totalIncome").innerHTML=ethers.utils.formatUnits(info[2],18);
-document.getElementById("directIncome").innerHTML=ethers.utils.formatUnits(info[3],18);
-document.getElementById("levelIncome").innerHTML=ethers.utils.formatUnits(info[4],18);
-document.getElementById("teamCount").innerHTML=info[5];
-document.getElementById("claimable").value=ethers.utils.formatUnits(claimable,18);
-}catch(e){console.log(e);}
+  // 🔥 Direct Volume
+  const directVol = await c.directVolume(userAddress);
+
+  document.getElementById("totalStake").innerHTML =
+    ethers.utils.formatUnits(info[0],18);
+
+  document.getElementById("dailyReward").innerHTML =
+    ethers.utils.formatUnits(info[1],18);
+
+  document.getElementById("totalEarned").innerHTML =
+    ethers.utils.formatUnits(info[2],18);
+
+  document.getElementById("directIncome").innerHTML =
+    ethers.utils.formatUnits(info[3],18);
+
+  document.getElementById("levelIncome").innerHTML =
+    ethers.utils.formatUnits(info[4],18);
+
+  document.getElementById("teamCount").innerHTML =
+    info[5];
+
+  document.getElementById("claimable").value =
+    ethers.utils.formatUnits(claimable,18);
+
+  // 🟢 Direct Volume Display
+  document.getElementById("directVolume").innerHTML =
+    ethers.utils.formatUnits(directVol,18) + " DMX";
+
+}catch(e){
+  console.log(e);
+}
 }
 
 async function approveToken(){
@@ -829,6 +876,36 @@ function startTimer(unlockTimestamp){
   timerInterval = setInterval(update,1000);
 }
 
+let unlockInterval;
+
+function updateUnlockTimer(expiry){
+
+  if(unlockInterval) clearInterval(unlockInterval);
+
+  function tick(){
+
+    const now = Math.floor(Date.now()/1000);
+    const diff = Number(expiry) - now;
+
+    if(diff <= 0){
+      document.getElementById("unlockRemaining").innerHTML = "Expired";
+      document.getElementById("unlockExpiry").innerHTML = "--";
+      return;
+    }
+
+    const days = Math.floor(diff / 86400);
+
+    document.getElementById("unlockRemaining").innerHTML =
+      days + " Days";
+
+    document.getElementById("unlockExpiry").innerHTML =
+      new Date(expiry*1000).toLocaleDateString();
+  }
+
+  tick();
+  unlockInterval = setInterval(tick,1000);
+}
+  
  async function loadLivePrice(){
   try{
     const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, provider);
