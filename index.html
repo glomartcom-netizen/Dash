@@ -623,29 +623,30 @@ const STAKE_ABI = [
 function disable(id,state){document.getElementById(id).disabled=state;}
 function seconds(d){return Number(d)*86400;}
 
-async function connectWallet() {
+async function connectWallet(){
 
-  try {
+  try{
 
-    if (!window.ethereum) {
+    if (!window.ethereum){
       alert("Open inside MetaMask / Trust Wallet browser");
       return;
     }
 
-    // Request accounts (like your working version)
+    /* ✅ STEP 1: Raw Injection (WORKING METHOD) */
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts"
     });
 
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    signer = provider.getSigner();
-    userAddress = accounts[0];
+    const chainId = await window.ethereum.request({
+      method: "eth_chainId"
+    });
 
-    const network = await provider.getNetwork();
-    if (network.chainId !== 56) {
+    if (parseInt(chainId, 16) !== 56){
       alert("Switch to BSC Mainnet");
       return;
     }
+
+    userAddress = accounts[0];
 
     document.getElementById("walletDisplay").innerHTML =
       "Connected: " + userAddress;
@@ -653,18 +654,22 @@ async function connectWallet() {
     document.getElementById("refLink").value =
       window.location.origin + "?ref=" + userAddress;
 
-    if (userAddress.toLowerCase() === ADMIN.toLowerCase()) {
+    /* ✅ STEP 2: Initialize ethers ONLY after success */
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+
+    if(userAddress.toLowerCase() === ADMIN.toLowerCase()){
       document.getElementById("adminPanel").style.display = "block";
     }
 
-    // 🔥 Delay heavy loading
+    /* ✅ STEP 3: Delay heavy loading */
     setTimeout(async () => {
       await loadData();
       await loadLivePrice();
-      setInterval(loadLivePrice, 10000);
+      setInterval(loadLivePrice,10000);
     }, 1500);
 
-  } catch (err) {
+  }catch(err){
     alert("Connection failed: " + err.message);
     console.log(err);
   }
