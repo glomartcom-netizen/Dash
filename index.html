@@ -9,7 +9,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
-<script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
   
 <style>
 *{box-sizing:border-box}
@@ -582,10 +581,6 @@ z-index:9999;
       MetaMask / Browser Wallet
     </button>
 
-    <button onclick="connectWalletConnect()" style="margin-top:10px;">
-      WalletConnect (QR)
-    </button>
-
     <button onclick="closeWalletModal()" style="
     margin-top:15px;
     background:#333;
@@ -688,11 +683,10 @@ function closeWalletModal(){
 }
 
 async function connectInjected(){
-
   try{
 
     if (!window.ethereum){
-      alert("No injected wallet found");
+      alert("Please open inside MetaMask / Trust Wallet browser");
       return;
     }
 
@@ -718,33 +712,11 @@ async function connectInjected(){
 
     closeWalletModal();
 
-  }catch(e){
-    alert("Connection failed");
-    console.log(e);
-  }
-}
-
-async function connectWalletConnect(){
-
-  try{
-
-    const wc = new WalletConnectProvider.default({
-      rpc: { 56: "https://bsc-dataseed.binance.org/" }
-    });
-
-    await wc.enable();
-
-    provider = new ethers.providers.Web3Provider(wc);
-    signer = provider.getSigner();
-    userAddress = await signer.getAddress();
-
-    document.getElementById("walletDisplay").innerHTML =
-      "Connected: " + userAddress;
-
-    closeWalletModal();
+    await loadData();
+    await loadLivePrice();
 
   }catch(e){
-    alert("WalletConnect failed");
+    alert(e.message);
     console.log(e);
   }
 }
