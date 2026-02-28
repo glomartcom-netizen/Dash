@@ -640,43 +640,38 @@ function disable(id,state){document.getElementById(id).disabled=state;}
 function seconds(d){return Number(d)*86400;}
 
 async function connectWallet(){
-
   try{
 
-    // ===== Desktop / Wallet Browser =====
-    if (window.ethereum && window.ethereum.isMetaMask) {
-
-      await window.ethereum.request({
-        method: "eth_requestAccounts"
-      });
-
-      provider = new ethers.providers.Web3Provider(window.ethereum);
-      signer = provider.getSigner();
-      userAddress = await signer.getAddress();
-
-      document.getElementById("walletDisplay").innerHTML =
-        "Connected: " + userAddress;
-
+    if (!window.ethereum) {
+      alert("Please open inside MetaMask or Trust Wallet");
       return;
     }
 
-    // ===== External Browser (WalletConnect only) =====
-    const wc = new WalletConnectProvider.default({
-      rpc: { 56: "https://bsc-dataseed.binance.org/" }
+    // Request account access
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts"
     });
 
-    await wc.enable();
-
-    provider = new ethers.providers.Web3Provider(wc);
+    provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
-    userAddress = await signer.getAddress();
+    userAddress = accounts[0];
 
     document.getElementById("walletDisplay").innerHTML =
       "Connected: " + userAddress;
 
+    // Optional: check BSC network
+    const chainId = await window.ethereum.request({
+      method: "eth_chainId"
+    });
+
+    if (parseInt(chainId, 16) !== 56) {
+      alert("Please switch to BNB Smart Chain (BSC)");
+      return;
+    }
+
   }catch(e){
+    console.log("ERROR:", e);
     alert("Connection failed");
-    console.log(e);
   }
 }
   
