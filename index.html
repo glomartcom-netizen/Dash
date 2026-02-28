@@ -67,7 +67,8 @@ color:gold;
 font-size:14px;
 }
   
-.stats{
+/* ===== STATS HORIZONTAL STYLE ===== */
+
 .statsSingle{
   display:flex;
   flex-direction:column;
@@ -203,15 +204,40 @@ border:1px solid #222;
 
 .adminPanel{display:none;margin-top:20px}
 
+/* ================= MOBILE RESPONSIVE ================= */
+
 @media(max-width:600px){
 
-/* Logo smaller */
-.logoWrap img{
-  width:32px;
-}
+  .logoWrap img{
+    width:32px;
+  }
 
-.logoText{
-  font-size:18px;
+  .logoText{
+    font-size:18px;
+  }
+
+  /* Cards single column */
+  .grid{
+    grid-template-columns:1fr;
+    gap:15px;
+  }
+
+  /* Smaller cards */
+  .card{
+    padding:16px;
+    border-radius:14px;
+  }
+
+  input,select{
+    padding:10px;
+    font-size:13px;
+  }
+
+  button{
+    padding:12px;
+    font-size:13px;
+  }
+
 }
 
 @media(max-width:480px){
@@ -227,30 +253,6 @@ border:1px solid #222;
   .statAmount{
     font-size:14px;
   }
-
-}
-
-/* Cards single column */
-.grid{
-  grid-template-columns:1fr;
-  gap:15px;
-}
-
-/* Smaller cards */
-.card{
-  padding:16px;
-  border-radius:14px;
-}
-
-input,select{
-  padding:10px;
-  font-size:13px;
-}
-
-button{
-  padding:12px;
-  font-size:13px;
-}
 
 }
 </style>
