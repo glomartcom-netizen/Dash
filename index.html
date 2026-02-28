@@ -271,7 +271,7 @@ button{
 <div class="stat"><i class="fa-solid fa-chart-line"></i>Total Earned<span id="totalEarned">0</span></div>
 <div class="stat"><i class="fa-solid fa-user-plus"></i>Direct Income<span id="directIncome">0</span></div>
 <div class="stat"><i class="fa-solid fa-sitemap"></i>Level Income<span id="levelIncome">0</span></div>
-<div class="stat"><i class="fa-solid fa-users"></i>Team Volume<span id="teamvolume">0</span></div>
+<div class="stat"><i class="fa-solid fa-users"></i>Team Volume<span id="teamVolume">0</span></div>
 </div>
   
 <div class="stat">
@@ -471,7 +471,7 @@ Mode:
   
 <div class="popup" id="downlinePopup">
 <div class="popupBox">
-<h3>25 Level Downline</h3>
+<h3>Downline History</h3>
 <div id="downlineData"></div>
 <button onclick="closePopup()">Close</button>
 </div>
@@ -554,6 +554,7 @@ const STAKE_ABI = [
   "function setDirectPercent(uint256) external",
   "function setLevelPercent(uint256,uint256) external",
   "function getLevelCount(address,uint256) view returns(uint256)",
+  "function getLevelUsers(address,uint256) view returns((address,uint256,uint256)[])"
 
   // ===== USER INFO =====
   "function getUserInfo(address) view returns(uint256,uint256,uint256,uint256,uint256,uint256)",
@@ -1038,45 +1039,141 @@ async function togglePriceMode(){
   
 async function openDownline(){
 
-  const c=new ethers.Contract(STAKING_ADDRESS,STAKE_ABI,provider);
-
-  let html="";
-
-  for(let i=1;i<=25;i++){
-
-    const count = await c.getLevelCount(userAddress,i);
-
-    html+=`
-    <div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #333">
-      <span>Level ${i}</span>
-      <span>${count}</span>
-    </div>`;
+  if(!provider || !userAddress){
+    alert("Connect wallet first");
+    return;
   }
 
-  document.getElementById("downlineData").innerHTML=html;
   document.getElementById("downlinePopup").style.display="flex";
+
+  try{
+
+    const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, provider);
+
+    let html="";
+
+    for(let level=1; level<=25; level++){
+
+      const count = await c.getLevelCount(userAddress, level);
+
+      if(count > 0){
+
+        html += `
+        <div style="margin-top:15px;color:gold">
+          Level ${level} (Total: ${count})
+        </div>`;
+
+        const users = await c.getLevelUsers(userAddress, level);
+
+        users.forEach(u => {
+
+          const wallet = u[0];
+          const amount = ethers.utils.formatUnits(u[1],18);
+          const date = new Date(Number(u[2]) * 1000).toLocaleString();
+
+          html += `
+          <div style="border-bottom:1px solid #333;padding:8px 0">
+            <small>${wallet}</small><br>
+            Stake: ${amount} DMX<br>
+            Joined: ${date}
+          </div>`;
+        });
+      }
+    }
+
+    document.getElementById("downlineData").innerHTML =
+      html || "No downline history found.";
+
+  }catch(e){
+
+    console.log(e);
+
+    document.getElementById("downlineData").innerHTML =
+      "Unable to load downline history.";
+
+  }
 }
   
 async function openHistory(){
-document.getElementById("historyPopup").style.display="flex";
-try{
-const c=new ethers.Contract(STAKING_ADDRESS,STAKE_ABI,provider);
-const f=c.filters.Claimed(userAddress);
-const currentBlock = await provider.getBlockNumber();
-const events = await c.queryFilter(f, currentBlock - 5000, currentBlock);
-let html="";
-ev.reverse().forEach(e=>{
-let amount=ethers.utils.formatUnits(e.args.amount,18);
-let time=new Date(e.args.time*1000).toLocaleString();
-html+=`<div style="border-bottom:1px solid #333;padding:8px 0">
-${amount} DMX<br><small>${time}</small></div>`;
-});
-document.getElementById("historyData").innerHTML=html||"No history found";
-}catch{
-document.getElementById("historyData").innerHTML="Unable to fetch history";
+
+  if(!provider || !userAddress){
+    alert("Connect wallet first");
+    return;
+  }
+
+  document.getElementById("historyPopup").style.display="flex";
+
+  try{
+
+    const c = new ethers.Contract(STAKING_ADDRESS, STAKE_ABI, provider);
+
+    const filter = c.filters.Claimed(userAddress);
+
+    const events = await c.queryFilter(filter);
+
+    let html = "";
+
+    if(events.length === 0){
+      html = "No claim history found";
+    }else{
+
+      events.reverse().forEach(e=>{
+
+        const amount =
+          ethers.utils.formatUnits(e.args.amount,18);
+
+        const timestamp = Number(e.args.time);
+
+        const date =
+          new Date(timestamp * 1000).toLocaleString();
+
+        const txHash = e.transactionHash;
+
+        html += `
+        <div style="
+          border-bottom:1px solid #333;
+          padding:12px 0;
+          line-height:1.6;
+        ">
+          <strong style="color:gold;">
+            ${amount} DMX
+          </strong><br>
+
+          <small>
+            Date: ${date}
+          </small><br>
+
+          <small>
+            Tx:
+            <a href="https://bscscan.com/tx/${txHash}"
+               target="_blank"
+               style="color:#ffd700;text-decoration:none;">
+               View on BscScan
+            </a>
+          </small>
+        </div>
+        `;
+      });
+    }
+
+    document.getElementById("historyData").innerHTML = html;
+
+  }catch(e){
+
+    console.log(e);
+
+    document.getElementById("historyData").innerHTML =
+      "Unable to fetch claim history";
+
+  }
 }
 
 async function openStakeHistory(){
+
+  if(!provider || !userAddress){
+    alert("Connect wallet first");
+    return;
+  }
 
   document.getElementById("stakeHistoryPopup").style.display="flex";
 
@@ -1093,18 +1190,14 @@ async function openStakeHistory(){
       const data = await c.getStakeInfo(userAddress, i);
 
       const amount = ethers.utils.formatUnits(data[0],18);
-
-      const startDate =
-        new Date(data[1] * 1000).toLocaleDateString();
-
-      const expiryDate =
-        new Date(data[2] * 1000).toLocaleDateString();
+      const startDate = new Date(data[1]*1000).toLocaleDateString();
+      const expiryDate = new Date(data[2]*1000).toLocaleDateString();
 
       html += `
       <div style="border-bottom:1px solid #333;padding:10px 0">
         <strong>Amount:</strong> ${amount} DMX<br>
-        <strong>Start Date:</strong> ${startDate}<br>
-        <strong>Expiry Date:</strong> ${expiryDate}
+        <strong>Start:</strong> ${startDate}<br>
+        <strong>Expiry:</strong> ${expiryDate}
       </div>
       `;
     }
@@ -1114,8 +1207,10 @@ async function openStakeHistory(){
 
   }catch(e){
 
+    console.log(e);
+
     document.getElementById("stakeHistoryData").innerHTML =
-      "Unable to fetch stake history";
+      "Contract not deployed or function not available";
 
   }
 }
