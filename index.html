@@ -645,7 +645,7 @@ async function connectWallet(){
 
     let web3Provider;
 
-    // Injected wallet first
+    // 1️⃣ Injected wallet first (Wallet Browser / Desktop)
     if (window.ethereum) {
 
       await window.ethereum.request({
@@ -654,14 +654,17 @@ async function connectWallet(){
 
       web3Provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    } else {
+    } 
+    else {
 
-      // WalletConnect fallback
+      // 2️⃣ WalletConnect fallback (External Mobile Browser)
       const wc = new WalletConnectProvider.default({
-        rpc: { 56: "https://bsc-dataseed.binance.org/" }
+        rpc: { 56: "https://bsc-dataseed.binance.org/" },
+        qrcode: true
       });
 
       await wc.enable();
+
       web3Provider = new ethers.providers.Web3Provider(wc);
     }
 
@@ -671,7 +674,7 @@ async function connectWallet(){
     if(network.chainId !== 56){
 
       try{
-        await window.ethereum.request({
+        await web3Provider.provider.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: "0x38" }]
         });
@@ -693,6 +696,7 @@ async function connectWallet(){
       setTimeout(loadRates,1000);
     }
 
+    // Delay heavy loading
     setTimeout(async ()=>{
       await loadData();
       await loadLivePrice();
@@ -701,7 +705,7 @@ async function connectWallet(){
 
   }catch(e){
     console.log(e);
-    alert("Connection failed");
+    alert("Connection failed: " + (e.message || "Unknown error"));
   }
 }
   
