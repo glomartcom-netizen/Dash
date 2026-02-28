@@ -10,9 +10,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
 
-<script src="https://unpkg.com/@web3modal/ethereum@2.7.1/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@web3modal/html@2.7.1/dist/index.umd.js"></script>
-
 <style>
 *{box-sizing:border-box}
 body{
@@ -1267,6 +1264,30 @@ window.open("https://bscscan.com/address/"+addr,"_blank");
 
 let connecting = false;
 
+// Detect wallet
+window.addEventListener("load", () => {
+  if(window.ethereum){
+    document.getElementById("detect").innerHTML =
+      "✅ Wallet Detected";
+  } else {
+    document.getElementById("detect").innerHTML =
+      "❌ Open inside MetaMask / Trust Wallet";
+  }
+});
+
+// Handle wallet changes
+if(window.ethereum){
+
+  window.ethereum.on("accountsChanged", () => {
+    location.reload();
+  });
+
+  window.ethereum.on("chainChanged", () => {
+    location.reload();
+  });
+
+}
+
 async function connectWallet(){
 
   if(connecting) return;
@@ -1280,6 +1301,7 @@ async function connectWallet(){
       return;
     }
 
+    // Request Account
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts"
     });
@@ -1289,6 +1311,7 @@ async function connectWallet(){
 
     const network = await provider.getNetwork();
 
+    // Auto switch to BSC
     if(network.chainId !== 56){
       await window.ethereum.request({
         method: "wallet_switchEthereumChain",
@@ -1296,23 +1319,11 @@ async function connectWallet(){
       });
     }
 
-    userAddress = accounts[0];   // ✅ IMPORTANT
+    const address = accounts[0];
 
-    document.getElementById("walletDisplay").innerHTML =
-      "Connected: " + userAddress;
-
-    document.getElementById("refLink").value =
-      window.location.origin + "?ref=" + userAddress;
-
-    // Show admin panel if admin wallet
-    if(userAddress.toLowerCase() === ADMIN.toLowerCase()){
-      document.getElementById("adminPanel").style.display = "block";
-    }
-
-    // Load all data
-    await loadData();
-    await loadRates();
-    await loadLivePrice();
+    document.getElementById("result").innerHTML =
+      "Connected:<br>" + address +
+      "<br><br>Network: BSC Mainnet (56)";
 
   }catch(err){
     alert("Connection Failed: " + err.message);
@@ -1320,12 +1331,6 @@ async function connectWallet(){
   }
 
   connecting = false;
-}
-
-// Handle wallet change
-if(window.ethereum){
-  window.ethereum.on("accountsChanged", () => location.reload());
-  window.ethereum.on("chainChanged", () => location.reload());
 }
 
 </script>
