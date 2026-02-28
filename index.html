@@ -640,38 +640,54 @@ function disable(id,state){document.getElementById(id).disabled=state;}
 function seconds(d){return Number(d)*86400;}
 
 async function connectWallet(){
+
   try{
 
-    if (!window.ethereum) {
-      alert("Please open inside MetaMask or Trust Wallet");
+    if (!window.ethereum){
+      alert("Open inside MetaMask / Trust Wallet browser");
       return;
     }
 
-    // Request account access
+    // STEP 1: Request Accounts (Raw injection method)
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts"
     });
 
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    signer = provider.getSigner();
+    const chainId = await window.ethereum.request({
+      method: "eth_chainId"
+    });
+
+    if (parseInt(chainId, 16) !== 56){
+      alert("Switch to BSC Mainnet");
+      return;
+    }
+
     userAddress = accounts[0];
 
     document.getElementById("walletDisplay").innerHTML =
       "Connected: " + userAddress;
 
-    // Optional: check BSC network
-    const chainId = await window.ethereum.request({
-      method: "eth_chainId"
-    });
+    document.getElementById("refLink").value =
+      window.location.origin + "?ref=" + userAddress;
 
-    if (parseInt(chainId, 16) !== 56) {
-      alert("Please switch to BNB Smart Chain (BSC)");
-      return;
+    // STEP 2: Initialize ethers AFTER wallet success
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+
+    if(userAddress.toLowerCase() === ADMIN.toLowerCase()){
+      document.getElementById("adminPanel").style.display = "block";
     }
 
-  }catch(e){
-    console.log("ERROR:", e);
-    alert("Connection failed");
+    // STEP 3: Delay heavy contract loading
+    setTimeout(async () => {
+      await loadData();
+      await loadLivePrice();
+      setInterval(loadLivePrice,10000);
+    }, 1200);
+
+  }catch(err){
+    console.log(err);
+    alert("Connection failed: " + err.message);
   }
 }
   
