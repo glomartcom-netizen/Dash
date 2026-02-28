@@ -522,7 +522,7 @@ const STAKE_ABI = [
   "function totalEarnedOf(address) view returns(uint256)",
   "function directIncomeOf(address) view returns(uint256)",
   "function levelIncomeOf(address) view returns(uint256)",
-  "function teamvolumeOf(address) view returns(uint256)",
+  "function teamVolumeOf(address) view returns(uint256)",
   "function directVolume(address) view returns(uint256)",  
 
   // ===== PRICE SYSTEM =====
@@ -560,6 +560,8 @@ const STAKE_ABI = [
   "function getClaimable(address) view returns(uint256)",
   "function getUnlockTime(address) view returns(uint256)",
   "function getLevelUnlockExpiry(address) view returns(uint256)",
+  "function getStakeCount(address) view returns(uint256)",
+  "function getStakeInfo(address,uint256) view returns(uint256,uint256,uint256)",
 
   // ===== EVENTS =====
   "event Claimed(address indexed user,uint256 amount,uint256 time)",
@@ -606,9 +608,6 @@ try{
 
   const info = await c.getUserInfo(userAddress);
   const claimable = await c.getClaimable(userAddress);
-
-  const unlockTime = await c.getUnlockTime(userAddress);
-startTimer(unlockTime); // principal
 
   const levelUnlock = await c.getLevelUnlockExpiry(userAddress);
 updateLevelUnlockTimer(levelUnlock); // level
@@ -844,38 +843,6 @@ async function restake(){
 
   disable("restakeBtn", false);
 }
-  
-// 👇👇👇 PLACE TIMER CODE HERE 👇👇👇
-
-let timerInterval;
-
-function startTimer(unlockTimestamp){
-
-  if(timerInterval) clearInterval(timerInterval);
-
-  function update(){
-
-    const now = Math.floor(Date.now()/1000);
-    const diff = Number(unlockTimestamp) - now;
-
-    if(diff <= 0){
-      document.getElementById("remainingTime").innerHTML = "Unlocked";
-      clearInterval(timerInterval);
-      return;
-    }
-
-    const days = Math.floor(diff / 86400);
-    const hours = Math.floor((diff % 86400) / 3600);
-    const minutes = Math.floor((diff % 3600) / 60);
-    const seconds = diff % 60;
-
-    document.getElementById("remainingTime").innerHTML =
-      days+"D "+hours+"H "+minutes+"M "+seconds+"S";
-  }
-
-  update();
-  timerInterval = setInterval(update,1000);
-}
 
 let levelUnlockInterval;
 
@@ -1095,7 +1062,8 @@ document.getElementById("historyPopup").style.display="flex";
 try{
 const c=new ethers.Contract(STAKING_ADDRESS,STAKE_ABI,provider);
 const f=c.filters.Claimed(userAddress);
-const ev=await c.queryFilter(f,-5000);
+const currentBlock = await provider.getBlockNumber();
+const events = await c.queryFilter(f, currentBlock - 5000, currentBlock);
 let html="";
 ev.reverse().forEach(e=>{
 let amount=ethers.utils.formatUnits(e.args.amount,18);
@@ -1157,7 +1125,8 @@ document.getElementById("downlinePopup").style.display="none";
 document.getElementById("historyPopup").style.display="none";
 document.getElementById("stakeHistoryPopup").style.display="none";  
 }
-
+}
+  
 function copyRef(){
 navigator.clipboard.writeText(document.getElementById("refLink").value);
 alert("Copied");
