@@ -553,7 +553,8 @@ Mode:
  </div> 
  
 <script>
-
+let provider, signer, userAddress;
+  
 const ADMIN="0x53ba2d865be750d0e2d4d01bcb0a46ec1684c46b";
 const USDT="0x55d398326f99059fF775485246999027B3197955";
 const DMX="PUT_DMX_TOKEN";
@@ -1259,15 +1260,12 @@ function viewAddress(addr){
 if(!addr||addr.includes("PUT")) return alert("Address not set");
 window.open("https://bscscan.com/address/"+addr,"_blank");
 }
-
-</div>   <!-- last popup -->
+</script>
 
 <script>
 
-let provider, signer, userAddress;
 let web3Modal;
 
-const ADMIN="0x53ba2d865be750d0e2d4d01bcb0a46ec1684c46b";
 const projectId="d1b044ae2663b9697bc5ab584bfb57e5";
 
 const chains=[{
