@@ -281,9 +281,9 @@ button{
 </div>
 
 <div class="stat">
-  <i class="fa-solid fa-clock"></i>
-  Unlock Remaining
-  <span id="unlockRemaining">0 Days</span>
+  <i class="fa-solid fa-layer-group"></i>
+  Level Unlock Remaining
+  <span id="levelUnlockRemaining">0 Days</span>
 </div>
 
 <div class="grid">
@@ -610,7 +610,7 @@ try{
   updateUnlockTimer(unlockTime);
 
   const levelUnlock = await c.getLevelUnlockExpiry(userAddress);
-  updateUnlockTimer(levelUnlock);
+  updateLevelUnlockTimer(levelUnlock);
   
   // 🔥 Direct Volume
   const directVol = await c.directVolume(userAddress);
@@ -876,11 +876,11 @@ function startTimer(unlockTimestamp){
   timerInterval = setInterval(update,1000);
 }
 
-let unlockInterval;
+let levelUnlockInterval;
 
-function updateUnlockTimer(expiry){
+function updateLevelUnlockTimer(expiry){
 
-  if(unlockInterval) clearInterval(unlockInterval);
+  if(levelUnlockInterval) clearInterval(levelUnlockInterval);
 
   function tick(){
 
@@ -888,22 +888,18 @@ function updateUnlockTimer(expiry){
     const diff = Number(expiry) - now;
 
     if(diff <= 0){
-      document.getElementById("unlockRemaining").innerHTML = "Expired";
-      document.getElementById("unlockExpiry").innerHTML = "--";
+      document.getElementById("levelUnlockRemaining").innerHTML = "Expired";
       return;
     }
 
     const days = Math.floor(diff / 86400);
 
-    document.getElementById("unlockRemaining").innerHTML =
+    document.getElementById("levelUnlockRemaining").innerHTML =
       days + " Days";
-
-    document.getElementById("unlockExpiry").innerHTML =
-      new Date(expiry*1000).toLocaleDateString();
   }
 
   tick();
-  unlockInterval = setInterval(tick,1000);
+  levelUnlockInterval = setInterval(tick,1000);
 }
   
  async function loadLivePrice(){
