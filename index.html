@@ -627,54 +627,39 @@ async function connectWallet(){
 
   try{
 
-    // Prevent double connect
-    if(provider){
-      console.log("Already connected");
-      return;
-    }
-
-    /* =========================
-       1️⃣ INJECTED WALLET
-    ========================== */
+    // ===== Injected Wallet (Best & Stable) =====
     if (typeof window.ethereum !== "undefined") {
 
-      provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-
-      await provider.send("eth_requestAccounts", []);
-
-    } 
-
-    /* =========================
-       2️⃣ WALLET CONNECT (Mobile External)
-    ========================== */
-    else {
-
-      const wcProvider = new WalletConnectProvider.default({
-        rpc: {
-          56: "https://bsc-dataseed.binance.org/"
-        },
-        chainId: 56
+      await window.ethereum.request({
+        method: "eth_requestAccounts"
       });
 
-      await wcProvider.enable();
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer = provider.getSigner();
+      userAddress = await signer.getAddress();
 
-      provider = new ethers.providers.Web3Provider(wcProvider, "any");
     }
 
-    /* =========================
-       NETWORK CHECK
-    ========================== */
+    // ===== WalletConnect (External Browser) =====
+    else {
+
+      const wc = new WalletConnectProvider.default({
+        rpc: { 56: "https://bsc-dataseed.binance.org/" }
+      });
+
+      await wc.enable();
+
+      provider = new ethers.providers.Web3Provider(wc);
+      signer = provider.getSigner();
+      userAddress = await signer.getAddress();
+    }
 
     const network = await provider.getNetwork();
 
     if(network.chainId !== 56){
-      alert("Please switch to BSC Mainnet");
-      provider = null;
+      alert("Switch to BSC Mainnet (BNB Smart Chain)");
       return;
     }
-
-    signer = provider.getSigner();
-    userAddress = await signer.getAddress();
 
     document.getElementById("walletDisplay").innerHTML =
       "Connected: " + userAddress;
@@ -682,21 +667,10 @@ async function connectWallet(){
     document.getElementById("refLink").value =
       window.location.origin + "?ref=" + userAddress;
 
-    /* =========================
-       ADMIN CHECK
-    ========================== */
-
     if(userAddress.toLowerCase() === ADMIN.toLowerCase()){
       document.getElementById("adminPanel").style.display = "block";
-
-      setTimeout(async ()=>{
-        await loadRates();
-      },1000);
+      setTimeout(loadRates, 1000);
     }
-
-    /* =========================
-       DELAY HEAVY LOAD
-    ========================== */
 
     setTimeout(async ()=>{
       await loadData();
@@ -704,13 +678,9 @@ async function connectWallet(){
       setInterval(loadLivePrice,10000);
     },1500);
 
-    console.log("Connected successfully");
-
   }catch(e){
-
     console.log(e);
-    alert("Connection failed: " + (e.message || "Unknown error"));
-
+    alert("Connection failed");
   }
 }
   
