@@ -339,7 +339,7 @@ border:1px solid #222;
   <div class="statAmount" id="levelUnlockRemaining">0 Days</div>
 </div>
 
-</div>
+<div class="grid">
 
 <div class="card">
 <h3><i class="fa-solid fa-coins"></i> Stake</h3>
@@ -667,30 +667,31 @@ updateLevelUnlockTimer(levelUnlock); // level
   // 🔥 Direct Volume
   const directVol = await c.directVolume(userAddress);
 
-  document.getElementById("totalStake").innerHTML =
-    ethers.utils.formatUnits(info[0],18);
+document.getElementById("totalStake").innerHTML =
+  ethers.utils.formatUnits(info[0],18) + " DMX";
 
-  document.getElementById("dailyReward").innerHTML =
-    ethers.utils.formatUnits(info[1],18);
+document.getElementById("dailyReward").innerHTML =
+  ethers.utils.formatUnits(info[1],18) + " DMX";
 
-  document.getElementById("totalEarned").innerHTML =
-    ethers.utils.formatUnits(info[2],18);
+document.getElementById("totalEarned").innerHTML =
+  ethers.utils.formatUnits(info[2],18) + " DMX";
 
-  document.getElementById("directIncome").innerHTML =
-    ethers.utils.formatUnits(info[3],18);
+document.getElementById("directIncome").innerHTML =
+  ethers.utils.formatUnits(info[3],18) + " DMX";
 
-  document.getElementById("levelIncome").innerHTML =
-    ethers.utils.formatUnits(info[4],18);
+document.getElementById("levelIncome").innerHTML =
+  ethers.utils.formatUnits(info[4],18) + " DMX";
 
-  document.getElementById("teamVolume").innerHTML =
-    info[5];
+/* 🔥 FIXED TEAM VOLUME */
+document.getElementById("teamVolume").innerHTML =
+  ethers.utils.formatUnits(info[5],18) + " DMX";
 
-  document.getElementById("claimable").value =
-    ethers.utils.formatUnits(claimable,18);
+document.getElementById("claimable").value =
+  ethers.utils.formatUnits(claimable,18) + " DMX";
 
-  // 🟢 Direct Volume Display
-  document.getElementById("directVolume").innerHTML =
-    ethers.utils.formatUnits(directVol,18) + " DMX";
+/* Direct Volume */
+document.getElementById("directVolume").innerHTML =
+  ethers.utils.formatUnits(directVol,18) + " DMX";
 
 }catch(e){
   console.log(e);
