@@ -482,7 +482,9 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
         "function users(address) view returns (address, uint256, uint256, uint256, uint256, uint256, uint256, uint256, uint256, bool)",
         "function getStakeHistory(address) view returns (tuple(uint256 amountDMX, uint256 start, uint256 end, uint256 lastClaim, uint256 rewardRateBPS, bool active)[])",
         "function getClaimHistory(address) view returns (tuple(uint256 amount, uint256 timestamp)[])",
-        "function getDirects(address) view returns (address[])"
+        "function getDirects(address) view returns (address[])",
+        "function getDMXFromUSDT(uint256) view returns (uint256)",
+        "function isManualPrice() view returns (bool)"
     ];
 
     const TOKEN_ABI = ["function approve(address, uint256) public returns (bool)", "function allowance(address, address) public view returns (uint256)"];
@@ -524,6 +526,8 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
 
     setInterval(() => { if (!userAddress) window.syncWallet(); else refreshData(); }, 10000);
 
+    setInterval(updatePrice,10000);
+    
     async function refreshData() {
         if(!contract || !userAddress) return;
         const f = ethers.utils.formatEther;
@@ -571,6 +575,27 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
         }
     }
 
+async function updatePrice(){
+
+try{
+
+const price = await contract.getDMXFromUSDT(ethers.utils.parseUnits("1",6));
+const formatted = ethers.utils.formatEther(price);
+
+document.getElementById("livePriceUser").innerText =
+parseFloat(formatted).toFixed(4) + " DMX";
+
+const mode = await contract.isManualPrice();
+
+document.getElementById("priceModeUser").innerText =
+mode ? "Manual Price" : "LP Price";
+
+}catch(e){
+console.log("Price sync error");
+}
+
+    }
+    
     async function showTab(type) {
         const cont = document.getElementById('tabContent');
         const f = ethers.utils.formatEther;
