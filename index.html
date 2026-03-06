@@ -231,7 +231,7 @@ class="input-dark">
 
 <button onclick="performStake('USDT')"
 class="flex items-center justify-center gap-2 bg-emerald-500 text-white font-black py-4 rounded-xl text-sm uppercase w-full">
-<img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=029" class="w-5 h-5">
+<img src="https://assets.coingecko.com/coins/images/325/small/Tether.png" class="w-5 h-5">
 Stake USDT
 
 </button>
@@ -568,7 +568,11 @@ else refreshData();
 
 setInterval(updatePrice,10000);
 
-setInterval(updateRewardPool,10000);
+setInterval(() => {
+if(provider && STAKE_ADDR && DMX_ADDR){
+updateRewardPool();
+}
+},10000);
     
     async function refreshData() {
         if(!contract || !userAddress) return;
