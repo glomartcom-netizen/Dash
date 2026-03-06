@@ -1,1 +1,318 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DimeX | Pro Ultimate Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #010409; color: #f0f6fc; }
+        .glass-card { background: rgba(13, 17, 23, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(240, 191, 76, 0.1); border-radius: 20px; }
+        .gold-glow { text-shadow: 0 0 12px rgba(245, 158, 11, 0.6); }
+        .btn-action { background: linear-gradient(135deg, #fbbf24, #d97706); color: black; font-weight: 800; transition: 0.3s; }
+        .input-dark { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; color: white; outline: none; width: 100%; font-size: 13px; }
+        .tab-btn { flex: 1; padding: 12px; font-size: 11px; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid transparent; opacity: 0.5; cursor: pointer; text-align: center; }
+        .tab-btn.active { border-bottom: 2px solid #f59e0b; opacity: 1; color: #f59e0b; }
+        w3m-button { transform: scale(0.9); }
+    </style>
+</head>
+<body class="pb-20">
+
+<header class="p-4 border-b border-white/5 flex justify-between items-center sticky top-0 bg-[#010409]/95 z-50">
+
+<div class="flex items-center gap-2">
+
+<img src="https://i.ibb.co/HpqwGFqt/logo.png" class="w-10 h-10 rounded-lg">
+
+<span class="text-xl font-black tracking-tighter text-amber-500 italic gold-glow">
+DimeX Pro
+</span>
+
+</div>
+
+<w3m-button label="Connect Wallet" balance="hide"></w3m-button>
+
+</header>
+
+<main class="max-w-4xl mx-auto p-4 space-y-5">
+    <div id="statusBanner" class="hidden p-3 rounded-xl text-center font-black text-[10px] uppercase tracking-widest"></div>
+
+    <div id="refBox" class="hidden glass-card p-4 border border-blue-500/20">
+        <p class="text-[9px] text-gray-500 font-bold uppercase mb-2">My Referral Link</p>
+        <div class="flex gap-2">
+            <input type="text" id="myRefLink" readonly class="input-dark text-[10px] bg-black/40">
+            <button onclick="copyRef()" class="bg-blue-600 px-4 rounded-xl text-[10px] font-black uppercase">Copy</button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+        <div class="glass-card p-4 border-b-2 border-amber-500/40">
+            <p class="text-[8px] text-gray-500 font-bold uppercase">Unclaimed Rewards</p>
+            <p id="dailyReward" class="text-xl font-black text-amber-500">0.00</p>
+        </div>
+        <div class="glass-card p-4 border-b-2 border-white/10">
+            <p class="text-[8px] text-gray-500 font-bold uppercase">Direct Income</p>
+            <p id="directIncome" class="text-xl font-black">0.00</p>
+        </div>
+        <div class="glass-card p-4 border-b-2 border-white/10">
+            <p class="text-[8px] text-gray-500 font-bold uppercase">Level Income</p>
+            <p id="levelIncome" class="text-xl font-black">0.00</p>
+        </div>
+        <div class="glass-card p-4 border-b-2 border-emerald-500/40">
+            <p class="text-[8px] text-gray-500 font-bold uppercase">Total Payout</p>
+            <p id="totalEarned" class="text-xl font-black text-emerald-400">0.00</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+        <div class="glass-card p-3 border-l-4 border-blue-500/50">
+            <p class="text-[8px] text-gray-500 font-bold uppercase">Direct Volume</p>
+            <p id="directVolume" class="text-sm font-black italic">0.00 DMX</p>
+        </div>
+        <div class="glass-card p-3 border-l-4 border-purple-500/50">
+            <p class="text-[8px] text-gray-500 font-bold uppercase">Team Volume</p>
+            <p id="teamVolume" class="text-sm font-black italic">0.00 DMX</p>
+        </div>
+    </div>
+
+    <div class="glass-card p-6 border border-amber-500/10">
+        <h3 class="text-[10px] text-amber-500 font-black uppercase mb-4 tracking-widest flex items-center gap-2">
+            <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-ping"></span> Live Staking
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="space-y-3">
+                <input type="number" id="stakeAmount" placeholder="Min: 5000 DMX / 25 USDT" class="input-dark">
+                <input type="text" id="refAddress" placeholder="Referrer Address" class="input-dark text-[10px]">
+            </div>
+            <div class="flex flex-col gap-2">
+                <button onclick="performStake('DMX')" class="btn-action h-full rounded-xl text-[10px] uppercase">Stake DMX</button>
+                <button onclick="performStake('USDT')" class="bg-blue-600 text-white font-black py-4 rounded-xl text-[10px] uppercase">Stake USDT</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="glass-card p-5">
+            <div class="flex justify-between items-end mb-2">
+                <p class="text-[9px] text-gray-400 font-bold uppercase">4X Income Progress</p>
+                <p id="capDisplay" class="text-xs font-black">0 / 0 DMX</p>
+            </div>
+            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                <div id="capBar" class="h-full bg-amber-500 transition-all duration-700" style="width: 0%"></div>
+            </div>
+            <p id="capPercent" class="text-[10px] text-right mt-1 font-bold text-gray-500">0%</p>
+        </div>
+        <div class="glass-card p-5 flex justify-between items-center border-l-4 border-blue-500">
+            <div>
+                <p class="text-[9px] text-gray-400 font-bold uppercase">Level Timer</p>
+                <p id="levelTimer" class="text-lg font-black italic text-blue-400">00d 00h 00m</p>
+            </div>
+            <div id="levelBadge" class="bg-blue-500/10 text-blue-400 text-[8px] font-black px-3 py-1 rounded-full">Syncing</div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="glass-card p-6 text-center border border-amber-500/20">
+            <p class="text-[10px] text-gray-500 font-black uppercase mb-1">Claimable</p>
+            <p id="claimableAmt" class="text-4xl font-black mb-4 gold-glow">0.00</p>
+            <button id="claimBtn" onclick="claimRewards()" class="btn-action w-full py-4 rounded-xl text-[10px] uppercase">Claim Now (Min 100)</button>
+        </div>
+        <div class="glass-card p-6 flex flex-col justify-center border border-emerald-500/10">
+            <p class="text-[10px] text-emerald-400 font-black uppercase">Compounding</p>
+            <p class="text-[9px] text-gray-500 mb-4 italic">+ 5% Bonus instantly</p>
+            <button onclick="restake()" class="bg-emerald-600 text-white font-black py-4 rounded-xl text-[10px] uppercase">Restake Now</button>
+        </div>
+    </div>
+
+    <div class="glass-card overflow-hidden border border-white/5">
+        <div class="flex bg-white/5">
+            <div id="tabStakes" onclick="showTab('stakes')" class="tab-btn active">History</div>
+            <div id="tabClaims" onclick="showTab('claims')" class="tab-btn">Claims</div>
+            <div id="tabDownline" onclick="showTab('downline')" class="tab-btn">Downline</div>
+        </div>
+        <div id="tabContent" class="p-4 min-h-[160px] space-y-2 text-[10px]"></div>
+    </div>
+</main>
+
+<script type="module">
+  import { createAppKit } from 'https://esm.sh/@reown/appkit?bundle'
+  import { Ethers5Adapter } from 'https://esm.sh/@reown/appkit-adapter-ethers5?bundle'
+  import { bsc } from 'https://esm.sh/@reown/appkit/networks?bundle'
+
+  const projectId = '059cc242b0cc96ac9665c598b76ddc7b';
+
+  const modal = createAppKit({
+    adapters: [new Ethers5Adapter()],
+    networks: [bsc],
+    metadata: { name: 'DimeX Pro', url: window.location.origin, icons: [] },
+    projectId,
+    features: { analytics: true }
+  })
+
+  window.appKitModal = modal;
+
+  // 3️⃣ Event Listener for better connection detection
+  window.appKitModal.subscribeProvider(() => {
+     window.syncWallet();
+  });
+</script>
+
+<script>
+    const STAKE_ADDR = "PASTE_YOUR_CONTRACT_ADDRESS_HERE";
+    const DMX_ADDR = "PASTE_DMX_TOKEN_ADDRESS_HERE";
+    const USDT_ADDR = "0x55d398326f99059fF775485246999027B3197955";
+
+    const ABI = [
+        "function stakeDMX(uint256, uint256, address) external",
+        "function stakeUSDT(uint256, uint256, address) external",
+        "function claim() external",
+        "function restake() external",
+        "function getFullDashboardStats(address) view returns (uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)",
+        "function users(address) view returns (address, uint256, uint256, uint256, uint256, uint256, uint256, uint256, uint256, bool)",
+        "function getStakeHistory(address) view returns (tuple(uint256 amountDMX, uint256 start, uint256 end, uint256 lastClaim, uint256 rewardRateBPS, bool active)[])",
+        "function getClaimHistory(address) view returns (tuple(uint256 amount, uint256 timestamp)[])",
+        "function getDirects(address) view returns (address[])"
+    ];
+
+    const TOKEN_ABI = ["function approve(address, uint256) public returns (bool)", "function allowance(address, address) public view returns (uint256)"];
+
+    let provider, signer, contract, userAddress;
+
+    // 1️⃣ Referral Auto-fill on load
+    window.onload = () => {
+        const ref = new URLSearchParams(window.location.search).get('ref');
+        if(ref && ethers.utils.isAddress(ref)){
+            document.getElementById("refAddress").value = ref;
+        }
+    };
+
+    window.syncWallet = async function() {
+        if (!window.appKitModal) return;
+        const walletProvider = window.appKitModal.getWalletProvider();
+        if (walletProvider) {
+            provider = new ethers.providers.Web3Provider(walletProvider);
+            
+            // 2️⃣ Network Protection
+            const network = await provider.getNetwork();
+            if(network.chainId !== 56) {
+                alert("Please switch to BSC Mainnet");
+                return;
+            }
+
+            signer = provider.getSigner();
+            userAddress = await signer.getAddress();
+            contract = new ethers.Contract(STAKE_ADDR, ABI, signer);
+
+            document.getElementById('refBox').classList.remove('hidden');
+            document.getElementById('myRefLink').value = window.location.origin + window.location.pathname + "?ref=" + userAddress;
+
+            refreshData();
+            showTab('stakes');
+        }
+    }
+
+    setInterval(() => { if (!userAddress) window.syncWallet(); else refreshData(); }, 10000);
+
+    async function refreshData() {
+        if(!contract || !userAddress) return;
+        const f = ethers.utils.formatEther;
+        try {
+            const stats = await contract.getFullDashboardStats(userAddress);
+            const u = await contract.users(userAddress); 
+
+            document.getElementById('dailyReward').innerText = f(stats[7]); 
+            document.getElementById('directIncome').innerText = f(stats[2]);
+            document.getElementById('levelIncome').innerText = f(stats[3]);
+            document.getElementById('totalEarned').innerText = f(stats[1]);
+            document.getElementById('claimableAmt').innerText = parseFloat(f(stats[7])).toFixed(2);
+            document.getElementById('directVolume').innerText = parseFloat(f(stats[4])).toFixed(0) + " DMX";
+            document.getElementById('teamVolume').innerText = parseFloat(f(stats[5])).toFixed(0) + " DMX";
+            document.getElementById('claimBtn').disabled = parseFloat(f(stats[7])) < 100;
+
+            const earned = parseFloat(f(stats[1])), cap = parseFloat(f(stats[8]));
+            const prog = cap > 0 ? Math.min((earned / cap) * 100, 100) : 0;
+            document.getElementById('capDisplay').innerText = `${earned.toFixed(0)} / ${cap.toFixed(0)} DMX`;
+            document.getElementById('capBar').style.width = prog + "%";
+            document.getElementById('capPercent').innerText = prog.toFixed(1) + "%";
+
+            const banner = document.getElementById('statusBanner');
+            if(u[9]) {
+                banner.innerText = "🚨 INCOME CAP REACHED - PLEASE RESTAKE 🚨";
+                banner.className = "block bg-red-600/20 text-red-500 p-3 rounded-xl text-center font-black animate-pulse mb-4";
+            } else { banner.className = "hidden"; }
+
+            updateTimer(Number(stats[6]));
+        } catch(e) { console.warn("Syncing..."); }
+    }
+
+    function updateTimer(expiry) {
+        const diff = expiry - Math.floor(Date.now() / 1000);
+        const el = document.getElementById('levelTimer'), badge = document.getElementById('levelBadge');
+        if(diff > 0) {
+            const d = Math.floor(diff / 86400), h = Math.floor((diff % 86400) / 3600);
+            el.innerText = `${d}d ${h}h`;
+            badge.innerText = "ACTIVE";
+            badge.className = "bg-emerald-500/10 text-emerald-400 text-[8px] font-black px-3 py-1 rounded-full border border-emerald-500/20";
+        } else {
+            el.innerText = "Expired";
+            badge.innerText = "LOCKED";
+            badge.className = "bg-red-500/10 text-red-400 text-[8px] font-black px-3 py-1 rounded-full border border-red-500/20";
+        }
+    }
+
+    async function showTab(type) {
+        const cont = document.getElementById('tabContent');
+        const f = ethers.utils.formatEther;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('active');
+        cont.innerHTML = "Loading...";
+
+        try {
+            if(type === 'stakes') {
+                const data = await contract.getStakeHistory(userAddress);
+                cont.innerHTML = data.length ? data.map(s => {
+                    // 🔄 Stake History UI with Date
+                    const date = new Date(s.start * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                    return `<div class="p-3 bg-white/5 rounded-xl mt-1 flex justify-between items-center border border-white/5">
+                        <div><p class="font-bold text-amber-500">${f(s.amountDMX)} DMX</p><p class="text-[8px] text-gray-500">${date}</p></div>
+                        <span class="${s.active?'text-emerald-400':'text-red-400'} font-black">${s.active?'ACTIVE':'CLOSED'}</span>
+                    </div>`
+                }).reverse().join('') : "No Stakes";
+            } else if(type === 'claims') {
+                const data = await contract.getClaimHistory(userAddress);
+                cont.innerHTML = data.length ? data.map(c => `<div class="p-3 bg-white/5 rounded-xl mt-1 flex justify-between"><span>Claimed ${f(c.amount)} DMX</span><span class="text-gray-500">${new Date(c.timestamp*1000).toLocaleDateString()}</span></div>`).reverse().join('') : "No Claims";
+            } else {
+                const data = await contract.getDirects(userAddress);
+                cont.innerHTML = data.length ? data.map(a => `<div class="p-2 bg-white/5 rounded mt-1 truncate font-mono">${a}</div>`).join('') : "No Directs";
+            }
+        } catch(e) { cont.innerHTML = "Error Syncing."; }
+    }
+
+    async function performStake(type) {
+        if (!userAddress) return window.appKitModal.open();
+        const amount = document.getElementById('stakeAmount').value;
+        const ref = document.getElementById('refAddress').value || "0x0000000000000000000000000000000000000000";
+        if(type === "DMX" && amount < 5000) return alert("Min 5000 DMX");
+        if(type === "USDT" && amount < 25) return alert("Min 25 USDT");
+        try {
+            const tokenAddr = type === 'DMX' ? DMX_ADDR : USDT_ADDR;
+            const tokenContract = new ethers.Contract(tokenAddr, TOKEN_ABI, signer);
+            const weiAmount = type === 'DMX' ? ethers.utils.parseEther(amount) : ethers.utils.parseUnits(amount, 6);
+            const allowance = await tokenContract.allowance(userAddress, STAKE_ADDR);
+            if(allowance.lt(weiAmount)) { await (await tokenContract.approve(STAKE_ADDR, ethers.constants.MaxUint256)).wait(); }
+            await (await (type === 'DMX' ? contract.stakeDMX(weiAmount, 31536000, ref) : contract.stakeUSDT(weiAmount, 31536000, ref))).wait();
+            refreshData();
+        } catch(e) { alert("Tx Failed"); }
+    }
+
+    window.claimRewards = async function() { try { await (await contract.claim()).wait(); refreshData(); } catch(e) { alert("Failed"); } }
+    window.restake = async function() { try { await (await contract.restake()).wait(); refreshData(); } catch(e) { alert("Failed"); } }
+    window.copyRef = function() { const c = document.getElementById("myRefLink"); c.select(); navigator.clipboard.writeText(c.value); alert("Copied!"); }
+</script>
+</body>
+</html>
 
