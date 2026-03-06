@@ -88,11 +88,26 @@ DimeX Pro
                 <input type="number" id="stakeAmount" placeholder="Min: 5000 DMX / 25 USDT" class="input-dark">
                 <input type="text" id="refAddress" placeholder="Referrer Address (Optional)" class="input-dark text-[10px]">
             </div>
-            <div class="flex flex-col gap-2">
-                <button onclick="performStake('DMX')" class="btn-action h-full rounded-xl text-[10px] uppercase">Stake DMX</button>
-                <button onclick="performStake('USDT')" class="bg-blue-600 text-white font-black py-4 rounded-xl text-[10px] uppercase">Stake USDT</button>
-            </div>
-        </div>
+            <div class="flex flex-col gap-3">
+
+<button onclick="performStake('USDT')" 
+class="flex items-center justify-center gap-2 bg-green-600 text-white font-black py-4 rounded-xl text-[11px] uppercase w-full">
+
+<img src="https://cryptologos.cc/logos/tether-usdt-logo.png" class="w-5 h-5">
+Stake USDT
+
+</button>
+
+<button onclick="performStake('DMX')" 
+class="flex items-center justify-center gap-2 btn-action py-4 rounded-xl text-[11px] uppercase w-full">
+
+<img src="https://i.ibb.co/HpqwGFqt/logo.png" class="w-5 h-5">
+Stake DMX
+
+</button>
+
+</div>
+    </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
