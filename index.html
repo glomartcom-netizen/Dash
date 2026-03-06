@@ -552,9 +552,14 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
         }
     }
 
-    setInterval(() => { if (!userAddress) window.syncWallet(); else refreshData(); }, 10000);
+    setInterval(() => { 
+if (!userAddress) window.syncWallet(); 
+else refreshData(); 
+}, 10000);
 
-    setInterval(updatePrice,10000);
+setInterval(updatePrice,10000);
+
+setInterval(updateRewardPool,10000);
     
     async function refreshData() {
         if(!contract || !userAddress) return;
