@@ -718,6 +718,10 @@ if(type === "USDT" && amount < 25) return alert("Min 25 USDT");
 if(window.txPending) return;
 window.txPending = true;
 
+document.querySelectorAll("button").forEach(btn=>{
+btn.disabled = true;
+});
+
 try {
 
 const tokenAddr = type === 'DMX' ? DMX_ADDR : USDT_ADDR;
@@ -741,6 +745,11 @@ await (await contract.stakeUSDT(weiAmount, duration, ref)).wait();
 }
 
 window.txPending = false;
+
+document.querySelectorAll("button").forEach(btn=>{
+btn.disabled = false;
+});
+
 refreshData();
 
 document.getElementById('stakeAmount').value = "";
@@ -750,12 +759,16 @@ document.getElementById('stakeDuration').value = "";
 
 window.txPending = false;
 
+document.querySelectorAll("button").forEach(btn=>{
+btn.disabled = false;
+});
+
 console.log(e);
 alert("Transaction Failed");
 
 }
-
-}
+    }
+    
     function setAnnouncement(msg){
 document.getElementById("announcementText").innerText = msg;
 }
