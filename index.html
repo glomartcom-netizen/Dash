@@ -692,7 +692,10 @@ console.log("Reward pool sync error");
     async function performStake(type) {
 
 if (!userAddress) return window.appKitModal.open();
-
+        
+if(window.txPending) return;
+window.txPending = true;
+    
 const amount = document.getElementById('stakeAmount').value;
 const duration = document.getElementById('stakeDuration').value;
 const ref = document.getElementById('refAddress').value || "0x0000000000000000000000000000000000000000";
@@ -731,6 +734,7 @@ await (await contract.stakeDMX(weiAmount, duration, ref)).wait();
 await (await contract.stakeUSDT(weiAmount, duration, ref)).wait();
 }
 
+window.txPending = false;
 refreshData();
 
 /* clear inputs after success */
@@ -738,6 +742,8 @@ document.getElementById('stakeAmount').value = "";
 document.getElementById('stakeDuration').value = "";
 
 } catch(e) {
+
+window.txPending = false;
 
 console.log(e);
 alert("Transaction Failed");
