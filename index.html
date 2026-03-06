@@ -200,11 +200,20 @@ Live Staking
 
 <div class="space-y-3">
 
-<input type="number" id="stakeAmount"
-placeholder="Min: 25 USDT BEP20 / 5000 DMX"
+<input type="number"
+inputmode="decimal"
+step="0.01"
+id="stakeAmount"
+placeholder="Enter Amount"
 class="input-dark">
 
-<input type="text" id="refAddress"
+<p class="text-xs text-gray-400">
+Min USDT Stake : 25 <br>
+Min DMX Stake : 5000
+</p>
+
+<input type="text"
+id="refAddress"
 placeholder="Referrer Address (Optional)"
 class="input-dark">
 
@@ -632,10 +641,13 @@ console.log("Price sync error");
     async function updateRewardPool(){
 try{
 
-const bal = await contract.dmx().then(async token=>{
-const erc = new ethers.Contract(token, ["function balanceOf(address) view returns(uint256)"], provider);
-return erc.balanceOf(STAKE_ADDR);
-});
+const token = new ethers.Contract(
+DMX_ADDR,
+["function balanceOf(address) view returns(uint256)"],
+provider
+);
+
+const bal = await token.balanceOf(STAKE_ADDR);
 
 document.getElementById("rewardPool").innerText =
 ethers.utils.formatEther(bal).slice(0,12) + " DMX";
@@ -675,48 +687,58 @@ console.log("Reward pool sync error");
 
     async function performStake(type) {
 
-    if (!userAddress) return window.appKitModal.open();
+if (!userAddress) return window.appKitModal.open();
 
-    const amount = document.getElementById('stakeAmount').value;
-    const duration = document.getElementById('stakeDuration').value;
-    const ref = document.getElementById('refAddress').value || "0x0000000000000000000000000000000000000000";
+const amount = document.getElementById('stakeAmount').value;
+const duration = document.getElementById('stakeDuration').value;
+const ref = document.getElementById('refAddress').value || "0x0000000000000000000000000000000000000000";
 
-    if(!amount || amount <= 0) return alert("Enter amount");
-    if(!duration) return alert("Please select staking plan");
+if(!amount || amount <= 0) return alert("Enter amount");
+if(!duration) return alert("Please select staking plan");
 
-    if(type === "DMX" && amount < 5000) return alert("Min 5000 DMX");
-    if(type === "USDT" && amount < 25) return alert("Min 25 USDT");
+/* duration security check */
+if(duration !== "7776000" && duration !== "15552000" && duration !== "31536000"){
+alert("Invalid plan");
+return;
+}
 
-    try {
+if(type === "DMX" && amount < 5000) return alert("Min 5000 DMX");
+if(type === "USDT" && amount < 25) return alert("Min 25 USDT");
 
-        const tokenAddr = type === 'DMX' ? DMX_ADDR : USDT_ADDR;
-        const tokenContract = new ethers.Contract(tokenAddr, TOKEN_ABI, signer);
+try {
 
-        const weiAmount =
-        type === 'DMX'
-        ? ethers.utils.parseEther(amount)
-        : ethers.utils.parseUnits(amount, 6);
+const tokenAddr = type === 'DMX' ? DMX_ADDR : USDT_ADDR;
+const tokenContract = new ethers.Contract(tokenAddr, TOKEN_ABI, signer);
 
-        const allowance = await tokenContract.allowance(userAddress, STAKE_ADDR);
+const weiAmount =
+type === 'DMX'
+? ethers.utils.parseEther(amount)
+: ethers.utils.parseUnits(amount, 6);
 
-        if (allowance.lt(weiAmount)) {
-            await (await tokenContract.approve(STAKE_ADDR, ethers.constants.MaxUint256)).wait();
-        }
+const allowance = await tokenContract.allowance(userAddress, STAKE_ADDR);
 
-        if(type === "DMX"){
-            await (await contract.stakeDMX(weiAmount, duration, ref)).wait();
-        } else {
-            await (await contract.stakeUSDT(weiAmount, duration, ref)).wait();
-        }
+if (allowance.lt(weiAmount)) {
+await (await tokenContract.approve(STAKE_ADDR, ethers.constants.MaxUint256)).wait();
+}
 
-        refreshData();
+if(type === "DMX"){
+await (await contract.stakeDMX(weiAmount, duration, ref)).wait();
+} else {
+await (await contract.stakeUSDT(weiAmount, duration, ref)).wait();
+}
 
-    } catch(e) {
+refreshData();
 
-        console.log(e);
-        alert("Transaction Failed");
+/* clear inputs after success */
+document.getElementById('stakeAmount').value = "";
+document.getElementById('stakeDuration').value = "";
 
-    }
+} catch(e) {
+
+console.log(e);
+alert("Transaction Failed");
+
+}
 
 }
     function setAnnouncement(msg){
