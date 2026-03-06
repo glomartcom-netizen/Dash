@@ -43,70 +43,77 @@ DimeX
 <div id="statusBanner" class="hidden p-3 rounded-xl text-center font-bold text-sm uppercase"></div>
 
 <!-- REFERRAL -->
-<div id="refBox" class="hidden glass-card p-5 border border-blue-500/20">
+<div id="refBox" class="hidden glass-card p-5 border border-amber-500/20">
+
 <p class="text-sm text-gray-400 font-bold uppercase mb-2 flex items-center gap-2">
 
-<img src="https://cdn-icons-png.flaticon.com/512/1250/1250689.png" class="w-4 h-4">
-
+<i class="fa-solid fa-link text-amber-400"></i>
 My Referral Link
 
 </p>
 
 <div class="flex gap-2">
 <input type="text" id="myRefLink" readonly class="input-dark text-sm bg-black/40">
-<button onclick="copyRef()" class="bg-blue-600 px-5 rounded-xl text-sm font-bold uppercase">Copy</button>
+<button onclick="copyRef()" class="bg-amber-500 text-black px-5 rounded-xl text-sm font-bold uppercase">
+Copy
+</button>
 </div>
 </div>
+
 
 <!-- MAIN STATS -->
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
 
 <div class="glass-card p-5 border-b-2 border-amber-500/40">
+
 <p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2">
 
-<img src="https://cdn-icons-png.flaticon.com/512/3135/3135706.png" class="w-4 h-4">
-
+<i class="fa-solid fa-coins text-amber-400"></i>
 Unclaimed Rewards
 
 </p>
 
 <p id="dailyReward" class="text-2xl font-black text-amber-500">0.00</p>
+
 </div>
 
 <div class="glass-card p-5 border-b-2 border-white/10">
+
 <p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2">
 
-<img src="https://cdn-icons-png.flaticon.com/512/2331/2331943.png" class="w-4 h-4">
-
+<i class="fa-solid fa-user-plus text-amber-400"></i>
 Direct Income
 
 </p>
 
 <p id="directIncome" class="text-2xl font-black">0.00</p>
+
 </div>
 
 <div class="glass-card p-5 border-b-2 border-white/10">
+
 <p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2">
 
-<img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" class="w-4 h-4">
-
+<i class="fa-solid fa-sitemap text-amber-400"></i>
 Level Income
 
 </p>
 
 <p id="levelIncome" class="text-2xl font-black">0.00</p>
+
 </div>
 
 <div class="glass-card p-5 border-b-2 border-emerald-500/40">
+
 <p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2">
 
-<img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="w-4 h-4">
-
+<i class="fa-solid fa-wallet text-amber-400"></i>
 Total Payout
 
 </p>
 
 <p id="totalEarned" class="text-2xl font-black text-emerald-400">0.00</p>
+
 </div>
 
 </div>
@@ -115,38 +122,40 @@ Total Payout
 <div class="grid grid-cols-2 gap-4">
 
 <div class="glass-card p-4 border-l-4 border-blue-500/50">
+
 <p class="text-sm text-gray-400 font-bold uppercase flex items-center gap-2">
 
-<img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" class="w-4 h-4">
-
+<i class="fa-solid fa-arrow-trend-up text-amber-400"></i>
 Direct Volume
 
 </p>
 
 <p id="directVolume" class="text-lg font-bold italic">0.00 DMX</p>
+
 </div>
 
 <div class="glass-card p-4 border-l-4 border-purple-500/50">
+
 <p class="text-sm text-gray-400 font-bold uppercase flex items-center gap-2">
 
-<img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" class="w-4 h-4">
-
+<i class="fa-solid fa-people-group text-amber-400"></i>
 Team Volume
 
 </p>
 
 <p id="teamVolume" class="text-lg font-bold italic">0.00 DMX</p>
+
 </div>
 
 </div>
+
 
 <!-- STAKING -->
 <div class="glass-card p-6 border border-amber-500/10">
 
 <h3 class="text-sm text-amber-500 font-black uppercase mb-4 flex items-center gap-2">
 
-<img src="https://cdn-icons-png.flaticon.com/512/1828/1828640.png" class="w-4 h-4">
-
+<i class="fa-solid fa-layer-group text-amber-400"></i>
 Live Staking
 
 </h3>
@@ -163,8 +172,8 @@ Live Staking
 
 <div class="flex flex-col gap-3">
 
-<button onclick="performStake('USDT')" 
-class="flex items-center justify-center gap-2 bg-green-600 text-white font-black py-4 rounded-xl text-sm uppercase w-full">
+<button onclick="performStake('USDT')"
+class="flex items-center justify-center gap-2 bg-black text-white font-black py-4 rounded-xl text-sm uppercase w-full">
 
 <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" class="w-5 h-5">
 
@@ -172,8 +181,8 @@ Stake USDT
 
 </button>
 
-<button onclick="performStake('DMX')" 
-class="flex items-center justify-center gap-2 btn-action py-4 rounded-xl text-sm uppercase w-full">
+<button onclick="performStake('DMX')"
+class="flex items-center justify-center gap-2 bg-amber-500 text-black font-black py-4 rounded-xl text-sm uppercase w-full">
 
 <img src="https://i.ibb.co/HpqwGFqt/logo.png" class="w-5 h-5">
 
@@ -187,7 +196,8 @@ Stake DMX
 
 </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- PROGRESS -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
 <div class="glass-card p-6">
 
@@ -195,8 +205,7 @@ Stake DMX
 
 <p class="text-sm text-gray-400 font-bold uppercase flex items-center gap-2">
 
-<img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" class="w-4 h-4">
-
+<i class="fa-solid fa-chart-line text-amber-400"></i>
 4X Income Progress
 
 </p>
@@ -207,7 +216,7 @@ Stake DMX
 
 <div class="w-full bg-white/5 h-3 rounded-full overflow-hidden">
 
-<div id="capBar" class="h-full bg-amber-500 transition-all duration-700" style="width: 0%"></div>
+<div id="capBar" class="h-full bg-amber-500 transition-all duration-700" style="width:0%"></div>
 
 </div>
 
@@ -215,15 +224,13 @@ Stake DMX
 
 </div>
 
-
 <div class="glass-card p-6 flex justify-between items-center border-l-4 border-blue-500">
 
 <div>
 
 <p class="text-sm text-gray-400 font-bold uppercase flex items-center gap-2">
 
-<img src="https://cdn-icons-png.flaticon.com/512/1827/1827504.png" class="w-4 h-4">
-
+<i class="fa-solid fa-clock text-amber-400"></i>
 Level Timer
 
 </p>
@@ -243,22 +250,21 @@ Syncing
 </div>
 
 
-
+<!-- CLAIM -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
 <div class="glass-card p-6 text-center border border-amber-500/20">
 
 <p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2 mb-1">
 
-<img src="https://cdn-icons-png.flaticon.com/512/3135/3135706.png" class="w-4 h-4">
-
+<i class="fa-solid fa-hand-holding-dollar text-amber-400"></i>
 Claimable
 
 </p>
 
 <p id="claimableAmt" class="text-4xl font-black mb-4 gold-glow">0.00</p>
 
-<button id="claimBtn" onclick="claimRewards()" class="btn-action w-full py-4 rounded-xl text-sm uppercase">
+<button id="claimBtn" onclick="claimRewards()" class="bg-amber-500 text-black w-full py-4 rounded-xl text-sm uppercase">
 
 Claim Now (Min 100)
 
@@ -266,14 +272,11 @@ Claim Now (Min 100)
 
 </div>
 
-
-
 <div class="glass-card p-6 flex flex-col justify-center border border-emerald-500/10">
 
 <p class="text-sm text-emerald-400 font-bold uppercase flex items-center gap-2">
 
-<img src="https://cdn-icons-png.flaticon.com/512/1828/1828640.png" class="w-4 h-4">
-
+<i class="fa-solid fa-rotate text-amber-400"></i>
 Compounding
 
 </p>
@@ -300,21 +303,24 @@ Restake + 5% Bonus
 
 <div class="flex bg-white/5">
 
-<div id="tabStakes" onclick="showTab('stakes')" class="tab-btn active text-sm">
+<div id="tabStakes" onclick="showTab('stakes')" class="tab-btn active text-sm flex items-center justify-center gap-2">
 
-📊 History
-
-</div>
-
-<div id="tabClaims" onclick="showTab('claims')" class="tab-btn text-sm">
-
-💰 Claims
+<i class="fa-solid fa-clock-rotate-left text-amber-400"></i>
+History
 
 </div>
 
-<div id="tabDownline" onclick="showTab('downline')" class="tab-btn text-sm">
+<div id="tabClaims" onclick="showTab('claims')" class="tab-btn text-sm flex items-center justify-center gap-2">
 
-👥 Downline
+<i class="fa-solid fa-money-bill-wave text-amber-400"></i>
+Claims
+
+</div>
+
+<div id="tabDownline" onclick="showTab('downline')" class="tab-btn text-sm flex items-center justify-center gap-2">
+
+<i class="fa-solid fa-users text-amber-400"></i>
+Downline
 
 </div>
 
