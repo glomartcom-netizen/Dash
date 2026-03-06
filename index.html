@@ -160,19 +160,28 @@ Team Volume
 <div class="glass-card p-6 border border-amber-500/10">
 
 <h3 class="text-sm text-amber-500 font-black uppercase mb-4 flex items-center gap-2">
-
 <i class="fa-solid fa-layer-group text-amber-400"></i>
 Live Staking
-
 </h3>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
 <div class="space-y-3">
 
-<input type="number" id="stakeAmount" placeholder="Min: 5000 DMX / 25 USDT" class="input-dark">
+<input type="number" id="stakeAmount"
+placeholder="Min: 5000 DMX / 25 USDT"
+class="input-dark">
 
-<input type="text" id="refAddress" placeholder="Referrer Address (Optional)" class="input-dark">
+<input type="text" id="refAddress"
+placeholder="Referrer Address (Optional)"
+class="input-dark">
+
+<!-- Duration Selector -->
+<select id="stakeDuration" class="input-dark">
+<option value="7776000">90 Days Plan</option>
+<option value="15552000">180 Days Plan</option>
+<option value="31536000" selected>365 Days Plan</option>
+</select>
 
 </div>
 
@@ -182,7 +191,6 @@ Live Staking
 class="flex items-center justify-center gap-2 bg-black text-white font-black py-4 rounded-xl text-sm uppercase w-full">
 
 <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" class="w-5 h-5">
-
 Stake USDT
 
 </button>
@@ -191,7 +199,6 @@ Stake USDT
 class="flex items-center justify-center gap-2 bg-amber-500 text-black font-black py-4 rounded-xl text-sm uppercase w-full">
 
 <img src="https://i.ibb.co/HpqwGFqt/logo.png" class="w-5 h-5">
-
 Stake DMX
 
 </button>
@@ -589,22 +596,48 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
     }
 
     async function performStake(type) {
-        if (!userAddress) return window.appKitModal.open();
-        const amount = document.getElementById('stakeAmount').value;
-        const ref = document.getElementById('refAddress').value || "0x0000000000000000000000000000000000000000";
-        if(type === "DMX" && amount < 5000) return alert("Min 5000 DMX");
-        if(type === "USDT" && amount < 25) return alert("Min 25 USDT");
-        try {
-            const tokenAddr = type === 'DMX' ? DMX_ADDR : USDT_ADDR;
-            const tokenContract = new ethers.Contract(tokenAddr, TOKEN_ABI, signer);
-            const weiAmount = type === 'DMX' ? ethers.utils.parseEther(amount) : ethers.utils.parseUnits(amount, 6);
-            const allowance = await tokenContract.allowance(userAddress, STAKE_ADDR);
-            if(allowance.lt(weiAmount)) { await (await tokenContract.approve(STAKE_ADDR, ethers.constants.MaxUint256)).wait(); }
-            await (await (type === 'DMX' ? contract.stakeDMX(weiAmount, 31536000, ref) : contract.stakeUSDT(weiAmount, 31536000, ref))).wait();
-            refreshData();
-        } catch(e) { alert("Tx Failed"); }
+
+    if (!userAddress) return window.appKitModal.open();
+
+    const amount = document.getElementById('stakeAmount').value;
+    const duration = document.getElementById('stakeDuration').value;
+    const ref = document.getElementById('refAddress').value || "0x0000000000000000000000000000000000000000";
+
+    if(type === "DMX" && amount < 5000) return alert("Min 5000 DMX");
+    if(type === "USDT" && amount < 25) return alert("Min 25 USDT");
+
+    try {
+
+        const tokenAddr = type === 'DMX' ? DMX_ADDR : USDT_ADDR;
+        const tokenContract = new ethers.Contract(tokenAddr, TOKEN_ABI, signer);
+
+        const weiAmount =
+        type === 'DMX'
+        ? ethers.utils.parseEther(amount)
+        : ethers.utils.parseUnits(amount, 6);
+
+        const allowance = await tokenContract.allowance(userAddress, STAKE_ADDR);
+
+        if (allowance.lt(weiAmount)) {
+            await (await tokenContract.approve(STAKE_ADDR, ethers.constants.MaxUint256)).wait();
+        }
+
+        if(type === "DMX"){
+            await (await contract.stakeDMX(weiAmount, duration, ref)).wait();
+        } else {
+            await (await contract.stakeUSDT(weiAmount, duration, ref)).wait();
+        }
+
+        refreshData();
+
+    } catch(e) {
+
+        console.log(e);
+        alert("Transaction Failed");
+
     }
 
+}
     window.claimRewards = async function() { try { await (await contract.claim()).wait(); refreshData(); } catch(e) { alert("Failed"); } }
     window.restake = async function() { try { await (await contract.restake()).wait(); refreshData(); } catch(e) { alert("Failed"); } }
     window.copyRef = function() { const c = document.getElementById("myRefLink"); c.select(); navigator.clipboard.writeText(c.value); alert("Copied!"); }
