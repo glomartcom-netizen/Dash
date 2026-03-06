@@ -42,8 +42,24 @@ DimeX
 
 <w3m-button label="Connect Wallet" balance="hide"></w3m-button>
 
+
 </header>
 
+<!-- ANNOUNCEMENT -->
+<div id="announcementBox" class="glass-card p-4 border border-amber-500/20 text-center max-w-4xl mx-auto mt-4">
+
+<p class="text-xs text-amber-400 font-bold uppercase mb-1">
+📢 Announcement
+</p>
+
+<p id="announcementText" class="text-sm text-white">
+🔥 DimeX Staking Platform Live
+</p>
+
+</div>
+
+<main class="max-w-4xl mx-auto p-4 space-y-6">
+    
 <main class="max-w-4xl mx-auto p-4 space-y-6">
 
 <div id="statusBanner" class="hidden p-3 rounded-xl text-center font-bold text-sm uppercase"></div>
@@ -121,6 +137,19 @@ Total Payout
 <p id="totalEarned" class="text-2xl font-black text-emerald-400">0.00</p>
 
 </div>
+
+</div>
+
+    <!-- REWARD POOL -->
+<div class="glass-card p-5 text-center border border-emerald-500/20">
+
+<p class="text-sm text-gray-400 font-bold uppercase">
+Reward Pool
+</p>
+
+<p id="rewardPool" class="text-2xl font-black text-emerald-400">
+Loading...
+</p>
 
 </div>
 
@@ -670,9 +699,34 @@ console.log("Price sync error");
     }
 
 }
-    window.claimRewards = async function() { try { await (await contract.claim()).wait(); refreshData(); } catch(e) { alert("Failed"); } }
-    window.restake = async function() { try { await (await contract.restake()).wait(); refreshData(); } catch(e) { alert("Failed"); } }
-    window.copyRef = function() { const c = document.getElementById("myRefLink"); c.select(); navigator.clipboard.writeText(c.value); alert("Copied!"); }
+    function setAnnouncement(msg){
+document.getElementById("announcementText").innerText = msg;
+}
+
+window.claimRewards = async function() { 
+try { 
+await (await contract.claim()).wait(); 
+refreshData(); 
+} catch(e) { 
+alert("Failed"); 
+} 
+}
+
+window.restake = async function() { 
+try { 
+await (await contract.restake()).wait(); 
+refreshData(); 
+} catch(e) { 
+alert("Failed"); 
+} 
+}
+
+window.copyRef = function() { 
+const c = document.getElementById("myRefLink"); 
+c.select(); 
+navigator.clipboard.writeText(c.value); 
+alert("Copied!"); 
+}
 </script>
 </body>
 </html>
