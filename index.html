@@ -56,6 +56,8 @@ DimeX
 🔥 DimeX Staking Platform Live
 </p>
 
+<img id="announcementBanner" class="mx-auto mt-3 rounded-xl hidden">
+
 </div>
 
     
@@ -621,6 +623,15 @@ updateRewardPool();
         }
     }
 
+function setBanner(url){
+
+const banner = document.getElementById("announcementBanner");
+
+banner.src = url;
+banner.classList.remove("hidden");
+
+}
+
 async function updatePrice(){
 
 try{
@@ -640,7 +651,7 @@ mode ? "Manual Price" : "LP Price";
 console.log("Price sync error");
 }
 
-    }
+}
 
     async function updateRewardPool(){
 
