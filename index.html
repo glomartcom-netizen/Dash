@@ -643,6 +643,7 @@ console.log("Price sync error");
     }
 
     async function updateRewardPool(){
+
 try{
 
 const token = new ethers.Contract(
@@ -653,12 +654,15 @@ provider
 
 const bal = await token.balanceOf(STAKE_ADDR);
 
+const formatted = ethers.utils.formatEther(bal);
+
 document.getElementById("rewardPool").innerText =
-ethers.utils.formatEther(bal).slice(0,12) + " DMX";
+parseFloat(formatted).toFixed(2) + " DMX";
 
 }catch(e){
 console.log("Reward pool sync error");
 }
+
 }
     
     async function showTab(type) {
