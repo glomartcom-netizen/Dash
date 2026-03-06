@@ -178,9 +178,10 @@ class="input-dark">
 
 <!-- Duration Selector -->
 <select id="stakeDuration" class="input-dark">
-<option value="7776000">90 Days Plan</option>
-<option value="15552000">180 Days Plan</option>
-<option value="31536000" selected>365 Days Plan</option>
+<option value="">Select Plan</option>
+<option value="7776000">90 Days — 0.20% Daily</option>
+<option value="15552000">180 Days — 0.25% Daily</option>
+<option value="31536000">365 Days — 0.30% Daily</option>
 </select>
 
 </div>
@@ -602,6 +603,9 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
     const amount = document.getElementById('stakeAmount').value;
     const duration = document.getElementById('stakeDuration').value;
     const ref = document.getElementById('refAddress').value || "0x0000000000000000000000000000000000000000";
+
+    if(!amount || amount <= 0) return alert("Enter amount");
+    if(!duration) return alert("Please select staking plan");
 
     if(type === "DMX" && amount < 5000) return alert("Min 5000 DMX");
     if(type === "USDT" && amount < 25) return alert("Min 25 USDT");
