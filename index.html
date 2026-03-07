@@ -42,8 +42,35 @@ object-fit:cover;
 .claim-ready{
 animation: claimGlow 1.5s infinite;
 }
-    </style>
+
+        @media (max-width:640px){
+
+/* top stats amounts */
+#dailyReward,
+#directIncome,
+#levelIncome,
+#totalEarned,
+#rewardPool{
+font-size:14px;
+line-height:1.1;
+}
+
+/* volume amounts */
+#directVolume,
+#teamVolume{
+font-size:13px;
+}
+
+/* compact cards mobile only */
+.grid .glass-card{
+padding:12px;
+}
+
+}
+        
+</style>
 </head>
+    
 <body class="pb-20">
 
 <header class="p-4 border-b border-white/5 flex justify-between items-center sticky top-0 bg-[#010409]/95 z-50">
