@@ -637,13 +637,6 @@ modal.subscribeState((state) => {
   }
 });
 
-/* ACCOUNT CHANGE */
-modal.subscribeProvider((info) => {
-  if(info?.isConnected && window.syncWallet){
-    window.syncWallet();
-  }
-});
-
 /* AUTO RECONNECT */  
 window.addEventListener("load", () => {  
   
