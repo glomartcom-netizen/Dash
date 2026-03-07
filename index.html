@@ -669,18 +669,18 @@ showTab('stakes');
         }
     }
 
-    setInterval(() => { 
-if (!userAddress) window.syncWallet(); 
-else refreshData(); 
-}, 10000);
+ setInterval(async () => {
 
-setInterval(updatePrice,10000);
-
-setInterval(() => {
-if(provider && STAKE_ADDR && DMX_ADDR){
-updateRewardPool();
+if(!userAddress){
+await window.syncWallet();
+return;
 }
-},10000);
+
+await refreshData();
+await updatePrice();
+await updateRewardPool();
+
+}, 10000);
     
     async function refreshData() {
         if(!contract || !userAddress) return;
