@@ -207,6 +207,26 @@ Loading...
 
 </div>
 
+    <!-- PLATFORM STATS -->
+<div class="grid grid-cols-3 gap-4 text-center">
+
+<div class="glass-card p-4">
+<p class="text-xs text-gray-400 uppercase font-bold">Total Users</p>
+<p id="totalUsers" class="text-lg font-black text-amber-500">0</p>
+</div>
+
+<div class="glass-card p-4">
+<p class="text-xs text-gray-400 uppercase font-bold">Total Staked</p>
+<p id="totalStaked" class="text-lg font-black text-emerald-400">0 DMX</p>
+</div>
+
+<div class="glass-card p-4">
+<p class="text-xs text-gray-400 uppercase font-bold">Total Rewards Paid</p>
+<p id="totalRewardsPaid" class="text-lg font-black text-blue-400">0 DMX</p>
+</div>
+
+</div>
+
 <!-- VOLUME -->
 <div class="grid grid-cols-2 gap-4">
 
@@ -664,6 +684,9 @@ document.getElementById('totalEarned').innerText = f(stats[1]);
 document.getElementById('claimableAmt').innerText = parseFloat(f(stats[7])).toFixed(2);
 document.getElementById('directVolume').innerText = parseFloat(f(stats[4])).toFixed(0) + " DMX";
 document.getElementById('teamVolume').innerText = parseFloat(f(stats[5])).toFixed(0) + " DMX";
+document.getElementById("totalUsers").innerText = f(stats[0]);
+document.getElementById("totalStaked").innerText = f(stats[4]) + " DMX";
+document.getElementById("totalRewardsPaid").innerText = f(stats[1]) + " DMX";
 
 /* claim button control + glow */
 const claimable = parseFloat(f(stats[7]));
