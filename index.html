@@ -797,7 +797,7 @@ document.getElementById('totalEarned').innerText = f(stats[1]);
 document.getElementById('claimableAmt').innerText = parseFloat(f(stats[7])).toFixed(2);
 document.getElementById('directVolume').innerText = parseFloat(f(stats[4])).toFixed(0) + " DMX";
 document.getElementById('teamVolume').innerText = parseFloat(f(stats[5])).toFixed(0) + " DMX";
-document.getElementById("myTotalStake").innerText = f(stats[4]);
+document.getElementById("myTotalStake").innerText = f(stats[0]);
             
 /* claim button control + glow */
 const claimable = parseFloat(f(stats[7]));
@@ -1002,17 +1002,23 @@ cont.innerHTML = "No Directs";
 return;
 }
 
+/* load all users faster */
+const users = await Promise.all(
+directs.map(a => contract.users(a))
+);
+
 let html = "";
 
-for(const addr of directs){
+for(let i=0;i<directs.length;i++){
+
+const addr = directs[i];
+const u = users[i];
 
 let stake = "0";
 let date = "-";
 let time = "-";
 
 try{
-
-const u = await contract.users(addr);
 
 stake = ethers.utils.formatEther(u[1] || 0);
 
@@ -1028,7 +1034,7 @@ time = d.toLocaleTimeString();
 }
 
 }catch(e){
-console.log("Downline user load error");
+console.log("Downline load error");
 }
 
 html += `
@@ -1053,15 +1059,8 @@ Stake: ${parseFloat(stake).toFixed(2)} DMX
 
 cont.innerHTML = html;
 
-}
+    }
 
-} catch(e) {
-
-cont.innerHTML = "Error loading data";
-
-}
-
-}
     async function performStake(type) {
         
     window.txPending = window.txPending || false;
