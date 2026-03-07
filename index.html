@@ -142,20 +142,42 @@ Copy
 
 
 <!-- MAIN STATS -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-
+<!-- TOTAL STAKED (Single Top Box) -->
 <div class="glass-card p-6 text-center border border-amber-500/20">
 
-<p class="text-sm text-gray-400 font-bold uppercase">
+<p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2">
+
+<i class="fa-solid fa-layer-group text-amber-400"></i>
 Total Staked
+
 </p>
 
-<p id="myTotalStake" class="text-3xl font-black text-amber-500">
+<p id="myTotalStake" class="text-4xl font-black text-amber-500">
 0.00
 </p>
 
 </div>
 
+
+<!-- EARNINGS GRID -->
+<div class="grid grid-cols-2 md:grid-cols-2 gap-4 text-center">
+
+<!-- Daily Rewards -->
+<div class="glass-card p-5 border-b-2 border-amber-500/40">
+
+<p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2">
+
+<i class="fa-solid fa-coins text-amber-400"></i>
+Daily Rewards
+
+</p>
+
+<p id="dailyReward" class="text-2xl font-black text-amber-500">0.00</p>
+
+</div>
+
+
+<!-- Direct Income -->
 <div class="glass-card p-5 border-b-2 border-white/10">
 
 <p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2">
@@ -169,6 +191,8 @@ Direct Income
 
 </div>
 
+
+<!-- Level Income -->
 <div class="glass-card p-5 border-b-2 border-white/10">
 
 <p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2">
@@ -182,6 +206,8 @@ Level Income
 
 </div>
 
+
+<!-- Total Payout -->
 <div class="glass-card p-5 border-b-2 border-emerald-500/40">
 
 <p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2">
@@ -197,20 +223,8 @@ Total Payout
 
 </div>
 
-<div class="glass-card p-6 text-center border border-amber-500/20">
 
-<p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2 mb-1">
-
-<i class="fa-solid fa-layer-group text-amber-400"></i>
-Total Staked
-
-</p>
-
-<p id="myTotalStake" class="text-4xl font-black mb-2 gold-glow">0.00</p>
-
-  </div>  
-
-    <!-- REWARD POOL -->
+<!-- REWARD POOL -->
 <div class="glass-card p-5 text-center border border-emerald-500/20">
 
 <p class="text-sm text-gray-400 font-bold uppercase">
@@ -223,9 +237,8 @@ Loading...
 
 </div>
 
-</div>
 
-<!-- VOLUME -->
+<!-- BUSINESS VOLUME -->
 <div class="grid grid-cols-2 gap-4">
 
 <div class="glass-card p-4 border-l-4 border-blue-500/50 text-center">
@@ -237,7 +250,7 @@ Direct Volume
 
 </p>
 
-<p id="directVolume" class="text-lg font-bold italic text-center">
+<p id="directVolume" class="text-lg font-bold italic">
 0.00 DMX
 </p>
 
@@ -252,14 +265,13 @@ Team Volume
 
 </p>
 
-<p id="teamVolume" class="text-lg font-bold italic text-center">
+<p id="teamVolume" class="text-lg font-bold italic">
 0.00 DMX
 </p>
 
 </div>
 
 </div>
-
 
 <!-- STAKING -->
 <div class="glass-card p-6 border border-amber-500/10">
