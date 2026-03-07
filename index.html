@@ -836,16 +836,13 @@ document.getElementById("announcementText").innerText = msg;
 
 const announcements = [
 {
-msg:"🔥 New Reward Campaign Live",
-banner:"https://i.imgur.com/banner1.png"
+msg:"🔥 DimeX Staking Platform Live"
 },
 {
-msg:"🚀 DMX Staking 0.30% Daily Plan",
-banner:"https://i.imgur.com/banner2.png"
+msg:"🚀 DMX Staking 0.30% Daily Plan"
 },
 {
-msg:"🎁 Restake Bonus 5% Available",
-banner:"https://i.imgur.com/banner3.png"
+msg:"🎁 Restake Bonus 5% Available"
 }
 ];
 
@@ -853,8 +850,13 @@ let announceIndex = 0;
 
 function rotateAnnouncement(){
 
-setAnnouncement(announcements[announceIndex].msg);
-setBanner(announcements[announceIndex].banner);
+const data = announcements[announceIndex];
+
+setAnnouncement(data.msg);
+
+if(data.banner){
+setBanner(data.banner);
+}
 
 announceIndex++;
 
