@@ -779,6 +779,8 @@ console.log("Reward pool sync error");
     }
 
     async function performStake(type) {
+        
+    window.txPending = window.txPending || false;
 
 if(maintenanceMode){
 alert("Platform under maintenance");
