@@ -645,31 +645,21 @@ modal.subscribeProvider((info) => {
 });
 
 /* AUTO RECONNECT */
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
 
-let retry = 0;
-const maxRetries = 10;
+setTimeout(async () => {
 
-const reconnect = setInterval(() => {
+if(window.appKitModal){
 
-const provider = modal.getWalletProvider();
+const provider = window.appKitModal.getWalletProvider();
 
-if(provider){
-
-if(window.syncWallet){
-window.syncWallet();
+if(provider && window.syncWallet){
+await window.syncWallet();
 }
 
-clearInterval(reconnect);
 }
 
-retry++;
-
-if(retry >= maxRetries){
-clearInterval(reconnect);
-}
-
-},1000);
+},1200);
 
 });
 </script>
