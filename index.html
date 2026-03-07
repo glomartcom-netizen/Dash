@@ -995,25 +995,41 @@ ${date} | ${time}
 
 else {
 
-const data = await contract.getDirects(userAddress);
+const directs = await contract.getDirects(userAddress);
 
-if(!data.length){
+if(!directs.length){
 cont.innerHTML = "No Directs";
 return;
 }
 
 let html = "";
 
-for(const addr of data){
+for(const addr of directs){
 
-const info = await contract.users(addr);
+let stake = "0";
+let date = "-";
+let time = "-";
 
-const stake = ethers.utils.formatEther(info[1] || 0);
+try{
 
-const join = new Date((info[2] || 0) * 1000);
+const u = await contract.users(addr);
 
-const date = join.toLocaleDateString();
-const time = join.toLocaleTimeString();
+stake = ethers.utils.formatEther(u[1] || 0);
+
+const join = Number(u[2] || 0);
+
+if(join > 0){
+
+const d = new Date(join * 1000);
+
+date = d.toLocaleDateString();
+time = d.toLocaleTimeString();
+
+}
+
+}catch(e){
+console.log("Downline user load error");
+}
 
 html += `
 <div class="p-3 bg-white/5 rounded-xl mt-2">
