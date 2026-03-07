@@ -705,6 +705,8 @@ showTab('stakes');
 
  setInterval(async () => {
 
+try{
+
 if(!userAddress){
 await window.syncWallet();
 return;
@@ -714,7 +716,11 @@ await refreshData();
 await updatePrice();
 await updateRewardPool();
 
-}, 10000);
+}catch(e){
+console.log("Dashboard sync error");
+}
+
+},10000);
     
     async function refreshData() {
         if(!contract || !userAddress) return;
@@ -1050,10 +1056,20 @@ return;
 }
 
 try {
+
+const btn = event.target;
+btn.disabled = true;
+
 await (await contract.restake()).wait();
+
 refreshData();
+
+btn.disabled = false;
+
 } catch(e) {
+
 alert("Failed");
+
 }
 
 }
@@ -1063,11 +1079,20 @@ const c = document.getElementById("myRefLink");
 c.select(); 
 navigator.clipboard.writeText(c.value); 
 alert("Copied!"); 
-    }
+}
 
-    document.getElementById("walletBtn").onclick = () => {
-    window.appKitModal.open();
+/* Wallet button click */
+window.addEventListener("load", () => {
+
+const btn = document.getElementById("walletBtn");
+
+if(btn){
+btn.onclick = () => {
+window.appKitModal.open();
 };
+}
+
+});
     
 </script>
 </body>
