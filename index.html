@@ -494,7 +494,15 @@ View
   // 3️⃣ Event Listener for better connection detection
   window.appKitModal.subscribeProvider(() => {
      window.syncWallet();
-  });
+});
+
+window.addEventListener("load", async () => {
+  setTimeout(() => {
+    if(window.appKitModal){
+      window.syncWallet();
+    }
+  },1500);
+});
 </script>
 
 <script>
