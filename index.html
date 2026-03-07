@@ -760,7 +760,7 @@ await (await contract.stakeUSDT(weiAmount, duration, ref)).wait();
 
 window.txPending = false;
 
-document.querySelectorAll("button").forEach(btn=>{
+document.querySelectorAll("#stakeButtons button").forEach(btn=>{
 btn.disabled = false;
 });
 
