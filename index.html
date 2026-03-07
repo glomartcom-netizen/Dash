@@ -787,8 +787,38 @@ alert("Transaction Failed");
 document.getElementById("announcementText").innerText = msg;
 }
 
-setAnnouncement("🔥 New Reward Campaign Live");
-setBanner("https://i.imgur.com/banner.png");
+const announcements = [
+{
+msg:"🔥 New Reward Campaign Live",
+banner:"https://i.imgur.com/banner1.png"
+},
+{
+msg:"🚀 DMX Staking 0.30% Daily Plan",
+banner:"https://i.imgur.com/banner2.png"
+},
+{
+msg:"🎁 Restake Bonus 5% Available",
+banner:"https://i.imgur.com/banner3.png"
+}
+];
+
+let announceIndex = 0;
+
+function rotateAnnouncement(){
+
+setAnnouncement(announcements[announceIndex].msg);
+setBanner(announcements[announceIndex].banner);
+
+announceIndex++;
+
+if(announceIndex >= announcements.length){
+announceIndex = 0;
+}
+
+}
+
+rotateAnnouncement();
+setInterval(rotateAnnouncement,6000);
 
 window.claimRewards = async function() { 
 try { 
