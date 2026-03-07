@@ -235,21 +235,18 @@ class="input-dark">
 
 </div>
 
-<div class="flex flex-col gap-3">
+<div id="stakeButtons" class="flex flex-col gap-3">
 
 <button onclick="performStake('USDT')"
 class="flex items-center justify-center gap-2 bg-emerald-500 text-white font-black py-4 rounded-xl text-sm uppercase w-full">
 <img src="https://assets.coingecko.com/coins/images/325/small/Tether.png" class="w-5 h-5">
 Stake USDT
-
 </button>
 
 <button onclick="performStake('DMX')"
 class="flex items-center justify-center gap-2 bg-amber-500 text-black font-black py-4 rounded-xl text-sm uppercase w-full">
-
 <img src="https://i.ibb.co/HpqwGFqt/logo.png" class="w-5 h-5">
 Stake DMX
-
 </button>
 
 </div>
@@ -735,8 +732,8 @@ if(type === "USDT" && amount < 25) return alert("Min 25 USDT");
 if(window.txPending) return;
 window.txPending = true;
 
-document.querySelectorAll("button").forEach(btn=>{
-btn.disabled = true;
+document.querySelectorAll("#stakeButtons button").forEach(btn=>{
+btn.disabled = false;
 });
 
 try {
