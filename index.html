@@ -887,11 +887,15 @@ await (await contract.claim()).wait();
 
 refreshData();
 
+/* restore button */
 btn.innerText = "Claim Now (Min 100)";
 btn.disabled = false;
 
 } catch(e) {
 
+console.log(e);
+
+/* restore button */
 btn.innerText = "Claim Now (Min 100)";
 btn.disabled = false;
 
