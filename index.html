@@ -1014,6 +1014,8 @@ for(let i=0;i<directs.length;i++){
 const addr = directs[i];
 const u = users[i];
 
+if(!u) continue;
+
 let stake = "0";
 let date = "-";
 let time = "-";
@@ -1060,7 +1062,14 @@ Stake: ${parseFloat(stake).toFixed(2)} DMX
 cont.innerHTML = html;
 
     }
-    }
+    } catch(e) {
+
+cont.innerHTML = "Error loading data";
+
+}
+
+}
+
 
     async function performStake(type) {
         
