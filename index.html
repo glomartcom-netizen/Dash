@@ -999,6 +999,9 @@ directs.map(a => contract.users(a))
 
 let html = "";
 
+let totalDirects = directs.length;
+let totalBusiness = 0;
+
 for(let i=0;i<directs.length;i++){
 
 const addr = directs[i];
@@ -1013,6 +1016,8 @@ let time = "-";
 try{
 
 stake = ethers.utils.formatEther(u[1] || 0);
+
+totalBusiness += parseFloat(stake);
 
 const join = Number(u[2] || 0);
 
@@ -1049,9 +1054,31 @@ Stake: ${parseFloat(stake).toFixed(2)} DMX
 
 }
 
-cont.innerHTML = html;
+cont.innerHTML = `
 
-    }
+<div class="p-3 bg-white/5 rounded-xl mb-3 text-center">
+
+<div class="text-xs text-gray-400">
+Total Directs
+</div>
+
+<div class="text-lg font-bold text-amber-400">
+${totalDirects}
+</div>
+
+<div class="text-xs text-gray-400 mt-2">
+Direct Business
+</div>
+
+<div class="text-lg font-bold text-emerald-400">
+${totalBusiness.toFixed(2)} DMX
+</div>
+
+</div>
+
+` + html;
+
+}
     } catch(e) {
 
 cont.innerHTML = "Error loading data";
