@@ -607,21 +607,32 @@ updateRewardPool();
             const stats = await contract.getFullDashboardStats(userAddress);
             const u = await contract.users(userAddress); 
 
-            document.getElementById('dailyReward').innerText = f(stats[7]); 
-            document.getElementById('directIncome').innerText = f(stats[2]);
-            document.getElementById('levelIncome').innerText = f(stats[3]);
-            document.getElementById('totalEarned').innerText = f(stats[1]);
-            document.getElementById('claimableAmt').innerText = parseFloat(f(stats[7])).toFixed(2);
-            document.getElementById('directVolume').innerText = parseFloat(f(stats[4])).toFixed(0) + " DMX";
-            document.getElementById('teamVolume').innerText = parseFloat(f(stats[5])).toFixed(0) + " DMX";
-            document.getElementById('claimBtn').disabled = parseFloat(f(stats[7])) < 100;
+document.getElementById('dailyReward').innerText = f(stats[7]); 
+document.getElementById('directIncome').innerText = f(stats[2]);
+document.getElementById('levelIncome').innerText = f(stats[3]);
+document.getElementById('totalEarned').innerText = f(stats[1]);
+document.getElementById('claimableAmt').innerText = parseFloat(f(stats[7])).toFixed(2);
+document.getElementById('directVolume').innerText = parseFloat(f(stats[4])).toFixed(0) + " DMX";
+document.getElementById('teamVolume').innerText = parseFloat(f(stats[5])).toFixed(0) + " DMX";
 
-            const earned = parseFloat(f(stats[1])), cap = parseFloat(f(stats[8]));
-            const prog = cap > 0 ? Math.min((earned / cap) * 100, 100) : 0;
-            document.getElementById('capDisplay').innerText = `${earned.toFixed(0)} / ${cap.toFixed(0)} DMX`;
-            document.getElementById('capBar').style.width = prog + "%";
-            document.getElementById('capPercent').innerText = prog.toFixed(1) + "%";
+/* claim button control + glow */
+const claimable = parseFloat(f(stats[7]));
+const claimBtn = document.getElementById('claimBtn');
 
+claimBtn.disabled = claimable < 100;
+
+if(claimable >= 100){
+claimBtn.classList.add("claim-ready");
+}else{
+claimBtn.classList.remove("claim-ready");
+}
+
+const earned = parseFloat(f(stats[1])), cap = parseFloat(f(stats[8]));
+const prog = cap > 0 ? Math.min((earned / cap) * 100, 100) : 0;
+document.getElementById('capDisplay').innerText = `${earned.toFixed(0)} / ${cap.toFixed(0)} DMX`;
+document.getElementById('capBar').style.width = prog + "%";
+document.getElementById('capPercent').innerText = prog.toFixed(1) + "%";
+            
             const banner = document.getElementById('statusBanner');
             if(u[9]) {
                 banner.innerText = "🚨 INCOME CAP REACHED - PLEASE RESTAKE 🚨";
