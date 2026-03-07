@@ -45,28 +45,31 @@ animation: claimGlow 1.5s infinite;
 
         @media (max-width:640px){
 
-/* titles small only for these cards */
+/* numbers small */
+#myTotalStake,
 #dailyReward,
 #directIncome,
 #levelIncome,
 #totalEarned,
 #directVolume,
-#teamVolume,
-#totalUsers,
-#totalStaked,
-#totalRewardsPaid{
-font-size:14px;
+#teamVolume{
+font-size:16px;
 line-height:1.1;
 }
 
-/* titles fix so they stay single line */
+/* titles smaller */
 .glass-card p:first-child{
-font-size:11px;
+font-size:10px;
 white-space:nowrap;
 }
 
-/* compact cards */
+/* card padding smaller */
 .grid .glass-card{
+padding:10px;
+}
+
+/* single cards */
+.glass-card{
 padding:12px;
 }
 
@@ -223,22 +226,7 @@ Total Payout
 
 </div>
 
-
-<!-- REWARD POOL -->
-<div class="glass-card p-5 text-center border border-emerald-500/20">
-
-<p class="text-sm text-gray-400 font-bold uppercase">
-Reward Pool
-</p>
-
-<p id="rewardPool" class="text-2xl font-black text-emerald-400">
-Loading...
-</p>
-
-</div>
-
-
-<!-- BUSINESS VOLUME -->
+    <!-- BUSINESS VOLUME -->
 <div class="grid grid-cols-2 gap-4">
 
 <div class="glass-card p-4 border-l-4 border-blue-500/50 text-center">
@@ -269,8 +257,20 @@ Team Volume
 0.00 DMX
 </p>
 
-</div>
+</div> 
 
+<!-- REWARD POOL -->
+<div class="glass-card p-5 text-center border border-emerald-500/20">
+
+<p class="text-sm text-gray-400 font-bold uppercase">
+Reward Pool
+</p>
+
+<p id="rewardPool" class="text-2xl font-black text-emerald-400">
+Loading...
+</p>
+
+</div>
 </div>
 
 <!-- STAKING -->
