@@ -91,7 +91,7 @@ DimeX
 </div>
 
 <button id="walletBtn"
-onclick="appKitModal.open()"
+onclick="window.appKitModal.open()"
 class="bg-amber-500 text-black px-4 py-2 rounded-xl font-bold text-sm transition">
 Connect Wallet
 </button>
@@ -1021,7 +1021,12 @@ const c = document.getElementById("myRefLink");
 c.select(); 
 navigator.clipboard.writeText(c.value); 
 alert("Copied!"); 
-}
+    }
+
+    document.getElementById("walletBtn").onclick = () => {
+    window.appKitModal.open();
+};
+    
 </script>
 </body>
 </html>
