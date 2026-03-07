@@ -644,34 +644,34 @@ modal.subscribeProvider((info) => {
   }
 });
 
-/* AUTO RECONNECT */
-window.addEventListener("load", () => {
-
-let retry = 0;
-const maxRetries = 10;
-
-const reconnect = setInterval(() => {
-
-const provider = window.appKitModal.getWalletProvider();
-
-if(provider){
-
-if(window.syncWallet){
-window.syncWallet();
-}
-
-clearInterval(reconnect);
-}
-
-retry++;
-
-if(retry >= maxRetries){
-clearInterval(reconnect);
-}
-
-},1000);
-
-});
+/* AUTO RECONNECT */  
+window.addEventListener("load", () => {  
+  
+let retry = 0;  
+const maxRetries = 10;  
+  
+const reconnect = setInterval(() => {  
+  
+const provider = modal.getWalletProvider();  
+  
+if(provider){  
+  
+if(window.syncWallet){  
+window.syncWallet();  
+}  
+  
+clearInterval(reconnect);  
+}  
+  
+retry++;  
+  
+if(retry >= maxRetries){  
+clearInterval(reconnect);  
+}  
+  
+},1000);  
+  
+});  
 </script>
 
 <script>
