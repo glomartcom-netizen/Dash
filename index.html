@@ -710,76 +710,76 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
 
     const TOKEN_ABI = ["function approve(address, uint256) public returns (bool)", "function allowance(address, address) public view returns (uint256)"];
 
-    let provider, signer, contract, userAddress;
-
-    // 1️⃣ Referral Auto-fill on load
-    window.addEventListener("load", () => {
-        const ref = new URLSearchParams(window.location.search).get('ref');
-        if(ref && ethers.utils.isAddress(ref)){
-            document.getElementById("refAddress").value = ref;
-        }
-    };
-
-    window.syncWallet = async function() {
-        if (!window.appKitModal) return;
-        const walletProvider = window.appKitModal.getWalletProvider();
-        if (walletProvider) {
-            provider = new ethers.providers.Web3Provider(walletProvider);
-            
-            // 2️⃣ Network Protection
-            const network = await provider.getNetwork();
-            if(network.chainId !== 56) {
-                alert("Please switch to BSC Mainnet");
-                return;
-            }
-
-            signer = provider.getSigner();
-userAddress = await signer.getAddress();
-
-/* wallet button update */
-const btn = document.getElementById("walletBtn");
-
-const short =
-userAddress.slice(0,6) + "..." + userAddress.slice(-4);
-
-const balanceWei = await provider.getBalance(userAddress);
-const balance = ethers.utils.formatEther(balanceWei);
-
-btn.innerText =
-short + " | " + parseFloat(balance).toFixed(3) + " BNB";
-
-btn.classList.remove("bg-amber-500","text-black");
-btn.classList.add("bg-emerald-600","text-white");
-btn.classList.add("walletConnected");
-
-contract = new ethers.Contract(STAKE_ADDR, ABI, signer);
-
-document.getElementById('refBox').classList.remove('hidden');
-document.getElementById('myRefLink').value = window.location.origin + window.location.pathname + "?ref=" + userAddress;
-
-refreshData();
-showTab('stakes');
-        }
-    }
-
- setInterval(async () => {
-
-try{
-
-if(!userAddress){
-await window.syncWallet();
-return;
-}
-
-await refreshData();
-await updatePrice();
-await updateRewardPool();
-
-}catch(e){
-console.log("Dashboard sync error");
-}
-
-},10000);
+     let provider, signer, contract, userAddress;    
+    
+    // 1️⃣ Referral Auto-fill on load    
+    window.onload = () => {    
+        const ref = new URLSearchParams(window.location.search).get('ref');    
+        if(ref && ethers.utils.isAddress(ref)){    
+            document.getElementById("refAddress").value = ref;    
+        }    
+    };    
+    
+    window.syncWallet = async function() {    
+        if (!window.appKitModal) return;    
+        const walletProvider = window.appKitModal.getWalletProvider();    
+        if (walletProvider) {    
+            provider = new ethers.providers.Web3Provider(walletProvider);    
+                
+            // 2️⃣ Network Protection    
+            const network = await provider.getNetwork();    
+            if(network.chainId !== 56) {    
+                alert("Please switch to BSC Mainnet");    
+                return;    
+            }    
+    
+            signer = provider.getSigner();    
+userAddress = await signer.getAddress();    
+    
+/* wallet button update */    
+const btn = document.getElementById("walletBtn");    
+    
+const short =    
+userAddress.slice(0,6) + "..." + userAddress.slice(-4);    
+    
+const balanceWei = await provider.getBalance(userAddress);    
+const balance = ethers.utils.formatEther(balanceWei);    
+    
+btn.innerText =    
+short + " | " + parseFloat(balance).toFixed(3) + " BNB";    
+    
+btn.classList.remove("bg-amber-500","text-black");    
+btn.classList.add("bg-emerald-600","text-white");    
+btn.classList.add("walletConnected");    
+    
+contract = new ethers.Contract(STAKE_ADDR, ABI, signer);    
+    
+document.getElementById('refBox').classList.remove('hidden');    
+document.getElementById('myRefLink').value = window.location.origin + window.location.pathname + "?ref=" + userAddress;    
+    
+refreshData();    
+showTab('stakes');    
+        }    
+    }    
+    
+ setInterval(async () => {    
+    
+try{    
+    
+if(!userAddress){    
+await window.syncWallet();    
+return;    
+}    
+    
+await refreshData();    
+await updatePrice();    
+await updateRewardPool();    
+    
+}catch(e){    
+console.log("Dashboard sync error");    
+}    
+    
+},10000);    
     
     async function refreshData() {
         if(!contract || !userAddress) return;
