@@ -18,15 +18,14 @@
     <style>
         body { font-family: 'Poppins', sans-serif; background: #010409; color: #f0f6fc; }
         .glass-card { background: rgba(13, 17, 23, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(240, 191, 76, 0.1); border-radius: 20px; }
-        #walletBtn{
+        .walletConnected{
 box-shadow:0 0 10px rgba(16,185,129,0.5);
-        }
+}
         .gold-glow { text-shadow: 0 0 12px rgba(245, 158, 11, 0.6); }
         .btn-action { background: linear-gradient(135deg, #fbbf24, #d97706); color: black; font-weight: 800; transition: 0.3s; }
         .input-dark { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; color: white; outline: none; width: 100%; font-size: 13px; }
         .tab-btn { flex: 1; padding: 12px; font-size: 11px; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid transparent; opacity: 0.5; cursor: pointer; text-align: center; }
         .tab-btn.active { border-bottom: 2px solid #f59e0b; opacity: 1; color: #f59e0b; }
-        w3m-button { transform: scale(0.9); }
 
         #announcementBanner{
 max-width:100%;
@@ -599,6 +598,7 @@ short + " | " + parseFloat(balance).toFixed(3) + " BNB";
 
 btn.classList.remove("bg-amber-500","text-black");
 btn.classList.add("bg-emerald-600","text-white");
+btn.classList.add("walletConnected");
 
 contract = new ethers.Contract(STAKE_ADDR, ABI, signer);
 
