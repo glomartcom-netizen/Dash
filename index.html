@@ -549,33 +549,67 @@ View
 </main>
 
 <script type="module">
-  import { createAppKit } from 'https://esm.sh/@reown/appkit?bundle'
-  import { Ethers5Adapter } from 'https://esm.sh/@reown/appkit-adapter-ethers5?bundle'
-  import { bsc } from 'https://esm.sh/@reown/appkit/networks?bundle'
+import { createAppKit } from 'https://esm.sh/@reown/appkit?bundle'
+import { Ethers5Adapter } from 'https://esm.sh/@reown/appkit-adapter-ethers5?bundle'
+import { bsc } from 'https://esm.sh/@reown/appkit/networks?bundle'
 
-  const projectId = '059cc242b0cc96ac9665c598b76ddc7b';
+const projectId = '059cc242b0cc96ac9665c598b76ddc7b';
 
-  const modal = createAppKit({
-    adapters: [new Ethers5Adapter()],
-    networks: [bsc],
-    metadata: { name: 'DimeX Pro', url: window.location.origin, icons: [] },
-    projectId,
-    features: { analytics: true }
-  })
-
-  window.appKitModal = modal;
-
-  // 3️⃣ Event Listener for better connection detection
-  window.appKitModal.subscribeProvider(() => {
-     window.syncWallet();
+const modal = createAppKit({
+  adapters: [new Ethers5Adapter()],
+  networks: [bsc],
+  metadata: { 
+    name: 'DimeX Pro', 
+    url: window.location.origin, 
+    icons: ['https://i.ibb.co/HpqwGFqt/logo.png'] 
+  },
+  projectId,
+  features: { analytics: true }
 });
 
-window.addEventListener("load", async () => {
-  setTimeout(() => {
-    if(window.appKitModal){
-      window.syncWallet();
-    }
-  },1500);
+window.appKitModal = modal;
+
+/* NETWORK / CONNECTION CHANGE */
+modal.subscribeState((state) => {
+  if(state?.isConnected && window.syncWallet){
+    window.syncWallet();
+  }
+});
+
+/* ACCOUNT CHANGE */
+modal.subscribeProvider((info) => {
+  if(info?.isConnected && window.syncWallet){
+    window.syncWallet();
+  }
+});
+
+/* AUTO RECONNECT */
+window.addEventListener("load", () => {
+
+let retry = 0;
+const maxRetries = 10;
+
+const reconnect = setInterval(() => {
+
+const provider = modal.getWalletProvider();
+
+if(provider){
+
+if(window.syncWallet){
+window.syncWallet();
+}
+
+clearInterval(reconnect);
+}
+
+retry++;
+
+if(retry >= maxRetries){
+clearInterval(reconnect);
+}
+
+},1000);
+
 });
 </script>
 
