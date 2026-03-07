@@ -30,6 +30,16 @@ max-width:100%;
 max-height:180px;
 object-fit:cover;
         }
+
+        @keyframes claimGlow {
+0% { box-shadow: 0 0 0px rgba(251,191,36,0.6); }
+50% { box-shadow: 0 0 20px rgba(251,191,36,0.9); }
+100% { box-shadow: 0 0 0px rgba(251,191,36,0.6); }
+}
+
+.claim-ready{
+animation: claimGlow 1.5s infinite;
+}
     </style>
 </head>
 <body class="pb-20">
@@ -327,10 +337,9 @@ Claimable
 
 <p id="claimableAmt" class="text-4xl font-black mb-4 gold-glow">0.00</p>
 
-<button id="claimBtn" onclick="claimRewards()" class="bg-amber-500 text-black w-full py-4 rounded-xl text-sm uppercase">
-
+<button id="claimBtn" onclick="claimRewards()" 
+class="bg-amber-600 hover:bg-amber-700 text-black w-full py-4 rounded-xl text-sm uppercase font-black transition-all">
 Claim Now (Min 100)
-
 </button>
 
 </div>
@@ -346,7 +355,7 @@ Compounding
 
 <p class="text-sm text-gray-400 mb-4 italic">
 
-Convert claimable to active stake + 5% Bonus instantly.
+Restake and get +5% bonus added to your staking amount.
 
 </p>
 
@@ -865,15 +874,30 @@ alert("Platform under maintenance");
 return;
 }
 
+const btn = document.getElementById("claimBtn");
+
 try {
+
+btn.disabled = true;
+btn.innerText = "Claiming...";
+
 await (await contract.claim()).wait();
+
 refreshData();
+
+btn.innerText = "Claim Now (Min 100)";
+btn.disabled = false;
+
 } catch(e) {
-alert("Failed");
-}
+
+btn.innerText = "Claim Now (Min 100)";
+btn.disabled = false;
+
+alert("Transaction Failed");
 
 }
 
+}
 window.restake = async function() {
 
 if(maintenanceMode){
