@@ -18,6 +18,9 @@
     <style>
         body { font-family: 'Poppins', sans-serif; background: #010409; color: #f0f6fc; }
         .glass-card { background: rgba(13, 17, 23, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(240, 191, 76, 0.1); border-radius: 20px; }
+        #walletBtn{
+box-shadow:0 0 10px rgba(16,185,129,0.5);
+        }
         .gold-glow { text-shadow: 0 0 12px rgba(245, 158, 11, 0.6); }
         .btn-action { background: linear-gradient(135deg, #fbbf24, #d97706); color: black; font-weight: 800; transition: 0.3s; }
         .input-dark { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; color: white; outline: none; width: 100%; font-size: 13px; }
@@ -56,8 +59,9 @@ DimeX
 
 </div>
 
-<button onclick="appKitModal.open()" 
-class="bg-amber-500 text-black px-4 py-2 rounded-xl font-bold text-sm">
+<button id="walletBtn"
+onclick="appKitModal.open()"
+class="bg-amber-500 text-black px-4 py-2 rounded-xl font-bold text-sm transition">
 Connect Wallet
 </button>
 
@@ -579,14 +583,30 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
             }
 
             signer = provider.getSigner();
-            userAddress = await signer.getAddress();
-            contract = new ethers.Contract(STAKE_ADDR, ABI, signer);
+userAddress = await signer.getAddress();
 
-            document.getElementById('refBox').classList.remove('hidden');
-            document.getElementById('myRefLink').value = window.location.origin + window.location.pathname + "?ref=" + userAddress;
+/* wallet button update */
+const btn = document.getElementById("walletBtn");
 
-            refreshData();
-            showTab('stakes');
+const short =
+userAddress.slice(0,6) + "..." + userAddress.slice(-4);
+
+const balanceWei = await provider.getBalance(userAddress);
+const balance = ethers.utils.formatEther(balanceWei);
+
+btn.innerText =
+short + " | " + parseFloat(balance).toFixed(3) + " BNB";
+
+btn.classList.remove("bg-amber-500","text-black");
+btn.classList.add("bg-emerald-600","text-white");
+
+contract = new ethers.Contract(STAKE_ADDR, ABI, signer);
+
+document.getElementById('refBox').classList.remove('hidden');
+document.getElementById('myRefLink').value = window.location.origin + window.location.pathname + "?ref=" + userAddress;
+
+refreshData();
+showTab('stakes');
         }
     }
 
