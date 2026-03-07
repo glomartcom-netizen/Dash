@@ -45,23 +45,27 @@ animation: claimGlow 1.5s infinite;
 
         @media (max-width:640px){
 
-/* top stats amounts */
+/* titles small only for these cards */
 #dailyReward,
 #directIncome,
 #levelIncome,
 #totalEarned,
-#rewardPool{
+#directVolume,
+#teamVolume,
+#totalUsers,
+#totalStaked,
+#totalRewardsPaid{
 font-size:14px;
 line-height:1.1;
 }
 
-/* volume amounts */
-#directVolume,
-#teamVolume{
-font-size:13px;
+/* titles fix so they stay single line */
+.glass-card p:first-child{
+font-size:11px;
+white-space:nowrap;
 }
 
-/* compact cards mobile only */
+/* compact cards */
 .grid .glass-card{
 padding:12px;
 }
