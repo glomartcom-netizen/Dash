@@ -740,6 +740,11 @@ const amount = document.getElementById('stakeAmount').value;
 const duration = document.getElementById('stakeDuration').value;
 const ref = document.getElementById('refAddress').value || "0x0000000000000000000000000000000000000000";
 
+if(ref.toLowerCase() === userAddress.toLowerCase()){
+alert("You cannot refer yourself");
+return;
+}
+
 if(!amount || amount <= 0) return alert("Enter amount");
 if(!duration) return alert("Please select staking plan");
 
