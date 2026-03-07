@@ -768,45 +768,53 @@ banner.classList.add("hidden");
 
 async function updatePrice(){
 
-try{
+    if(!contract) return; // safety
 
-const price = await contract.getDMXFromUSDT(ethers.utils.parseUnits("1",6));
-const formatted = ethers.utils.formatEther(price);
+    try{
 
-document.getElementById("livePriceUser").innerText =
-parseFloat(formatted).toFixed(4) + " DMX";
+        const price = await contract.getDMXFromUSDT(
+            ethers.utils.parseUnits("1",6)
+        );
 
-const mode = await contract.isManualPrice();
+        const formatted = ethers.utils.formatEther(price);
 
-document.getElementById("priceModeUser").innerText =
-mode ? "Manual Price" : "LP Price";
+        document.getElementById("livePriceUser").innerText =
+        parseFloat(formatted).toFixed(4) + " DMX";
 
-}catch(e){
-console.log("Price sync error");
-}
+        const mode = await contract.isManualPrice();
+
+        document.getElementById("priceModeUser").innerText =
+        mode ? "Manual" : "LP Based";
+
+    }catch(e){
+        console.log("Price sync...");
+    }
 
 }
 
     async function updateRewardPool(){
 
-try{
+    if(!provider) return;
+    if(!document.getElementById("rewardPool")) return;
 
-const token = new ethers.Contract(
-DMX_ADDR,
-["function balanceOf(address) view returns(uint256)"],
-provider
-);
+    try{
 
-const bal = await token.balanceOf(STAKE_ADDR);
+        const token = new ethers.Contract(
+            DMX_ADDR,
+            ["function balanceOf(address) view returns(uint256)"],
+            provider
+        );
 
-const formatted = ethers.utils.formatEther(bal);
+        const bal = await token.balanceOf(STAKE_ADDR);
 
-document.getElementById("rewardPool").innerText =
-parseFloat(formatted).toFixed(2) + " DMX";
+        const formatted = ethers.utils.formatEther(bal);
 
-}catch(e){
-console.log("Reward pool sync error");
-}
+        document.getElementById("rewardPool").innerText =
+        parseFloat(formatted).toLocaleString() + " DMX";
+
+    }catch(e){
+        console.log("Pool sync...");
+    }
 
 }
     
