@@ -145,19 +145,34 @@ Copy
 
 
 <!-- MAIN STATS -->
-<!-- TOTAL STAKED (Single Top Box) -->
-<div class="glass-card p-6 text-center border border-amber-500/20">
+<!-- TOP STATS -->
+<div class="grid grid-cols-2 gap-4 text-center">
 
-<p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2">
+<!-- Total Staked -->
+<div class="glass-card p-6 border border-amber-500/20">
 
-<i class="fa-solid fa-layer-group text-amber-400"></i>
+<p class="text-sm text-gray-400 font-bold uppercase">
 Total Staked
-
 </p>
 
-<p id="myTotalStake" class="text-4xl font-black text-amber-500">
+<p id="myTotalStake" class="text-3xl font-black text-amber-500">
 0.00
 </p>
+
+</div>
+
+<!-- Reward Pool -->
+<div class="glass-card p-6 border border-emerald-500/20">
+
+<p class="text-sm text-gray-400 font-bold uppercase">
+Reward Pool
+</p>
+
+<p id="rewardPool" class="text-3xl font-black text-emerald-400">
+Loading...
+</p>
+
+</div>
 
 </div>
 
@@ -255,19 +270,6 @@ Team Volume
 
 <p id="teamVolume" class="text-lg font-bold italic">
 0.00 DMX
-</p>
-
-</div> 
-
-<!-- REWARD POOL -->
-<div class="glass-card p-5 text-center border border-emerald-500/20">
-
-<p class="text-sm text-gray-400 font-bold uppercase">
-Reward Pool
-</p>
-
-<p id="rewardPool" class="text-2xl font-black text-emerald-400">
-Loading...
 </p>
 
 </div>
