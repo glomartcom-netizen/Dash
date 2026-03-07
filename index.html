@@ -845,22 +845,36 @@ announceIndex = 0;
 rotateAnnouncement();
 setInterval(rotateAnnouncement,6000);
 
-window.claimRewards = async function() { 
-try { 
-await (await contract.claim()).wait(); 
-refreshData(); 
-} catch(e) { 
-alert("Failed"); 
-} 
+window.claimRewards = async function() {
+
+if(maintenanceMode){
+alert("Platform under maintenance");
+return;
 }
 
-window.restake = async function() { 
-try { 
-await (await contract.restake()).wait(); 
-refreshData(); 
-} catch(e) { 
-alert("Failed"); 
-} 
+try {
+await (await contract.claim()).wait();
+refreshData();
+} catch(e) {
+alert("Failed");
+}
+
+}
+
+window.restake = async function() {
+
+if(maintenanceMode){
+alert("Platform under maintenance");
+return;
+}
+
+try {
+await (await contract.restake()).wait();
+refreshData();
+} catch(e) {
+alert("Failed");
+}
+
 }
 
 window.copyRef = function() { 
