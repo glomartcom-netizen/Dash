@@ -319,40 +319,44 @@ Team Volume
  </div>
     
 <!-- STAKING -->
-<div class="glass-card p-6 border border-amber-500/10">
+<div class="glass-card p-6 border border-amber-500/20">
 
-<h3 class="text-sm text-amber-500 font-black uppercase mb-4 flex items-center gap-2">
+<h3 class="text-sm text-amber-500 font-black uppercase mb-5 flex items-center gap-2">
 <i class="fa-solid fa-layer-group text-amber-400"></i>
 Live Staking
 </h3>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-<div class="space-y-3">
+<div class="space-y-4">
+
+<!-- Stake Amount -->
+<label class="text-xs text-amber-400 font-bold uppercase tracking-wide">
+Stake Amount
+</label>
 
 <input type="number"
 inputmode="decimal"
 step="0.01"
 id="stakeAmount"
-placeholder="Enter Amount"
+placeholder="Enter staking amount"
 class="input-dark">
 
-<p class="text-xs text-gray-400">
-Min USDT Stake : 25 <br>
-Min DMX Stake : 5000
-</p>
+<div class="flex justify-between text-xs text-gray-400">
+<span>Min USDT BEP20 : 25</span>
+<span>Min DMX : 5000</span>
+</div>
 
-<input type="text"
-id="refAddress"
-placeholder="Referrer Address (Optional)"
-class="input-dark">
+<!-- Plan -->
+<label class="text-xs text-amber-400 font-bold uppercase tracking-wide">
+Select Plan
+</label>
 
-<!-- Duration Selector -->
 <select id="stakeDuration" class="input-dark">
-<option value="">Select Plan</option>
-<option value="7776000">90 Days — 0.20% Daily</option>
-<option value="15552000">180 Days — 0.25% Daily</option>
-<option value="31536000">365 Days — 0.30% Daily</option>
+<option value="">Choose Staking Plan</option>
+<option value="7776000">90 Days • 0.20% Daily</option>
+<option value="15552000">180 Days • 0.25% Daily</option>
+<option value="31536000">365 Days • 0.30% Daily</option>
 </select>
 
 </div>
