@@ -705,7 +705,7 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
     let provider, signer, contract, userAddress;
 
     // 1️⃣ Referral Auto-fill on load
-    window.onload = () => {
+    window.addEventListener("load", () => {
         const ref = new URLSearchParams(window.location.search).get('ref');
         if(ref && ethers.utils.isAddress(ref)){
             document.getElementById("refAddress").value = ref;
