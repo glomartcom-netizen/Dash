@@ -51,6 +51,10 @@ DimeX
 
 </header>
 
+<div id="maintenanceBanner" class="hidden bg-red-600 text-white text-center font-bold p-3">
+⚠ Platform Under Maintenance
+</div>
+
 <!-- ANNOUNCEMENT -->
 <div id="announcementBox" class="glass-card p-4 border border-amber-500/20 text-center max-w-4xl mx-auto mt-4">
 
@@ -635,6 +639,22 @@ banner.classList.remove("hidden");
 
 }
 
+    let maintenanceMode = false;
+
+function toggleMaintenance(status){
+
+maintenanceMode = status;
+
+const banner = document.getElementById("maintenanceBanner");
+
+if(status){
+banner.classList.remove("hidden");
+}else{
+banner.classList.add("hidden");
+}
+
+    }
+
 async function updatePrice(){
 
 try{
@@ -709,8 +729,13 @@ console.log("Reward pool sync error");
 
     async function performStake(type) {
 
-if (!userAddress) return window.appKitModal.open();
+if(maintenanceMode){
+alert("Platform under maintenance");
+return;
+}
 
+if (!userAddress) return window.appKitModal.open();
+        
 const amount = document.getElementById('stakeAmount').value;
 const duration = document.getElementById('stakeDuration').value;
 const ref = document.getElementById('refAddress').value || "0x0000000000000000000000000000000000000000";
