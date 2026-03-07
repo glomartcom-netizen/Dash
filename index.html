@@ -733,7 +733,7 @@ if(window.txPending) return;
 window.txPending = true;
 
 document.querySelectorAll("#stakeButtons button").forEach(btn=>{
-btn.disabled = false;
+btn.disabled = true;
 });
 
 try {
@@ -773,7 +773,7 @@ document.getElementById('stakeDuration').value = "";
 
 window.txPending = false;
 
-document.querySelectorAll("button").forEach(btn=>{
+document.querySelectorAll("#stakeButtons button").forEach(btn=>{
 btn.disabled = false;
 });
 
