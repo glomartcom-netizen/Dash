@@ -920,33 +920,132 @@ async function updatePrice(){
 }
     
     async function showTab(type) {
-        const cont = document.getElementById('tabContent');
-        const f = ethers.utils.formatEther;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('active');
-        cont.innerHTML = "Loading...";
 
-        try {
-            if(type === 'stakes') {
-                const data = await contract.getStakeHistory(userAddress);
-                cont.innerHTML = data.length ? data.map(s => {
-                    // 🔄 Stake History UI with Date
-                    const date = new Date(s.start * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-                    return `<div class="p-3 bg-white/5 rounded-xl mt-1 flex justify-between items-center border border-white/5">
-                        <div><p class="font-bold text-amber-500">${f(s.amountDMX)} DMX</p><p class="text-[8px] text-gray-500">${date}</p></div>
-                        <span class="${s.active?'text-emerald-400':'text-red-400'} font-black">${s.active?'ACTIVE':'CLOSED'}</span>
-                    </div>`
-                }).reverse().join('') : "No Stakes";
-            } else if(type === 'claims') {
-                const data = await contract.getClaimHistory(userAddress);
-                cont.innerHTML = data.length ? data.map(c => `<div class="p-3 bg-white/5 rounded-xl mt-1 flex justify-between"><span>Claimed ${f(c.amount)} DMX</span><span class="text-gray-500">${new Date(c.timestamp*1000).toLocaleDateString()}</span></div>`).reverse().join('') : "No Claims";
-            } else {
-                const data = await contract.getDirects(userAddress);
-                cont.innerHTML = data.length ? data.map(a => `<div class="p-2 bg-white/5 rounded mt-1 truncate font-mono">${a}</div>`).join('') : "No Directs";
-            }
-        } catch(e) { cont.innerHTML = "Error Syncing."; }
-    }
+const cont = document.getElementById('tabContent');
+const f = ethers.utils.formatEther;
 
+document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+document.getElementById('tab' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('active');
+
+cont.innerHTML = "Loading...";
+
+try {
+
+if(type === 'stakes') {
+
+const data = await contract.getStakeHistory(userAddress);
+
+cont.innerHTML = data.length ? data.map(s => {
+
+const amount = f(s.amountDMX);
+
+const d = new Date(s.start * 1000);
+
+const date = d.toLocaleDateString();
+const time = d.toLocaleTimeString();
+
+return `
+<div class="p-3 bg-white/5 rounded-xl mt-2">
+
+<div class="text-amber-400 font-bold text-sm">
+${parseFloat(amount).toFixed(2)} DMX
+</div>
+
+<div class="text-xs text-gray-400">
+${date} | ${time}
+</div>
+
+</div>
+`;
+
+}).reverse().join('') : "No Stakes";
+
+}
+
+else if(type === 'claims') {
+
+const data = await contract.getClaimHistory(userAddress);
+
+cont.innerHTML = data.length ? data.map(c => {
+
+const amount = f(c.amount);
+
+const d = new Date(c.timestamp * 1000);
+
+const date = d.toLocaleDateString();
+const time = d.toLocaleTimeString();
+
+return `
+<div class="p-3 bg-white/5 rounded-xl mt-2">
+
+<div class="text-emerald-400 font-bold text-sm">
+${parseFloat(amount).toFixed(2)} DMX
+</div>
+
+<div class="text-xs text-gray-400">
+${date} | ${time}
+</div>
+
+</div>
+`;
+
+}).reverse().join('') : "No Claims";
+
+}
+
+else {
+
+const data = await contract.getDirects(userAddress);
+
+if(!data.length){
+cont.innerHTML = "No Directs";
+return;
+}
+
+let html = "";
+
+for(const addr of data){
+
+const info = await contract.users(addr);
+
+const stake = ethers.utils.formatEther(info[1] || 0);
+
+const join = new Date((info[2] || 0) * 1000);
+
+const date = join.toLocaleDateString();
+const time = join.toLocaleTimeString();
+
+html += `
+<div class="p-3 bg-white/5 rounded-xl mt-2">
+
+<div class="font-mono text-xs break-all text-amber-400">
+${addr}
+</div>
+
+<div class="text-xs text-gray-400">
+${date} | ${time}
+</div>
+
+<div class="text-sm text-emerald-400 font-bold">
+Stake: ${parseFloat(stake).toFixed(2)} DMX
+</div>
+
+</div>
+`;
+
+}
+
+cont.innerHTML = html;
+
+}
+
+} catch(e) {
+
+cont.innerHTML = "Error loading data";
+
+}
+
+}
     async function performStake(type) {
         
     window.txPending = window.txPending || false;
