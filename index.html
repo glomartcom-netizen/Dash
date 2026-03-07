@@ -630,9 +630,14 @@ const modal = createAppKit({
 
 window.appKitModal = modal;
 
-/* NETWORK / CONNECTION CHANGE */
 modal.subscribeState((state) => {
   if(state?.isConnected && window.syncWallet){
+    window.syncWallet();
+  }
+});
+
+modal.subscribeProvider((info) => {
+  if(info?.isConnected && window.syncWallet){
     window.syncWallet();
   }
 });
