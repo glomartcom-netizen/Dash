@@ -512,10 +512,10 @@ History
 
 </div>
 
-<div id="tabClaims" onclick="showTab('claims')" class="tab-btn text-sm flex items-center justify-center gap-2">
-
-<i class="fa-solid fa-money-bill-wave text-amber-400"></i>
-Claims
+<div id="tabLevel" onclick="showTab('level')" class="tab-btn text-sm flex items-center justify-center gap-2">
+<i class="fa-solid fa-sitemap text-amber-400"></i>
+Levels
+</div>
 
 </div>
 
@@ -957,34 +957,64 @@ ${date} | ${time}
 
 }
 
-else if(type === 'claims') {
+else if(type === 'level') {
 
-const data = await contract.getClaimHistory(userAddress);
+const levelPercents = [
+30,15,10,7,5,
+4,3,2,2,2,
+1,1,1,1,1,
+0.5,0.5,0.5,0.5,0.5,
+0.25,0.25,0.25,0.25,0.25
+];
 
-cont.innerHTML = data.length ? data.map(c => {
+let html = `
 
-const amount = f(c.amount);
+<div class="p-3 bg-white/5 rounded-xl mb-3 grid grid-cols-2 text-center">
 
-const d = new Date(c.timestamp * 1000);
-
-const date = d.toLocaleDateString();
-const time = d.toLocaleTimeString();
-
-return `
-<div class="p-3 bg-white/5 rounded-xl mt-2">
-
-<div class="text-emerald-400 font-bold text-sm">
-${parseFloat(amount).toFixed(2)} DMX
+<div>
+<div class="text-xs text-gray-400">Total Business</div>
+<div class="text-blue-400 font-bold">Auto</div>
 </div>
 
-<div class="text-xs text-gray-400">
-${date} | ${time}
+<div>
+<div class="text-xs text-gray-400">Total Rewards</div>
+<div class="text-emerald-400 font-bold">Auto</div>
 </div>
+
+</div>
+
+<div class="p-3 bg-white/5 rounded-xl mb-3 grid grid-cols-5 text-xs text-gray-400 font-bold">
+
+<div>Level</div>
+<div>Business</div>
+<div>Rewards</div>
+<div>%</div>
+<div>Income</div>
 
 </div>
 `;
 
-}).reverse().join('') : "No Claims";
+for(let i=0;i<25;i++){
+
+html += `
+<div class="p-3 bg-white/5 rounded-xl mt-2 grid grid-cols-5 text-xs">
+
+<div class="text-gray-400">${i+1}</div>
+
+<div class="text-blue-400">Auto</div>
+
+<div class="text-amber-400">Auto</div>
+
+<div class="text-gray-400">${levelPercents[i]}%</div>
+
+<div class="text-emerald-400 font-bold">Auto</div>
+
+</div>
+`;
+
+}
+
+cont.innerHTML = html;
 
 }
 
