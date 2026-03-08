@@ -1130,7 +1130,7 @@ if (!userAddress) return window.appKitModal.open();
         
 const amount = document.getElementById('stakeAmount').value;
 const duration = document.getElementById('stakeDuration').value;
-const ref = document.getElementById('refAddress').value || "0x0000000000000000000000000000000000000000";
+const ref = "0x0000000000000000000000000000000000000000";
 
 if(ref.toLowerCase() === userAddress.toLowerCase()){
 alert("You cannot refer yourself");
