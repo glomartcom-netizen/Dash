@@ -482,6 +482,12 @@ transition transform hover:scale-[1.02]">
 Claim Now (Min 100)
 </button>
 
+<!-- NEW CLAIM HISTORY BUTTON -->
+<button onclick="viewClaimHistory()"
+class="mt-3 text-xs text-amber-400 underline">
+View Claim History (BscScan)
+</button>
+
 </div>
 
 <div class="glass-card p-6 flex flex-col justify-center border border-emerald-500/10">
@@ -1218,6 +1224,7 @@ alert("Transaction Failed");
 
 }
     }
+
     
     function setAnnouncement(msg){
 document.getElementById("announcementText").innerText = msg;
@@ -1338,6 +1345,19 @@ window.appKitModal.open();
 }
 
 });
+    function viewClaimHistory(){
+
+if(!userAddress){
+alert("Connect wallet first");
+return;
+}
+
+window.open(
+"https://bscscan.com/address/" + userAddress + "#tokentxns",
+"_blank"
+);
+
+}
     
 </script>
 </body>
