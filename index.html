@@ -966,66 +966,66 @@ announceIndex = 0;
 rotateAnnouncement();  
 setInterval(rotateAnnouncement,6000);  
   
-window.claimRewards = async function() {  
-  
-if(maintenanceMode){  
-alert("Platform under maintenance");  
-return;  
-}  
-  
-const btn = document.getElementById("claimBtn");  
-  
-try {  
-  
-btn.disabled = true;  
-btn.innerText = "Claiming...";  
-  
-await (await contract.claim()).wait();  
-  
-refreshData();  
-  
-/* restore button */  
-btn.innerText = "Claim Now (Min 100)";  
-btn.disabled = false;  
-  
-} catch(e) {  
-  
-console.log(e);  
-  
-/* restore button */  
-btn.innerText = "Claim Now (Min 100)";  
-btn.disabled = false;  
-  
-alert("Transaction Failed");  
-  
-}  
-  
-}  
-window.restake = async function() {  
-  
-if(maintenanceMode){  
-alert("Platform under maintenance");  
-return;  
-}  
-  
-try {  
-  
-const btn = event.target;  
-btn.disabled = true;  
-  
-await (await contract.restake()).wait();  
-  
-refreshData();  
-  
-btn.disabled = false;  
-  
-} catch(e) {  
-  
-alert("Failed");  
-  
-}  
-  
-}  
+window.claimRewards = async function() {
+    if (window.txPending) return;
+    if (maintenanceMode) return alert("Platform is currently under maintenance.");
+    if (!contract) return alert("Please connect your wallet first.");
+
+    const btn = document.getElementById("claimBtn");
+    const originalText = "Claim Now (Min 100)";
+
+    try {
+        window.txPending = true;
+        btn.disabled = true;
+        btn.innerText = "Processing Claim...";
+        btn.classList.remove("claim-ready");
+
+        const tx = await contract.claim();
+        console.log("Claim transaction sent:", tx.hash);
+        
+        await tx.wait();
+
+        alert("Rewards claimed successfully! Check your wallet.");
+        refreshData();
+    } catch (error) {
+        console.error("Claim error:", error);
+        alert("Claim failed. Ensure you have BNB for gas and at least 100 DMX claimable.");
+    } finally {
+        window.txPending = false;
+        btn.disabled = false;
+        btn.innerText = originalText;
+        // The refreshData() in try block will re-add claim-ready class if balance is still > 100
+    }
+}
+
+window.restake = async function() {
+    if (window.txPending) return;
+    if (maintenanceMode) return alert("Platform is currently under maintenance.");
+    
+    const btn = event.currentTarget || event.target;
+    const originalText = "Restake + 5% Bonus";
+
+    try {
+        window.txPending = true;
+        btn.disabled = true;
+        btn.innerText = "Processing Restake...";
+
+        const tx = await contract.restake();
+        console.log("Restake transaction sent:", tx.hash);
+
+        await tx.wait();
+
+        alert("Restake Successful! Your +5% bonus has been added.");
+        refreshData();
+    } catch (error) {
+        console.error("Restake error:", error);
+        alert("Restake failed. Ensure you have claimable rewards available.");
+    } finally {
+        window.txPending = false;
+        btn.disabled = false;
+        btn.innerText = originalText;
+    }
+}
   
 window.copyRef = function() {   
 const c = document.getElementById("myRefLink");   
