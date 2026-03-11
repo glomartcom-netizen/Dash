@@ -186,43 +186,57 @@ Team Volume
 </p>  
 </div>   
 </div>  
-    <!-- STAKING -->  <div class="glass-card p-6 border border-amber-500/20">  <h3 class="text-sm text-amber-500 font-black uppercase mb-5 flex items-center gap-2">  
-<i class="fa-solid fa-layer-group text-amber-400"></i>  
-Live Staking  
-</h3>  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">  <div class="space-y-4">  <!-- Stake Amount -->  <label class="text-xs text-amber-400 font-bold uppercase tracking-wide">  
-Stake Amount  
-</label>  <input type="number"  
-inputmode="decimal"  
-step="0.01"  
-id="stakeAmount"  
-placeholder="Enter staking amount"  
-class="input-dark">
+    <!-- STAKING -->  
+<div class="glass-card p-6 border border-amber-500/20">
+    <h3 class="text-sm text-amber-500 font-black uppercase mb-5 flex items-center gap-2">
+        <i class="fa-solid fa-layer-group text-amber-400"></i> Live Staking
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="space-y-4">
+            <label class="text-xs text-amber-400 font-bold uppercase tracking-wide">
+                Stake Amount (DMX Units)
+            </label>
+            <input type="number" inputmode="decimal" id="stakeAmount" placeholder="Enter DMX quantity" class="input-dark">
+            
+            <p id="usdtEstimate" class="text-[11px] text-emerald-400 font-bold italic h-4 mt-[-12px]"></p>
 
-<div class="flex gap-4 text-xs text-gray-400">  
-<span>Min USDT (BEP20) : 25</span>  
-<span>Min DMX : 5000</span>  
-</div>  <!-- Plan -->  <label class="text-xs text-amber-400 font-bold uppercase tracking-wide">  
-Select Plan  
-</label>  <select id="stakeDuration" class="input-dark">  
-<option value="">Choose Staking Plan</option>  
-<option value="7776000">90 Days • 0.20% Daily</option>  
-<option value="15552000">180 Days • 0.25% Daily</option>  
-<option value="31536000">365 Days • 0.30% Daily</option>  
-</select>  </div>  <div id="stakeButtons" class="flex flex-col gap-3">  <button onclick="performStake('USDT')"  
-class="flex items-center justify-center gap-2 py-4 rounded-xl text-sm uppercase w-full font-black text-white  
-bg-gradient-to-r from-emerald-500 to-green-700  
-shadow-lg hover:shadow-emerald-500/40  
-transition transform hover:scale-[1.02]">
+            <div class="flex flex-col gap-1 text-[10px] text-gray-400 bg-white/5 p-2 rounded-lg">
+                <div class="flex justify-between">
+                    <span>Minimum Stake:</span>
+                    <span class="text-amber-400 font-bold">2500 DMX</span>
+                </div>
+            </div>
 
-<img src="https://assets.coingecko.com/coins/images/325/small/Tether.png" class="w-5 h-5">  
-Stake USDT  </button>  <button onclick="performStake('DMX')"  
-class="flex items-center justify-center gap-2 py-4 rounded-xl text-sm uppercase w-full font-black text-black  
-bg-gradient-to-r from-amber-400 to-orange-500  
-shadow-lg hover:shadow-amber-500/40  
-transition transform hover:scale-[1.02]">
+            <label class="text-xs text-amber-400 font-bold uppercase tracking-wide">
+                Select Plan
+            </label>
+            <select id="stakeDuration" class="input-dark">
+                <option value="">Choose Staking Plan</option>
+                <option value="7776000">90 Days • 0.20% Daily</option>
+                <option value="15552000">180 Days • 0.25% Daily</option>
+                <option value="31536000">365 Days • 0.30% Daily</option>
+            </select>
+        </div>
 
-<img src="https://i.ibb.co/HpqwGFqt/logo.png" class="w-5 h-5">  
-Stake DMX  </button>  </div>  </div>  </div>  <!-- PROGRESS -->
+        <div id="stakeButtons" class="flex flex-col gap-3">
+            <button id="btnStakeUSDT" onclick="performStake('USDT')" 
+                class="flex items-center justify-center gap-2 py-4 rounded-xl text-sm uppercase w-full font-black text-white 
+                bg-gradient-to-r from-emerald-500 to-green-700 shadow-lg hover:shadow-emerald-500/40 transition transform hover:scale-[1.02]">
+                <img src="https://assets.coingecko.com/coins/images/325/small/Tether.png" class="w-5 h-5"> 
+                Stake with USDT
+            </button>
+
+            <button id="btnStakeDMX" onclick="performStake('DMX')" 
+                class="flex items-center justify-center gap-2 py-4 rounded-xl text-sm uppercase w-full font-black text-black 
+                bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg hover:shadow-amber-500/40 transition transform hover:scale-[1.02]">
+                <img src="https://i.ibb.co/HpqwGFqt/logo.png" class="w-5 h-5"> 
+                Stake with DMX
+            </button>
+        </div>
+    </div>
+</div>  
+    
+    <!-- PROGRESS -->
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">  <div class="glass-card p-6">  <div class="flex justify-between items-end mb-3">  <p class="text-sm text-gray-400 font-bold uppercase flex items-center gap-2">  <i class="fa-solid fa-chart-line text-amber-400"></i>
 4X Income Progress
