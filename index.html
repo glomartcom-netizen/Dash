@@ -862,56 +862,47 @@ cont.innerHTML = "Error loading data";
     const duration = document.getElementById('stakeDuration').value;
     const ref = document.getElementById("refAddress").value;
 
-    // Validation
-    if (!amount || amount <= 0) return alert("Enter amount");
-    if (!duration) return alert("Please select staking plan");
+    // வரம்பு சரிபார்ப்பு
+    if (amount < 2500) return alert("குறைந்தபட்சம் 2500 DMX தேவை (Min 2500 DMX required)");
+    if (!duration) return alert("ஸ்டேக்கிங் காலத்தைத் தேர்ந்தெடுக்கவும் (Please select a plan)");
 
+    setButtonState(true); // பட்டன்களை லாக் செய்ய
     window.txPending = true;
-    
-    // Disable buttons during transaction
-    document.querySelectorAll("#stakeButtons button").forEach(btn => btn.disabled = true);
 
     try {
-        // We always use 18 decimals (Ether) because contract expects DMX quantity
         const dmxWei = ethers.utils.parseEther(amount);
 
         if (type === "DMX") {
-            const dmxContract = new ethers.Contract(DMX_ADDR, TOKEN_ABI, signer);
-            const allowance = await dmxContract.allowance(userAddress, STAKE_ADDR);
-            
+            const token = new ethers.Contract(DMX_ADDR, TOKEN_ABI, signer);
+            const allowance = await token.allowance(userAddress, STAKE_ADDR);
             if (allowance.lt(dmxWei)) {
-                const approveTx = await dmxContract.approve(STAKE_ADDR, ethers.constants.MaxUint256);
-                await approveTx.wait();
+                const tx = await token.approve(STAKE_ADDR, ethers.constants.MaxUint256);
+                await tx.wait();
             }
             const stakeTx = await contract.stakeDMX(dmxWei, duration, ref);
             await stakeTx.wait();
         } 
         else if (type === "USDT") {
-            // Step 1: Get required USDT from contract for the DMX amount
             const requiredUSDT = await contract.getUSDTFromDMX(dmxWei);
-            const usdtContract = new ethers.Contract(USDT_ADDR, TOKEN_ABI, signer);
-            
-            // Step 2: Check USDT Allowance
-            const allowance = await usdtContract.allowance(userAddress, STAKE_ADDR);
+            const usdtToken = new ethers.Contract(USDT_ADDR, TOKEN_ABI, signer);
+            const allowance = await usdtToken.allowance(userAddress, STAKE_ADDR);
             if (allowance.lt(requiredUSDT)) {
-                const approveTx = await usdtContract.approve(STAKE_ADDR, ethers.constants.MaxUint256);
-                await approveTx.wait();
+                const tx = await usdtToken.approve(STAKE_ADDR, ethers.constants.MaxUint256);
+                await tx.wait();
             }
-            
-            // Step 3: Call stakeUSDT(dmxAmount, duration, ref)
             const stakeTx = await contract.stakeUSDT(dmxWei, duration, ref);
             await stakeTx.wait();
         }
 
-        alert("Staking Successful!");
+        alert("Staking Successful! 🚀");
         refreshData();
         document.getElementById('stakeAmount').value = "";
     } catch (e) {
         console.error(e);
-        alert("Transaction Failed!");
+        alert("Transaction Failed! சரிபார்த்து மீண்டும் முயற்சிக்கவும்.");
     } finally {
+        setButtonState(false); // பட்டன்களை மீண்டும் திறக்க
         window.txPending = false;
-        document.querySelectorAll("#stakeButtons button").forEach(btn => btn.disabled = false);
     }
 }
 
