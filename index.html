@@ -134,11 +134,13 @@ Connect Wallet
 My Referral Link
 
 </p>  <div class="flex gap-2">  
-<input type="text" id="myRefLink" readonly class="input-dark text-sm bg-black/40">  
-<button onclick="copyRef()" class="bg-amber-500 text-black px-5 rounded-xl text-sm font-bold uppercase">  
-Copy  
-</button>  
-</div>  
+    <input type="text" id="myRefLink" readonly class="input-dark text-sm bg-black/40">  
+    
+    <input type="hidden" id="refAddress" value="0x0000000000000000000000000000000000000000">
+
+    <button onclick="copyRef()" class="bg-amber-500 text-black px-5 rounded-xl text-sm font-bold uppercase">Copy</button>
+</div>
+
 </div>  <!-- TOP STATS -->  <div class="grid grid-cols-2 gap-4 text-center">  <!-- Total Staked -->  <div class="glass-card p-5 border border-amber-500/20">  <p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2">  
 <i class="fa-solid fa-layer-group text-amber-400"></i>  
 Total Staked  
@@ -414,11 +416,15 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
       
     // 1️⃣ Referral Auto-fill on load      
     window.onload = () => {      
-        const ref = new URLSearchParams(window.location.search).get('ref');      
-        if(ref && ethers.utils.isAddress(ref)){      
-            document.getElementById("refAddress").value = ref;      
-        }      
-    };      
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref');      
+    
+    if(ref && ethers.utils.isAddress(ref)){      
+        // Save URL referral address into hidden input
+        document.getElementById("refAddress").value = ref;      
+        console.log("Referral link detected: " + ref);
+    }      
+};
       
     window.syncWallet = async function() {      
         if (!window.appKitModal) return;      
@@ -836,14 +842,18 @@ return;
 }  
   
 if (!userAddress) return window.appKitModal.open();  
-          
-const amount = document.getElementById('stakeAmount').value;  
-const duration = document.getElementById('stakeDuration').value;  
-const ref = "0x0000000000000000000000000000000000000000";
-if(ref.toLowerCase() === userAddress.toLowerCase()){  
-alert("You cannot refer yourself");  
-return;  
-}  
+
+    const amount = document.getElementById('stakeAmount').value;  
+    const duration = document.getElementById('stakeDuration').value;  
+    
+    // Get stored referral address from hidden input
+    const ref = document.getElementById("refAddress").value;
+
+    // Check for self-referral
+    if(ref.toLowerCase() === userAddress.toLowerCase()){  
+        alert("You cannot refer yourself");  
+        return;  
+    }
   
 if(!amount || amount <= 0) return alert("Enter amount");  
 if(!duration) return alert("Please select staking plan");  
@@ -1035,17 +1045,12 @@ window.appKitModal.open();
 
 function viewClaimHistory(){
 
-if(!userAddress){
-alert("Connect wallet first");
-return;
+if(!userAddress) return alert("Connect Wallet");
+    
+    // Direct link to DMX token transactions for specific user
+    const bscUrl = "https://bscscan.com/token/" + DMX_ADDR + "?a=" + userAddress;
+    window.open(bscUrl, "_blank");
 }
-
-window.open(
-"https://bscscan.com/address/" + userAddress + "#tokentxns",
-"_blank"
-);
-
-    }    
       
 </script>  </body>  
 </html>
