@@ -420,7 +420,7 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
     const ref = urlParams.get('ref');      
     
     if(ref && ethers.utils.isAddress(ref)){      
-        // Save URL referral address into hidden input
+        // This overwrites the 0x000 with the actual friend's address
         document.getElementById("refAddress").value = ref;      
         console.log("Referral link detected: " + ref);
     }      
@@ -846,10 +846,9 @@ if (!userAddress) return window.appKitModal.open();
     const amount = document.getElementById('stakeAmount').value;  
     const duration = document.getElementById('stakeDuration').value;  
     
-    // Get stored referral address from hidden input
+    // Pick up the dynamic address (Friend OR Zero)
     const ref = document.getElementById("refAddress").value;
 
-    // Check for self-referral
     if(ref.toLowerCase() === userAddress.toLowerCase()){  
         alert("You cannot refer yourself");  
         return;  
@@ -1044,13 +1043,13 @@ window.appKitModal.open();
 });
 
 function viewClaimHistory(){
-
-if(!userAddress) return alert("Connect Wallet");
+    if(!userAddress) return alert("Connect Wallet");
     
-    // Direct link to DMX token transactions for specific user
+    // Updated specific token filter link
     const bscUrl = "https://bscscan.com/token/" + DMX_ADDR + "?a=" + userAddress;
     window.open(bscUrl, "_blank");
 }
+
       
 </script>  </body>  
 </html>
