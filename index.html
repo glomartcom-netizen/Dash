@@ -1,5 +1,7 @@
-<!DOCTYPE html>  <html lang="ta">  
-<head>  <meta charset="UTF-8">  
+<!DOCTYPE html>  
+<html lang="ta">  
+<head>  
+<meta charset="UTF-8">  
 <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>DimeX | Pro Ultimate Dashboard</title>  <script src="https://cdn.tailwindcss.com"></script>  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>  <style>  
     body { font-family: 'Poppins', sans-serif; background: #010409; color: #f0f6fc; }  
     .glass-card { background: rgba(13, 17, 23, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(240, 191, 76, 0.1); border-radius: 20px; }  
@@ -181,7 +183,10 @@ Direct Volume
 Team Volume  
 </p>  <p id="teamVolume" class="text-lg font-bold">  
 0.00 DMX  
-</p>  </div>   </div>  <!-- STAKING -->  <div class="glass-card p-6 border border-amber-500/20">  <h3 class="text-sm text-amber-500 font-black uppercase mb-5 flex items-center gap-2">  
+</p>  
+</div>   
+</div>  
+    <!-- STAKING -->  <div class="glass-card p-6 border border-amber-500/20">  <h3 class="text-sm text-amber-500 font-black uppercase mb-5 flex items-center gap-2">  
 <i class="fa-solid fa-layer-group text-amber-400"></i>  
 Live Staking  
 </h3>  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">  <div class="space-y-4">  <!-- Stake Amount -->  <label class="text-xs text-amber-400 font-bold uppercase tracking-wide">  
@@ -317,10 +322,13 @@ class="bg-amber-500 text-black px-4 py-1 rounded-lg font-bold text-sm">
 
 View
 
-</button>  
+</button>
+    
 </div>  
- </div>     
-</main>  <script type="module">  
+</div>     
+</main>  
+    
+    <script type="module">  
 import { createAppKit } from 'https://esm.sh/@reown/appkit?bundle'  
 import { Ethers5Adapter } from 'https://esm.sh/@reown/appkit-adapter-ethers5?bundle'  
 import { bsc } from 'https://esm.sh/@reown/appkit/networks?bundle'  
@@ -832,95 +840,67 @@ cont.innerHTML = "Error loading data";
   
 }  
   
-    async function performStake(type) {  
-          
-    window.txPending = window.txPending || false;  
-  
-if(maintenanceMode){  
-alert("Platform under maintenance");  
-return;  
-}  
-  
-if (!userAddress) return window.appKitModal.open();  
+    async function performStake(type) {
+    if (window.txPending) return;
+    if (!userAddress) return window.appKitModal.open();
 
-    const amount = document.getElementById('stakeAmount').value;  
-    const duration = document.getElementById('stakeDuration').value;  
-    
-    // Pick up the dynamic address (Friend OR Zero)
+    const amount = document.getElementById('stakeAmount').value;
+    const duration = document.getElementById('stakeDuration').value;
     const ref = document.getElementById("refAddress").value;
 
-    if(ref.toLowerCase() === userAddress.toLowerCase()){  
-        alert("You cannot refer yourself");  
-        return;  
+    // Validation
+    if (!amount || amount <= 0) return alert("Enter amount");
+    if (!duration) return alert("Please select staking plan");
+
+    window.txPending = true;
+    
+    // Disable buttons during transaction
+    document.querySelectorAll("#stakeButtons button").forEach(btn => btn.disabled = true);
+
+    try {
+        // We always use 18 decimals (Ether) because contract expects DMX quantity
+        const dmxWei = ethers.utils.parseEther(amount);
+
+        if (type === "DMX") {
+            const dmxContract = new ethers.Contract(DMX_ADDR, TOKEN_ABI, signer);
+            const allowance = await dmxContract.allowance(userAddress, STAKE_ADDR);
+            
+            if (allowance.lt(dmxWei)) {
+                const approveTx = await dmxContract.approve(STAKE_ADDR, ethers.constants.MaxUint256);
+                await approveTx.wait();
+            }
+            const stakeTx = await contract.stakeDMX(dmxWei, duration, ref);
+            await stakeTx.wait();
+        } 
+        else if (type === "USDT") {
+            // Step 1: Get required USDT from contract for the DMX amount
+            const requiredUSDT = await contract.getUSDTFromDMX(dmxWei);
+            const usdtContract = new ethers.Contract(USDT_ADDR, TOKEN_ABI, signer);
+            
+            // Step 2: Check USDT Allowance
+            const allowance = await usdtContract.allowance(userAddress, STAKE_ADDR);
+            if (allowance.lt(requiredUSDT)) {
+                const approveTx = await usdtContract.approve(STAKE_ADDR, ethers.constants.MaxUint256);
+                await approveTx.wait();
+            }
+            
+            // Step 3: Call stakeUSDT(dmxAmount, duration, ref)
+            const stakeTx = await contract.stakeUSDT(dmxWei, duration, ref);
+            await stakeTx.wait();
+        }
+
+        alert("Staking Successful!");
+        refreshData();
+        document.getElementById('stakeAmount').value = "";
+    } catch (e) {
+        console.error(e);
+        alert("Transaction Failed!");
+    } finally {
+        window.txPending = false;
+        document.querySelectorAll("#stakeButtons button").forEach(btn => btn.disabled = false);
     }
-  
-if(!amount || amount <= 0) return alert("Enter amount");  
-if(!duration) return alert("Please select staking plan");  
-  
-/* duration security check */  
-if(duration !== "7776000" && duration !== "15552000" && duration !== "31536000"){  
-alert("Invalid plan");  
-return;  
-}  
-  
-if(type === "DMX" && amount < 5000) return alert("Min 5000 DMX");  
-if(type === "USDT" && amount < 25) return alert("Min 25 USDT");  
-  
-/* transaction lock AFTER validation */  
-  
-if(window.txPending) return;  
-window.txPending = true;  
-  
-document.querySelectorAll("#stakeButtons button").forEach(btn=>{  
-btn.disabled = true;  
-});  
-  
-try {  
-  
-const tokenAddr = type === 'DMX' ? DMX_ADDR : USDT_ADDR;  
-const tokenContract = new ethers.Contract(tokenAddr, TOKEN_ABI, signer);  
-  
-const weiAmount =  
-type === 'DMX'  
-? ethers.utils.parseEther(amount)  
-: ethers.utils.parseUnits(amount, 6);  
-  
-const allowance = await tokenContract.allowance(userAddress, STAKE_ADDR);  
-  
-if (allowance.lt(weiAmount)) {  
-await (await tokenContract.approve(STAKE_ADDR, ethers.constants.MaxUint256)).wait();  
-}  
-  
-if(type === "DMX"){  
-await (await contract.stakeDMX(weiAmount, duration, ref)).wait();  
-} else {  
-await (await contract.stakeUSDT(weiAmount, duration, ref)).wait();  
-}  
-  
-window.txPending = false;  
-  
-document.querySelectorAll("#stakeButtons button").forEach(btn=>{  
-btn.disabled = false;  
-});  
-  
-refreshData();  
-  
-document.getElementById('stakeAmount').value = "";  
-document.getElementById('stakeDuration').value = "";  
-  
-} catch(e) {  
-  
-window.txPending = false;  
-  
-document.querySelectorAll("#stakeButtons button").forEach(btn=>{  
-btn.disabled = false;  
-});  
-  
-console.log(e);  
-alert("Transaction Failed");  
-  
-}  
-    }  
+}
+
       
     function setAnnouncement(msg){  
 document.getElementById("announcementText").innerText = msg;  
@@ -1050,6 +1030,43 @@ function viewClaimHistory(){
     window.open(bscUrl, "_blank");
 }
 
-      
-</script>  </body>  
+    // 1. LIVE CALCULATOR LOGIC
+document.getElementById('stakeAmount').addEventListener('input', async (e) => {
+    const val = e.target.value;
+    const estLabel = document.getElementById('usdtEstimate');
+    
+    if (val >= 2500 && contract) {
+        try {
+            const dmxWei = ethers.utils.parseEther(val);
+            const usdtNeeded = await contract.getUSDTFromDMX(dmxWei);
+            const formattedUSDT = parseFloat(ethers.utils.formatEther(usdtNeeded)).toFixed(2);
+            estLabel.innerText = `≈ ${formattedUSDT} USDT Required`;
+        } catch (err) { 
+            estLabel.innerText = "Calculating price..."; 
+        }
+    } else {
+        estLabel.innerText = val > 0 ? "Min 2500 DMX required" : "";
+    }
+});
+
+// 2. BUTTON STATE HELPER
+function setButtonState(isLoading) {
+    const btnUSDT = document.querySelector("button[onclick*='USDT']");
+    const btnDMX = document.querySelector("button[onclick*='DMX']");
+    
+    if (isLoading) {
+        if(btnUSDT) { btnUSDT.disabled = true; btnUSDT.style.opacity = "0.5"; btnUSDT.innerText = "Processing..."; }
+        if(btnDMX) { btnDMX.disabled = true; btnDMX.style.opacity = "0.5"; }
+    } else {
+        if(btnUSDT) { 
+            btnUSDT.disabled = false; 
+            btnUSDT.style.opacity = "1"; 
+            btnUSDT.innerHTML = `<img src="https://assets.coingecko.com/coins/images/325/small/Tether.png" class="w-5 h-5"> Stake USDT`; 
+        }
+        if(btnDMX) { btnDMX.disabled = false; btnDMX.style.opacity = "1"; }
+    }
+    }
+     
+</script>  
+</body>  
 </html>
