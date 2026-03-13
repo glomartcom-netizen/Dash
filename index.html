@@ -170,6 +170,8 @@ type="number"
 placeholder="Enter USDT amount"
 class="input-dark bg-black/40 w-full">
 
+<p id="buyPreview" class="text-xs text-cyan-400 font-bold"></p>
+
 <button onclick="buyDMX()"
 class="bg-green-600 w-full py-2 rounded-xl font-bold">
 
@@ -1201,6 +1203,36 @@ window.appKitModal.open();
 }  
   
 });
+
+document.getElementById("buyUSDT").addEventListener("input", async function(){
+
+if(!contract) return;
+
+const val = this.value;
+
+if(!val || val <= 0){
+document.getElementById("buyPreview").innerText = "";
+return;
+}
+
+try{
+
+const usdtWei = ethers.utils.parseUnits(val,18);
+
+const dmxAmount = await contract.getDMXFromUSDT(usdtWei);
+
+const formatted = ethers.utils.formatEther(dmxAmount);
+
+document.getElementById("buyPreview").innerText =
+"≈ " + parseFloat(formatted).toFixed(4) + " DMX";
+
+}catch(e){
+
+document.getElementById("buyPreview").innerText = "Calculating...";
+
+}
+
+});            
 
 function viewClaimHistory(){
     if(!userAddress) return alert("Connect Wallet");
