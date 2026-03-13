@@ -143,6 +143,71 @@ My Referral Link
     <button onclick="copyRef()" class="bg-amber-500 text-black px-5 rounded-xl text-sm font-bold uppercase">Copy</button>
 </div>
 
+<!-- DMX SWAP -->
+
+<div id="swapBox" class="glass-card p-5 border border-cyan-500/20">
+
+<p class="text-sm text-gray-400 font-bold uppercase mb-4 flex items-center gap-2">
+
+💱 Swap DMX
+
+</p>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+<!-- BUY DMX -->
+
+<div class="space-y-2">
+
+<p class="text-xs text-green-400 font-bold uppercase">
+
+Buy DMX (USDT → DMX)
+
+</p>
+
+<input id="buyUSDT"
+type="number"
+placeholder="Enter USDT amount"
+class="input-dark bg-black/40 w-full">
+
+<button onclick="buyDMX()"
+class="bg-green-600 w-full py-2 rounded-xl font-bold">
+
+BUY DMX
+
+</button>
+
+</div>
+
+
+<!-- SELL DMX -->
+
+<div class="space-y-2">
+
+<p class="text-xs text-red-400 font-bold uppercase">
+
+Sell DMX (DMX → USDT)
+
+</p>
+
+<input id="sellDMXAmount"
+type="number"
+placeholder="Enter DMX amount"
+class="input-dark bg-black/40 w-full">
+
+<button onclick="sellDMX()"
+class="bg-red-600 w-full py-2 rounded-xl font-bold">
+
+SELL DMX
+
+</button>
+
+</div>
+
+</div>
+
+</div>    
+
 </div>  <!-- TOP STATS -->  <div class="grid grid-cols-2 gap-4 text-center">  <!-- Total Staked -->  <div class="glass-card p-5 border border-amber-500/20">  <p class="text-sm text-gray-400 font-bold uppercase flex items-center justify-center gap-2">  
 <i class="fa-solid fa-layer-group text-amber-400"></i>  
 Total Staked  
@@ -926,6 +991,74 @@ cont.innerHTML = "Error loading data";
     }
 }
 
+async function buyDMX(){
+
+try{
+
+const amt = document.getElementById("buyUSDT").value;
+
+const usdtAddr = await contract.usdt();
+
+const usdt = new ethers.Contract(
+usdtAddr,
+["function approve(address,uint256)"],
+signer
+);
+
+await usdt.approve(
+contractAddress,
+ethers.utils.parseUnits(amt,18)
+);
+
+await contract.buyDMX(
+ethers.utils.parseUnits(amt,18)
+);
+
+alert("DMX Purchased");
+
+}catch(e){
+
+console.error(e);
+alert("Buy failed");
+
+}
+
+}
+
+    async function sellDMX(){
+
+try{
+
+const amt = document.getElementById("sellDMXAmount").value;
+
+const dmxAddr = await contract.dmx();
+
+const dmx = new ethers.Contract(
+dmxAddr,
+["function approve(address,uint256)"],
+signer
+);
+
+await dmx.approve(
+contractAddress,
+ethers.utils.parseUnits(amt,18)
+);
+
+await contract.sellDMX(
+ethers.utils.parseUnits(amt,18)
+);
+
+alert("DMX Sold");
+
+}catch(e){
+
+console.error(e);
+alert("Sell failed");
+
+}
+
+    }
+        
       
     function setAnnouncement(msg){  
 document.getElementById("announcementText").innerText = msg;  
