@@ -1002,6 +1002,11 @@ async function buyDMX(){
 
 try{
 
+if(!contract){
+alert("Connect wallet first");
+return;
+}
+
 const amt = document.getElementById("buyUSDT").value;
 
 if(!amt || amt <= 0){
@@ -1013,18 +1018,36 @@ const usdtAddr = await contract.usdt();
 
 const usdt = new ethers.Contract(
 usdtAddr,
-["function approve(address,uint256)"],
+[
+"function approve(address,uint256)",
+"function allowance(address,address) view returns(uint256)"
+],
 signer
 );
 
 const amountWei = ethers.utils.parseUnits(amt,18);
 
+/* CHECK ALLOWANCE FIRST */
+
+const allowance = await usdt.allowance(
+userAddress,
+STAKE_ADDR
+);
+
+/* APPROVE ONLY IF NEEDED */
+
+if(allowance.lt(amountWei)){
+
 const approveTx = await usdt.approve(
 STAKE_ADDR,
-amountWei
+ethers.constants.MaxUint256
 );
 
 await approveTx.wait();
+
+}
+
+/* BUY DMX */
 
 const tx = await contract.buyDMX(amountWei);
 
@@ -1040,9 +1063,15 @@ alert("Buy failed");
 }
 
 }
+    
     async function sellDMX(){
 
 try{
+
+if(!contract){
+alert("Connect wallet first");
+return;
+}
 
 const amt = document.getElementById("sellDMXAmount").value;
 
@@ -1055,18 +1084,36 @@ const dmxAddr = await contract.dmx();
 
 const dmx = new ethers.Contract(
 dmxAddr,
-["function approve(address,uint256)"],
+[
+"function approve(address,uint256)",
+"function allowance(address,address) view returns(uint256)"
+],
 signer
 );
 
 const amountWei = ethers.utils.parseUnits(amt,18);
 
+/* CHECK ALLOWANCE */
+
+const allowance = await dmx.allowance(
+userAddress,
+STAKE_ADDR
+);
+
+/* APPROVE ONLY IF NEEDED */
+
+if(allowance.lt(amountWei)){
+
 const approveTx = await dmx.approve(
 STAKE_ADDR,
-amountWei
+ethers.constants.MaxUint256
 );
 
 await approveTx.wait();
+
+}
+
+/* SELL DMX */
 
 const tx = await contract.sellDMX(amountWei);
 
