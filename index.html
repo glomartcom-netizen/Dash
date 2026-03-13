@@ -1002,6 +1002,11 @@ try{
 
 const amt = document.getElementById("buyUSDT").value;
 
+if(!amt || amt <= 0){
+alert("Enter valid USDT amount");
+return;
+}
+
 const usdtAddr = await contract.usdt();
 
 const usdt = new ethers.Contract(
@@ -1010,16 +1015,20 @@ usdtAddr,
 signer
 );
 
-await usdt.approve(
-contractAddress,
-ethers.utils.parseUnits(amt,18)
+const amountWei = ethers.utils.parseUnits(amt,18);
+
+const approveTx = await usdt.approve(
+STAKE_ADDR,
+amountWei
 );
 
-await contract.buyDMX(
-ethers.utils.parseUnits(amt,18)
-);
+await approveTx.wait();
 
-alert("DMX Purchased");
+const tx = await contract.buyDMX(amountWei);
+
+await tx.wait();
+
+alert("DMX Purchased Successfully");
 
 }catch(e){
 
@@ -1029,12 +1038,16 @@ alert("Buy failed");
 }
 
 }
-
     async function sellDMX(){
 
 try{
 
 const amt = document.getElementById("sellDMXAmount").value;
+
+if(!amt || amt <= 0){
+alert("Enter valid DMX amount");
+return;
+}
 
 const dmxAddr = await contract.dmx();
 
@@ -1044,16 +1057,20 @@ dmxAddr,
 signer
 );
 
-await dmx.approve(
-contractAddress,
-ethers.utils.parseUnits(amt,18)
+const amountWei = ethers.utils.parseUnits(amt,18);
+
+const approveTx = await dmx.approve(
+STAKE_ADDR,
+amountWei
 );
 
-await contract.sellDMX(
-ethers.utils.parseUnits(amt,18)
-);
+await approveTx.wait();
 
-alert("DMX Sold");
+const tx = await contract.sellDMX(amountWei);
+
+await tx.wait();
+
+alert("DMX Sold Successfully");
 
 }catch(e){
 
@@ -1062,7 +1079,7 @@ alert("Sell failed");
 
 }
 
-    }
+}
         
       
     function setAnnouncement(msg){  
