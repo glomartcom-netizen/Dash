@@ -665,31 +665,31 @@ banner.classList.add("hidden");
   
     }  
   
-async function updatePrice(){  
-  
-    if(!contract) return; // safety  
-  
-    try{  
-  
-        const price = await contract.getDMXFromUSDT(  
-            ethers.utils.parseUnits("1",6)  
-        );  
-  
-        const formatted = ethers.utils.formatEther(price);  
-  
-        document.getElementById("livePriceUser").innerText =  
-        parseFloat(formatted).toFixed(4) + " DMX";  
-  
-        const mode = await contract.isManualPrice();  
-  
-        document.getElementById("priceModeUser").innerText =  
-        mode ? "Manual" : "LP Based";  
-  
-    }catch(e){  
-        console.log("Price sync...");  
-    }  
-  
-}  
+async function updatePrice(){
+
+if(!contract) return;
+
+try{
+
+const price = await contract.getDMXFromUSDT(
+ethers.utils.parseUnits("1",18)
+);
+
+const formatted = ethers.utils.formatEther(price);
+
+document.getElementById("livePriceUser").innerText =
+parseFloat(formatted).toFixed(4) + " DMX";
+
+const mode = await contract.isManualPrice();
+
+document.getElementById("priceModeUser").innerText =
+mode ? "Manual" : "LP Based";
+
+}catch(e){
+console.log("Price sync...");
+}
+
+}
   
     async function updateRewardPool(){  
   
@@ -1206,7 +1206,10 @@ window.appKitModal.open();
 
 document.getElementById("buyUSDT").addEventListener("input", async function(){
 
-if(!contract) return;
+if(!contract){
+document.getElementById("buyPreview").innerText = "Connect wallet...";
+return;
+}
 
 const val = this.value;
 
@@ -1232,7 +1235,7 @@ document.getElementById("buyPreview").innerText = "Calculating...";
 
 }
 
-});            
+});
 
 function viewClaimHistory(){
     if(!userAddress) return alert("Connect Wallet");
