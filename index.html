@@ -512,16 +512,17 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
      let provider, signer, contract, userAddress;      
       
     // 1️⃣ Referral Auto-fill on load      
-    window.onload = () => {      
+    window.addEventListener("load", () => {
+
     const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get('ref');      
-    
-    if(ref && ethers.utils.isAddress(ref)){      
-        // This overwrites the 0x000 with the actual friend's address
-        document.getElementById("refAddress").value = ref;      
+    const ref = urlParams.get('ref');
+
+    if(ref && ethers.utils.isAddress(ref)){
+        document.getElementById("refAddress").value = ref;
         console.log("Referral link detected: " + ref);
-    }      
-};
+    }
+
+});
       
     window.syncWallet = async function () {
 
