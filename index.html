@@ -589,26 +589,41 @@ console.log("Dashboard sync error");
             const stats = await contract.getFullDashboardStats(userAddress);  
             const u = await contract.users(userAddress);   
   
-document.getElementById('dailyReward').innerText = f(stats[7]);   
-document.getElementById('directIncome').innerText = f(stats[2]);  
-document.getElementById('levelIncome').innerText = f(stats[3]);  
-document.getElementById('totalEarned').innerText = f(stats[1]);  
-document.getElementById('claimableAmt').innerText = parseFloat(f(stats[7])).toFixed(2);  
-document.getElementById('directVolume').innerText = parseFloat(f(stats[4])).toFixed(0) + " DMX";  
-document.getElementById('teamVolume').innerText = parseFloat(f(stats[5])).toFixed(0) + " DMX";  
-document.getElementById("myTotalStake").innerText = f(stats[0]);  
-              
-/* claim button control + glow */  
-const claimable = parseFloat(f(stats[7]));  
-const claimBtn = document.getElementById('claimBtn');  
-  
-claimBtn.disabled = claimable < 100;  
-  
-if(claimable >= 100){  
-claimBtn.classList.add("claim-ready");  
-}else{  
-claimBtn.classList.remove("claim-ready");  
-}  
+// MAIN VALUES
+document.getElementById("myTotalStake").innerText = f(stats[0]);
+
+document.getElementById("directIncome").innerText = f(stats[2]);
+document.getElementById("levelIncome").innerText = f(stats[3]);
+document.getElementById("totalEarned").innerText = f(stats[1]);
+
+document.getElementById("directVolume").innerText =
+    parseFloat(f(stats[4])).toFixed(0) + " DMX";
+
+document.getElementById("teamVolume").innerText =
+    parseFloat(f(stats[5])).toFixed(0) + " DMX";
+
+
+// ✅ CLAIMABLE (correct)
+const claimable = parseFloat(f(stats[7]));
+document.getElementById("claimableAmt").innerText =
+    claimable.toFixed(2);
+
+
+// ✅ DAILY REWARD (ESTIMATE FIX)
+const daily = (parseFloat(f(stats[0])) * 0.002).toFixed(2); // 0.2%
+document.getElementById("dailyReward").innerText = daily;
+
+
+// CLAIM BUTTON CONTROL
+const claimBtn = document.getElementById("claimBtn");
+
+claimBtn.disabled = claimable < 100;
+
+if (claimable >= 100) {
+    claimBtn.classList.add("claim-ready");
+} else {
+    claimBtn.classList.remove("claim-ready");
+}
   
 const earned = parseFloat(f(stats[1])), cap = parseFloat(f(stats[8]));  
 const prog = cap > 0 ? Math.min((earned / cap) * 100, 100) : 0;  
@@ -762,65 +777,57 @@ ${date} | ${time}
 }  
   
 else if(type === 'level') {  
-  
-const levelPercents = [  
-30,15,10,7,5,  
-4,3,2,2,2,  
-1,1,1,1,1,  
-0.5,0.5,0.5,0.5,0.5,  
-0.25,0.25,0.25,0.25,0.25  
-];  
-  
-let html = `  
-  
-<div class="p-3 bg-white/5 rounded-xl mb-3 grid grid-cols-2 text-center">  
-  
-<div>  
-<div class="text-xs text-gray-400">Total Business</div>  
-<div class="text-blue-400 font-bold">Auto</div>  
-</div>  
-  
-<div>  
-<div class="text-xs text-gray-400">Total Rewards</div>  
-<div class="text-emerald-400 font-bold">Auto</div>  
-</div>  
-  
-</div>  
-  
-<div class="p-3 bg-white/5 rounded-xl mb-3 grid grid-cols-5 text-xs text-gray-400 font-bold">  
-  
-<div>Level</div>  
-<div>Business</div>  
-<div>Rewards</div>  
-<div>%</div>  
-<div>Income</div>  
-  
-</div>  
-`;  
-  
-for(let i=0;i<25;i++){  
-  
-html += `  
-<div class="p-3 bg-white/5 rounded-xl mt-2 grid grid-cols-5 text-xs">  
-  
-<div class="text-gray-400">${i+1}</div>  
-  
-<div class="text-blue-400">Auto</div>  
-  
-<div class="text-amber-400">Auto</div>  
-  
-<div class="text-gray-400">${levelPercents[i]}%</div>  
-  
-<div class="text-emerald-400 font-bold">Auto</div>  
-  
-</div>  
-`;  
-  
-}  
-  
-cont.innerHTML = html;  
-  
-}  
+
+let html = `
+
+<div class="p-3 bg-white/5 rounded-xl mb-3 grid grid-cols-2 text-center">
+
+<div>
+<div class="text-xs text-gray-400">Total Business</div>
+<div class="text-blue-400 font-bold">Auto</div>
+</div>
+
+<div>
+<div class="text-xs text-gray-400">Total Rewards</div>
+<div class="text-emerald-400 font-bold">Auto</div>
+</div>
+
+</div>
+
+<div class="p-3 bg-white/5 rounded-xl mb-3 grid grid-cols-5 text-xs text-gray-400 font-bold">
+
+<div>Level</div>
+<div>Business</div>
+<div>Rewards</div>
+<div>%</div>
+<div>Income</div>
+
+</div>
+`;
+
+for(let i=0;i<25;i++){
+
+html += `
+<div class="p-3 bg-white/5 rounded-xl mt-2 grid grid-cols-5 text-xs">
+
+<div class="text-gray-400">${i+1}</div>
+
+<div class="text-blue-400">Auto</div>
+
+<div class="text-amber-400">Auto</div>
+
+<div class="text-yellow-400 font-bold">Live</div>
+
+<div class="text-emerald-400 font-bold">Auto</div>
+
+</div>
+`;
+
+}
+
+cont.innerHTML = html;
+
+}
   
 else {  
   
