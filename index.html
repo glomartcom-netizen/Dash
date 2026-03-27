@@ -32,6 +32,11 @@ object-fit:cover;
 .claim-ready{  
 animation: claimGlow 1.5s infinite;  
 }  
+
+.plan-card:hover{
+    transform: scale(1.02);
+    border-color: #f59e0b;
+}    
   
 /* ===== BRAND BUTTONS ===== */  
   
@@ -274,16 +279,46 @@ Team Volume
                 </div>  
             </div>  
   
-            <label class="text-xs text-amber-400 font-bold uppercase tracking-wide">  
-                Select Plan  
-            </label>  
-            <select id="stakeDuration" class="input-dark">  
-                <option value="">Choose Staking Plan</option>  
-                <option value="7776000">90 Days • 0.20% Daily</option>  
-                <option value="15552000">180 Days • 0.25% Daily</option>  
-                <option value="31536000">365 Days • 0.30% Daily</option>  
-            </select>  
-        </div>  
+            <label class="text-xs text-amber-400 font-bold uppercase tracking-wide">
+    Select Plan
+</label>
+
+<div id="planSelector" class="grid grid-cols-1 gap-3 mt-2">
+
+<div onclick="selectPlan(this, '7776000')" 
+class="plan-card p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
+
+<div class="flex justify-between items-center">
+<span class="font-bold text-amber-400">90 Days</span>
+<span class="text-xs text-gray-400">0.20%</span>
+</div>
+
+</div>
+
+<div onclick="selectPlan(this, '15552000')" 
+class="plan-card p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
+
+<div class="flex justify-between items-center">
+<span class="font-bold text-amber-400">180 Days</span>
+<span class="text-xs text-gray-400">0.25%</span>
+</div>
+
+</div>
+
+<div onclick="selectPlan(this, '31536000')" 
+class="plan-card p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
+
+<div class="flex justify-between items-center">
+<span class="font-bold text-amber-400">365 Days</span>
+<span class="text-xs text-gray-400">0.30%</span>
+</div>
+
+</div>
+
+</div>
+
+<!-- hidden input (IMPORTANT) -->
+<input type="hidden" id="stakeDuration">
   
         <div id="stakeButtons" class="flex flex-col gap-3">  
             <button id="btnStakeUSDT" onclick="performStake('USDT')"   
@@ -1771,7 +1806,21 @@ function setButtonState(isLoading) {
         if(btnDMX) { btnDMX.disabled = false; btnDMX.style.opacity = "1"; }  
     }  
     } 
+    
+function selectPlan(el, value){
 
+// remove old selection
+document.querySelectorAll(".plan-card").forEach(c=>{
+    c.classList.remove("border-amber-500","bg-amber-500/10");
+});
+
+// highlight selected
+el.classList.add("border-amber-500","bg-amber-500/10");
+
+// set value
+document.getElementById("stakeDuration").value = value;
+
+        }
        
 </script>    
 </body>    
