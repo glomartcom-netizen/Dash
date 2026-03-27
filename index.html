@@ -523,66 +523,78 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
     }      
 };
       
-    window.syncWallet = async function() {      
-        if (!window.appKitModal) return;      
-        const walletProvider = window.appKitModal.getWalletProvider();      
-        if (walletProvider) {      
-            provider = new ethers.providers.Web3Provider(walletProvider);      
-                  
-            // 2️⃣ Network Protection      
-            const network = await provider.getNetwork();      
-            if(network.chainId !== 56) {      
-                alert("Please switch to BSC Mainnet");      
-                return;      
-            }      
-      
-            signer = provider.getSigner();      
-userAddress = await signer.getAddress();      
-      
-/* wallet button update */      
-const btn = document.getElementById("walletBtn");      
-      
-const short =      
-userAddress.slice(0,6) + "..." + userAddress.slice(-4);      
-      
-const balanceWei = await provider.getBalance(userAddress);      
-const balance = ethers.utils.formatEther(balanceWei);      
-      
-btn.innerText =      
-short + " | " + parseFloat(balance).toFixed(3) + " BNB";      
-      
-btn.classList.remove("bg-amber-500","text-black");      
-btn.classList.add("bg-emerald-600","text-white");      
-btn.classList.add("walletConnected");      
-      
-contract = new ethers.Contract(STAKE_ADDR, ABI, signer);      
-      
-document.getElementById('refBox').classList.remove('hidden');      
-document.getElementById('myRefLink').value = window.location.origin + window.location.pathname + "?ref=" + userAddress;      
-      
-refreshData();      
-showTab('stakes');      
-        }      
-    }      
-      
- setInterval(async () => {      
-      
-try{      
-      
-if(!userAddress){      
-await window.syncWallet();      
-return;      
-}      
-      
-await refreshData();      
-await updatePrice();      
-await updateRewardPool();      
-      
-}catch(e){      
-console.log("Dashboard sync error");      
-}      
-      
-},10000);      
+    window.syncWallet = async function () {
+
+    try {
+
+        if (!window.appKitModal) return;
+
+        const walletProvider = window.appKitModal.getWalletProvider();
+
+        // 🔥 IMPORTANT FIX
+        if (!walletProvider) {
+            console.log("Wallet provider not ready yet");
+            return;
+        }
+
+        provider = new ethers.providers.Web3Provider(walletProvider);
+
+        const network = await provider.getNetwork();
+
+        if (network.chainId !== 56) {
+            alert("Please switch to BSC Mainnet");
+            return;
+        }
+
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+
+        // WALLET UI
+        const btn = document.getElementById("walletBtn");
+
+        const short = userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
+
+        const balanceWei = await provider.getBalance(userAddress);
+        const balance = ethers.utils.formatEther(balanceWei);
+
+        btn.innerText = short + " | " + parseFloat(balance).toFixed(3) + " BNB";
+
+        btn.classList.remove("bg-amber-500", "text-black");
+        btn.classList.add("bg-emerald-600", "text-white", "walletConnected");
+
+        // CONTRACT INIT
+        contract = new ethers.Contract(STAKE_ADDR, ABI, signer);
+
+        // REF LINK
+        document.getElementById('refBox').classList.remove('hidden');
+        document.getElementById('myRefLink').value =
+            window.location.origin + window.location.pathname + "?ref=" + userAddress;
+
+        // 🔥 FULL LOAD (IMPORTANT)
+        await refreshData();
+        await updatePrice();
+        await updateRewardPool();
+        await showTab('stakes');
+
+        // 🔥 EXTRA SAFE (fix delay bug)
+        setTimeout(() => {
+            refreshData();
+            updatePrice();
+            updateRewardPool();
+        }, 1500);
+
+    } catch (err) {
+        console.log("SyncWallet Error:", err);
+    }
+};
+    // FORCE INITIAL LOAD
+setTimeout(() => {
+    if(userAddress){
+        refreshData();
+        updatePrice();
+        updateRewardPool();
+    }
+}, 2000);
       
     async function refreshData() {  
 
