@@ -893,14 +893,13 @@ async function updatePrice(){
 
 }
       
-    async function showTab(type) {  
+    async function showTab(type) {
 
     const cont = document.getElementById('tabContent');
     if(!cont || !contract || !userAddress) return;
 
     const f = ethers.utils.formatEther;
 
-    // ✅ SAFE TAB SWITCH
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
     const activeTab = document.getElementById(
@@ -913,61 +912,32 @@ async function updatePrice(){
 
     try {
 
-        // =========================
-        // 🔹 STAKES TAB
-        // =========================
+        // ===== STAKES =====
         if(type === 'stakes') {
 
             const data = await contract.getStakeHistory(userAddress);
 
-            // ✅ EMPTY STATE (PRO UI)
             if(!data || data.length === 0){
-                cont.innerHTML = `
-                <div class="text-center text-gray-400 py-6">
-                    No staking history found
-                </div>`;
+                cont.innerHTML = "No staking history";
                 return;
             }
 
-            // ✅ LIMIT (PERFORMANCE)
-            const limited = data.slice(-20).reverse();
-
-            cont.innerHTML = limited.map(s => {
+            cont.innerHTML = data.slice(-20).reverse().map(s => {
 
                 const amount = Number(f(s.amountDMX || 0)).toFixed(2);
 
                 const d = new Date(Number(s.start || 0) * 1000);
 
-                const date = d.toLocaleDateString();
-                const time = d.toLocaleTimeString();
-
-                return `  
-                <div class="p-3 bg-white/5 rounded-xl mt-2 border border-white/5">  
-
-                    <div class="text-amber-400 font-bold text-sm">
-                        ${amount} DMX
-                    </div>  
-
+                return `
+                <div class="p-3 bg-white/5 rounded-xl mt-2">
+                    <div class="text-amber-400 font-bold">${amount} DMX</div>
                     <div class="text-xs text-gray-400">
-                        ${date} | ${time}
-                    </div>  
-
-                </div>  
+                        ${d.toLocaleDateString()} | ${d.toLocaleTimeString()}
+                    </div>
+                </div>
                 `;
-
             }).join('');
         }
-
-    } catch(e) {
-
-        console.error("Tab load error:", e);
-
-        cont.innerHTML = `
-        <div class="text-center text-red-400 py-6">
-            Error loading data
-        </div>`;
-    }
-}
   
 else if(type === 'level') {  
 
