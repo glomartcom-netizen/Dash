@@ -41,6 +41,13 @@ box-shadow: 0 0 12px rgba(251,191,36,0.6);
 }
 span{
 box-shadow: 0 0 6px rgba(251,191,36,0.3);
+}  
+#btnStakeUSDT:hover{
+box-shadow: 0 0 15px rgba(16,185,129,0.6);
+}
+
+#btnStakeDMX:hover{
+box-shadow: 0 0 15px rgba(251,191,36,0.6);
 }    
      
 /* ===== BRAND BUTTONS ===== */  
@@ -264,81 +271,105 @@ Team Volume
 </div>     
 </div>    
     <!-- STAKING -->    
-<div class="glass-card p-6 border border-amber-500/20">  
-    <h3 class="text-sm text-amber-500 font-black uppercase mb-5 flex items-center gap-2">  
-        <i class="fa-solid fa-layer-group text-amber-400"></i> Live Staking  
-    </h3>  
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">  
-        <div class="space-y-4">  
-            <label class="text-xs text-amber-400 font-bold uppercase tracking-wide">  
-                Stake Amount (DMX Units)  
-            </label>  
-            <input type="number" inputmode="decimal" id="stakeAmount" placeholder="Enter DMX quantity" class="input-dark">  
-              
-            <p id="usdtEstimate" class="text-[11px] text-emerald-400 font-bold italic h-4 mt-[-12px]"></p>  
-  
-            <div class="flex justify-between items-center mt-1">
+<div class="glass-card p-5 border border-amber-500/20">
 
-<p class="text-[11px] text-gray-500">
-Enter your staking amount
-</p>
+<h3 class="text-sm text-amber-400 font-black uppercase mb-4 flex items-center gap-2">
+<i class="fa-solid fa-layer-group"></i> Live Staking
+</h3>
 
-<span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-1 rounded-lg font-bold">
-MIN 2500 DMX
+<div class="space-y-4">
+
+<!-- AMOUNT -->
+<div>
+<label class="text-[11px] text-gray-400 font-bold uppercase">
+Stake Amount
+</label>
+
+<input type="number" id="stakeAmount"
+placeholder="Min 2500 DMX"
+class="input-dark mt-1">
+
+<!-- MIN + ESTIMATE INLINE -->
+<div class="flex justify-between text-[11px] mt-1">
+
+<span class="text-gray-500">
+Min: <span class="text-amber-400 font-bold">2500</span>
 </span>
 
+<span id="usdtEstimate" class="text-emerald-400 font-bold"></span>
+
 </div>
-  
-            <label class="text-xs text-amber-400 font-bold uppercase tracking-wide">
+</div>
+
+<!-- PLAN SELECT -->
+<div>
+<label class="text-[11px] text-gray-400 font-bold uppercase">
 Select Plan
 </label>
 
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-white/5 rounded-xl p-1 mt-2 border border-white/10">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
 
 <button onclick="selectPlan(this,'7776000')" 
-class="plan-btn p-3 text-[11px] font-bold text-gray-400 rounded-lg transition text-center">
+class="plan-btn p-3 rounded-xl bg-white/5 text-center transition">
 
-90 Days  
-<div class="text-[9px] text-gray-500">0.20% Daily</div>
+<div class="text-amber-400 font-bold text-sm">90 Days</div>
+<div class="text-[10px] text-gray-400">0.20% Daily</div>
 
 </button>
 
 <button onclick="selectPlan(this,'15552000')" 
-class="plan-btn p-3 text-[11px] font-bold text-gray-400 rounded-lg transition text-center">
+class="plan-btn p-3 rounded-xl bg-white/5 text-center transition">
 
-180 Days  
-<div class="text-[9px] text-gray-500">0.25% Daily</div>
+<div class="text-amber-400 font-bold text-sm">180 Days</div>
+<div class="text-[10px] text-gray-400">0.25% Daily</div>
 
 </button>
 
 <button onclick="selectPlan(this,'31536000')" 
-class="plan-btn p-3 text-[11px] font-bold text-gray-400 rounded-lg transition text-center">
+class="plan-btn p-3 rounded-xl bg-white/5 text-center transition">
 
-365 Days  
-<div class="text-[9px] text-gray-500">0.30% Daily</div>
+<div class="text-amber-400 font-bold text-sm">365 Days</div>
+<div class="text-[10px] text-gray-400">0.30% Daily</div>
 
 </button>
 
 </div>
 
 <input type="hidden" id="stakeDuration">
+</div>
   
-        <div id="stakeButtons" class="flex flex-col gap-3">  
-            <button id="btnStakeUSDT" onclick="performStake('USDT')"   
-                class="flex items-center justify-center gap-2 py-4 rounded-xl text-sm uppercase w-full font-black text-white   
-                bg-gradient-to-r from-emerald-500 to-green-700 shadow-lg hover:shadow-emerald-500/40 transition transform hover:scale-[1.02]">  
-                <img src="https://assets.coingecko.com/coins/images/325/small/Tether.png" class="w-5 h-5">   
-                Stake with USDT  
-            </button>  
-  
-            <button id="btnStakeDMX" onclick="performStake('DMX')"   
-                class="flex items-center justify-center gap-2 py-4 rounded-xl text-sm uppercase w-full font-black text-black   
-                bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg hover:shadow-amber-500/40 transition transform hover:scale-[1.02]">  
-                <img src="https://i.ibb.co/HpqwGFqt/logo.png" class="w-5 h-5">   
-                Stake with DMX  
-            </button>  
-        </div>  
-    </div>  
+        <div id="stakeButtons" class="grid grid-cols-2 gap-3">
+
+<!-- USDT -->
+<button id="btnStakeUSDT" onclick="performStake('USDT')"   
+class="flex flex-col items-center justify-center gap-1 py-4 rounded-xl text-[11px] font-black text-white  
+bg-gradient-to-r from-emerald-500 to-green-700  
+shadow-md hover:shadow-emerald-500/40  
+transition transform hover:scale-[1.03]">
+
+<img src="https://assets.coingecko.com/coins/images/325/small/Tether.png" class="w-6 h-6">
+
+<span>Stake USDT</span>
+<span class="text-[9px] text-emerald-200 font-normal">Stable Entry</span>
+
+</button>
+
+<!-- DMX -->
+<button id="btnStakeDMX" onclick="performStake('DMX')"   
+class="flex flex-col items-center justify-center gap-1 py-4 rounded-xl text-[11px] font-black text-black  
+bg-gradient-to-r from-amber-400 to-orange-500  
+shadow-md hover:shadow-amber-500/40  
+transition transform hover:scale-[1.03]">
+
+<img src="https://i.ibb.co/HpqwGFqt/logo.png" class="w-6 h-6">
+
+<span>Stake DMX</span>
+<span class="text-[9px] text-yellow-900 font-normal">Direct Boost</span>
+
+</button>
+
+</div>
+</div>  
 </div>    
       
     <!-- PROGRESS -->  
@@ -1815,25 +1846,28 @@ function selectPlan(el, value){
 document.querySelectorAll(".plan-btn").forEach(btn=>{
 btn.classList.remove("bg-amber-500","text-black","shadow-md");
 
-// reset sub text
-const sub = btn.querySelector("div");
+const title = btn.querySelector("div:first-child");
+const sub = btn.querySelector("div:last-child");
+
+if(title) title.classList.remove("text-black");
 if(sub){
 sub.classList.remove("text-yellow-900");
-sub.classList.add("text-gray-500");
+sub.classList.add("text-gray-400");
 }
 });
 
-// selected highlight
+// selected
 el.classList.add("bg-amber-500","text-black","shadow-md");
 
-// sub text dark
-const sub = el.querySelector("div");
+const title = el.querySelector("div:first-child");
+const sub = el.querySelector("div:last-child");
+
+if(title) title.classList.add("text-black");
 if(sub){
-sub.classList.remove("text-gray-500");
+sub.classList.remove("text-gray-400");
 sub.classList.add("text-yellow-900");
 }
 
-// set value
 document.getElementById("stakeDuration").value = value;
 
 }
