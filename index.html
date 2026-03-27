@@ -36,7 +36,13 @@ animation: claimGlow 1.5s infinite;
 .plan-btn:hover{
 transform: scale(1.03);
 }
-  
+.plan-btn.bg-amber-500{
+box-shadow: 0 0 12px rgba(251,191,36,0.6);
+}
+span{
+box-shadow: 0 0 6px rgba(251,191,36,0.3);
+}    
+     
 /* ===== BRAND BUTTONS ===== */  
   
 .btn-brand{  
@@ -271,21 +277,26 @@ Team Volume
               
             <p id="usdtEstimate" class="text-[11px] text-emerald-400 font-bold italic h-4 mt-[-12px]"></p>  
   
-            <div class="flex flex-col gap-1 text-[10px] text-gray-400 bg-white/5 p-2 rounded-lg">  
-                <div class="flex justify-between">  
-                    <span>Minimum Stake:</span>  
-                    <span class="text-amber-400 font-bold">2500 DMX</span>  
-                </div>  
-            </div>  
+            <div class="flex justify-between items-center mt-1">
+
+<p class="text-[11px] text-gray-500">
+Enter your staking amount
+</p>
+
+<span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-1 rounded-lg font-bold">
+MIN 2500 DMX
+</span>
+
+</div>
   
             <label class="text-xs text-amber-400 font-bold uppercase tracking-wide">
 Select Plan
 </label>
 
-<div class="flex bg-white/5 rounded-xl p-1 mt-2 border border-white/10">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-white/5 rounded-xl p-1 mt-2 border border-white/10">
 
 <button onclick="selectPlan(this,'7776000')" 
-class="plan-btn flex-1 py-2 text-[11px] font-bold text-gray-400 rounded-lg transition text-center">
+class="plan-btn p-3 text-[11px] font-bold text-gray-400 rounded-lg transition text-center">
 
 90 Days  
 <div class="text-[9px] text-gray-500">0.20% Daily</div>
@@ -293,7 +304,7 @@ class="plan-btn flex-1 py-2 text-[11px] font-bold text-gray-400 rounded-lg trans
 </button>
 
 <button onclick="selectPlan(this,'15552000')" 
-class="plan-btn flex-1 py-2 text-[11px] font-bold text-gray-400 rounded-lg transition text-center">
+class="plan-btn p-3 text-[11px] font-bold text-gray-400 rounded-lg transition text-center">
 
 180 Days  
 <div class="text-[9px] text-gray-500">0.25% Daily</div>
@@ -301,7 +312,7 @@ class="plan-btn flex-1 py-2 text-[11px] font-bold text-gray-400 rounded-lg trans
 </button>
 
 <button onclick="selectPlan(this,'31536000')" 
-class="plan-btn flex-1 py-2 text-[11px] font-bold text-gray-400 rounded-lg transition text-center">
+class="plan-btn p-3 text-[11px] font-bold text-gray-400 rounded-lg transition text-center">
 
 365 Days  
 <div class="text-[9px] text-gray-500">0.30% Daily</div>
@@ -1803,11 +1814,26 @@ function selectPlan(el, value){
 
 document.querySelectorAll(".plan-btn").forEach(btn=>{
 btn.classList.remove("bg-amber-500","text-black","shadow-md");
-btn.classList.add("text-gray-400");
+
+// reset sub text
+const sub = btn.querySelector("div");
+if(sub){
+sub.classList.remove("text-yellow-900");
+sub.classList.add("text-gray-500");
+}
 });
 
+// selected highlight
 el.classList.add("bg-amber-500","text-black","shadow-md");
 
+// sub text dark
+const sub = el.querySelector("div");
+if(sub){
+sub.classList.remove("text-gray-500");
+sub.classList.add("text-yellow-900");
+}
+
+// set value
 document.getElementById("stakeDuration").value = value;
 
 }
