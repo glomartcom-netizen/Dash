@@ -31,24 +31,48 @@ object-fit:cover;
   
 .claim-ready{  
 animation: claimGlow 1.5s infinite;  
-}  
+} 
+    
+/* PLAN BUTTON */
+.plan-btn{
+transition: all 0.2s ease;
+border-radius: 12px;
+}
 
 .plan-btn:hover{
 transform: scale(1.03);
 }
-.plan-btn.bg-amber-500{
-box-shadow: 0 0 12px rgba(251,191,36,0.6);
+
+/* ACTIVE PLAN */
+.plan-btn.active{
+background: linear-gradient(135deg,#fbbf24,#d97706);
+box-shadow: 0 0 12px rgba(251,191,36,0.5);
 }
-span{
-box-shadow: 0 0 6px rgba(251,191,36,0.3);
-}  
+
+/* TEXT VISIBILITY FIX */
+.plan-btn div:first-child{
+color:#fbbf24;
+font-weight:700;
+}
+
+.plan-btn div:last-child{
+color:#9ca3af;
+}
+
+/* ACTIVE TEXT */
+.plan-btn.active div{
+color:black !important;
+}
+
+
+/* BUTTON HOVER CLEAN */
 #btnStakeUSDT:hover{
-box-shadow: 0 0 15px rgba(16,185,129,0.6);
+box-shadow: 0 0 10px rgba(16,185,129,0.5);
 }
 
 #btnStakeDMX:hover{
-box-shadow: 0 0 15px rgba(251,191,36,0.6);
-}    
+box-shadow: 0 0 10px rgba(251,191,36,0.5);
+}
      
 /* ===== BRAND BUTTONS ===== */  
   
@@ -286,15 +310,11 @@ Stake Amount
 </label>
 
 <input type="number" id="stakeAmount"
-placeholder="Min 2500 DMX"
+placeholder="Minimum 2500 DMX"
 class="input-dark mt-1">
 
-<!-- MIN + ESTIMATE INLINE -->
-<div class="flex justify-between text-[11px] mt-1">
-
-<span class="text-gray-500">
-Min: <span class="text-amber-400 font-bold">2500</span>
-</span>
+<!-- ONLY ESTIMATE (MIN REMOVED) -->
+<div class="flex justify-end text-[11px] mt-1">
 
 <span id="usdtEstimate" class="text-emerald-400 font-bold"></span>
 
@@ -310,26 +330,26 @@ Select Plan
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
 
 <button onclick="selectPlan(this,'7776000')" 
-class="plan-btn p-3 rounded-xl bg-white/5 text-center transition">
+class="plan-btn p-3 rounded-xl bg-white/5 text-center">
 
-<div class="text-amber-400 font-bold text-sm">90 Days</div>
-<div class="text-[10px] text-gray-400">0.20% Daily</div>
+<div class="text-sm font-bold">90 Days</div>
+<div class="text-[10px]">0.20% Daily</div>
 
 </button>
 
 <button onclick="selectPlan(this,'15552000')" 
-class="plan-btn p-3 rounded-xl bg-white/5 text-center transition">
+class="plan-btn p-3 rounded-xl bg-white/5 text-center">
 
-<div class="text-amber-400 font-bold text-sm">180 Days</div>
-<div class="text-[10px] text-gray-400">0.25% Daily</div>
+<div class="text-sm font-bold">180 Days</div>
+<div class="text-[10px]">0.25% Daily</div>
 
 </button>
 
 <button onclick="selectPlan(this,'31536000')" 
-class="plan-btn p-3 rounded-xl bg-white/5 text-center transition">
+class="plan-btn p-3 rounded-xl bg-white/5 text-center">
 
-<div class="text-amber-400 font-bold text-sm">365 Days</div>
-<div class="text-[10px] text-gray-400">0.30% Daily</div>
+<div class="text-sm font-bold">365 Days</div>
+<div class="text-[10px]">0.30% Daily</div>
 
 </button>
 
@@ -337,34 +357,29 @@ class="plan-btn p-3 rounded-xl bg-white/5 text-center transition">
 
 <input type="hidden" id="stakeDuration">
 </div>
+
+</div>
+</div>
   
-        <div id="stakeButtons" class="grid grid-cols-2 gap-3">
+        <div id="stakeButtons" class="grid grid-cols-2 gap-2 mt-2">
 
-<!-- USDT -->
 <button id="btnStakeUSDT" onclick="performStake('USDT')"   
-class="flex flex-col items-center justify-center gap-1 py-4 rounded-xl text-[11px] font-black text-white  
+class="flex items-center justify-center gap-2 py-2.5 rounded-lg text-[11px] font-bold text-white  
 bg-gradient-to-r from-emerald-500 to-green-700  
-shadow-md hover:shadow-emerald-500/40  
-transition transform hover:scale-[1.03]">
+shadow hover:shadow-emerald-500/30 transition">
 
-<img src="https://assets.coingecko.com/coins/images/325/small/Tether.png" class="w-6 h-6">
-
-<span>Stake USDT</span>
-<span class="text-[9px] text-emerald-200 font-normal">Stable Entry</span>
+<img src="https://assets.coingecko.com/coins/images/325/small/Tether.png" class="w-4 h-4">   
+USDT
 
 </button>
 
-<!-- DMX -->
 <button id="btnStakeDMX" onclick="performStake('DMX')"   
-class="flex flex-col items-center justify-center gap-1 py-4 rounded-xl text-[11px] font-black text-black  
+class="flex items-center justify-center gap-2 py-2.5 rounded-lg text-[11px] font-bold text-black  
 bg-gradient-to-r from-amber-400 to-orange-500  
-shadow-md hover:shadow-amber-500/40  
-transition transform hover:scale-[1.03]">
+shadow hover:shadow-amber-500/30 transition">
 
-<img src="https://i.ibb.co/HpqwGFqt/logo.png" class="w-6 h-6">
-
-<span>Stake DMX</span>
-<span class="text-[9px] text-yellow-900 font-normal">Direct Boost</span>
+<img src="https://i.ibb.co/HpqwGFqt/logo.png" class="w-4 h-4">   
+DMX
 
 </button>
 
@@ -1843,31 +1858,15 @@ function setButtonState(isLoading) {
     
 function selectPlan(el, value){
 
+// remove active from all
 document.querySelectorAll(".plan-btn").forEach(btn=>{
-btn.classList.remove("bg-amber-500","text-black","shadow-md");
-
-const title = btn.querySelector("div:first-child");
-const sub = btn.querySelector("div:last-child");
-
-if(title) title.classList.remove("text-black");
-if(sub){
-sub.classList.remove("text-yellow-900");
-sub.classList.add("text-gray-400");
-}
+btn.classList.remove("active");
 });
 
-// selected
-el.classList.add("bg-amber-500","text-black","shadow-md");
+// add active to selected
+el.classList.add("active");
 
-const title = el.querySelector("div:first-child");
-const sub = el.querySelector("div:last-child");
-
-if(title) title.classList.add("text-black");
-if(sub){
-sub.classList.remove("text-gray-400");
-sub.classList.add("text-yellow-900");
-}
-
+// set value
 document.getElementById("stakeDuration").value = value;
 
 }
