@@ -33,10 +33,9 @@ object-fit:cover;
 animation: claimGlow 1.5s infinite;  
 }  
 
-.plan-card:hover{
-    transform: scale(1.02);
-    border-color: #f59e0b;
-}    
+.plan-btn:hover{
+transform: scale(1.03);
+}
   
 /* ===== BRAND BUTTONS ===== */  
   
@@ -280,44 +279,37 @@ Team Volume
             </div>  
   
             <label class="text-xs text-amber-400 font-bold uppercase tracking-wide">
-    Select Plan
+Select Plan
 </label>
 
-<div id="planSelector" class="grid grid-cols-1 gap-3 mt-2">
+<div class="flex bg-white/5 rounded-xl p-1 mt-2 border border-white/10">
 
-<div onclick="selectPlan(this, '7776000')" 
-class="plan-card p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
+<button onclick="selectPlan(this,'7776000')" 
+class="plan-btn flex-1 py-2 text-[11px] font-bold text-gray-400 rounded-lg transition text-center">
 
-<div class="flex justify-between items-center">
-<span class="font-bold text-amber-400">90 Days</span>
-<span class="text-xs text-gray-400">0.20%</span>
-</div>
+90 Days  
+<div class="text-[9px] text-gray-500">0.20% Daily</div>
 
-</div>
+</button>
 
-<div onclick="selectPlan(this, '15552000')" 
-class="plan-card p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
+<button onclick="selectPlan(this,'15552000')" 
+class="plan-btn flex-1 py-2 text-[11px] font-bold text-gray-400 rounded-lg transition text-center">
 
-<div class="flex justify-between items-center">
-<span class="font-bold text-amber-400">180 Days</span>
-<span class="text-xs text-gray-400">0.25%</span>
-</div>
+180 Days  
+<div class="text-[9px] text-gray-500">0.25% Daily</div>
 
-</div>
+</button>
 
-<div onclick="selectPlan(this, '31536000')" 
-class="plan-card p-3 rounded-xl bg-white/5 border border-white/10 cursor-pointer">
+<button onclick="selectPlan(this,'31536000')" 
+class="plan-btn flex-1 py-2 text-[11px] font-bold text-gray-400 rounded-lg transition text-center">
 
-<div class="flex justify-between items-center">
-<span class="font-bold text-amber-400">365 Days</span>
-<span class="text-xs text-gray-400">0.30%</span>
-</div>
+365 Days  
+<div class="text-[9px] text-gray-500">0.30% Daily</div>
+
+</button>
 
 </div>
 
-</div>
-
-<!-- hidden input (IMPORTANT) -->
 <input type="hidden" id="stakeDuration">
   
         <div id="stakeButtons" class="flex flex-col gap-3">  
@@ -1809,18 +1801,16 @@ function setButtonState(isLoading) {
     
 function selectPlan(el, value){
 
-// remove old selection
-document.querySelectorAll(".plan-card").forEach(c=>{
-    c.classList.remove("border-amber-500","bg-amber-500/10");
+document.querySelectorAll(".plan-btn").forEach(btn=>{
+btn.classList.remove("bg-amber-500","text-black","shadow-md");
+btn.classList.add("text-gray-400");
 });
 
-// highlight selected
-el.classList.add("border-amber-500","bg-amber-500/10");
+el.classList.add("bg-amber-500","text-black","shadow-md");
 
-// set value
 document.getElementById("stakeDuration").value = value;
 
-        }
+}
        
 </script>    
 </body>    
