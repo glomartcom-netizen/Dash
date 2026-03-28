@@ -878,25 +878,6 @@ function selectPlan(el, value){
     selectedPlan = Number(value);  
 }  
   
-// LIVE USDT  
-document.getElementById("stakeAmount").addEventListener("input", async (e)=>{  
-    if(!contract) return;  
-  
-    try{  
-        const val = e.target.value || 0;  
-  
-        const usdt = await contract.getUSDTFromDMX(  
-            ethers.utils.parseEther(val.toString())  
-        );  
-  
-        document.getElementById("usdtEstimate").innerText =  
-            "≈ " + Number(ethers.utils.formatEther(usdt)).toFixed(2) + " USDT";  
-  
-    }catch{  
-        document.getElementById("usdtEstimate").innerText = "";  
-    }  
-});  
-  
 // OPEN MODAL  
 async function openStakeBox(){  
   
