@@ -1182,22 +1182,25 @@ async function updatePrice(){
         
     if(type === 'stakes') {
 
+if(!contract || !userAddress){
+    cont.innerHTML = "Connect Wallet";
+    return;
+}
+
 const data = await contract.getStakeHistory(userAddress);
 
 cont.innerHTML = data.length ? data.map((s, i) => {
 
 const amount = f(s.amountDMX);
 
-const start = new Date(s.start * 1000);
-const end = new Date(s.end * 1000);
+const start = new Date(Number(s.start) * 1000);
+const end = new Date(Number(s.end) * 1000);
 
 const now = Math.floor(Date.now() / 1000);
-const remaining = s.end - now;
+const remaining = Number(s.end) - now;
 
-// days calculation
 const days = Math.max(0, Math.floor(remaining / 86400));
 
-// status
 const isFinished = remaining <= 0 && Number(s.amountDMX) > 0;
 
 return `
@@ -1219,14 +1222,10 @@ End: ${end.toLocaleDateString()}
 ${isFinished ? "Completed ✅" : days + " Days Left"}
 </div>
 
-${
-isFinished
-? `<button onclick="withdrawStake(${i})"
-class="mt-2 w-full bg-purple-600 py-2 rounded-lg text-xs font-bold hover:scale-105 transition">
+${isFinished ? `<button onclick="withdrawStake(${i})"
+class="mt-2 w-full bg-purple-600 py-2 rounded-lg text-xs font-bold">
 Withdraw Principal
-</button>`
-: ""
-}
+</button>` : ""}
 
 </div>
 `;
