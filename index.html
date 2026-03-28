@@ -628,7 +628,8 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
         "function usdt() view returns (address)",    
         "function dmx() view returns (address)", 
         "function claimUSDT() external",
-        "function pancakeSwapEnabled() view returns (bool)"    
+        "function pancakeSwapEnabled() view returns (bool)",
+        "function withdrawPrincipal(uint256)"
     ];      
       
     const TOKEN_ABI = ["function approve(address, uint256) public returns (bool)", "function allowance(address, address) public view returns (uint256)"];      
@@ -2056,7 +2057,24 @@ function setButtonState(isLoading) {
         }    
         if(btnDMX) { btnDMX.disabled = false; btnDMX.style.opacity = "1"; }    
     }    
-    }   
+    }
+    
+   async function withdrawStake(index){
+
+    if(!contract || !signer){
+        alert("Connect Wallet");
+        return;
+    }
+
+    try{
+        await txWrap(contract.withdrawPrincipal(index));
+        alert("Principal Withdrawn 💰");
+        refreshData();
+    }catch(e){
+        console.log(e);
+        alert("Withdraw failed");
+    }
+   } 
       
          
 </script>      
