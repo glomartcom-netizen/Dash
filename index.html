@@ -863,91 +863,141 @@ async function claimUSDT(){
 }  
       
   
-let selectedPlan = 0;  
-let selectedType = "";  
-  
-// PLAN SELECT  
-function selectPlan(el, value){  
-  
-    document.querySelectorAll(".plan-btn").forEach(btn=>{  
-        btn.classList.remove("active");  
-    });  
-  
-    el.classList.add("active");  
-  
-    selectedPlan = Number(value);  
-}  
-  
-// OPEN MODAL  
-async function openStakeBox(){  
-  
-    if(!contract || !signer){  
-        alert("Connect Wallet");  
-        return;  
-    }  
-  
-    const amount = document.getElementById("stakeAmount").value;  
-  
-    if(!amount || amount < 2500){  
-        alert("Minimum 2500 DMX");  
-        return;  
-    }  
-  
-    if(!selectedPlan){  
-        alert("Select Plan");  
-        return;  
-    }  
-  
-    const modal = document.getElementById("stakeModal");  
-    modal.classList.remove("hidden");  
-    modal.classList.add("flex");  
-  
-    document.getElementById("stakeModalAmount").innerText =  
-        amount + " DMX";  
-  
-    const usdt = await contract.getUSDTFromDMX(  
-        ethers.utils.parseEther(amount)  
-    );  
-  
-    document.getElementById("stakeModalUSDT").innerText =  
-        "≈ " + Number(ethers.utils.formatEther(usdt)).toFixed(2) + " USDT";  
-  
-    document.getElementById("stakeModalPlan").innerText =  
-        "Duration: " + (selectedPlan / 86400) + " Days";  
-}  
-  
-// CLOSE MODAL  
-function closeStakeBox(){  
-    const modal = document.getElementById("stakeModal");  
-    modal.classList.add("hidden");  
-    modal.classList.remove("flex");  
-}  
-  
-// CONFIRM  
-async function confirmStake(){  
-  
-    const amount = document.getElementById("stakeAmount").value;  
-  
-    if(selectedType === "DMX"){  
-  
-        await txWrap(contract.stakeDMX(  
-            ethers.utils.parseEther(amount),  
-            selectedPlan,  
-            userAddress  
-        ));  
-  
-    }else{  
-  
-        await txWrap(contract.stakeUSDT(  
-            ethers.utils.parseEther(amount),  
-            selectedPlan,  
-            userAddress  
-        ));  
-  
-    }  
-  
-    closeStakeBox();  
-}  
+let selectedPlan = 0;
+let selectedType = "";
+
+// ==============================
+// 🔹 PLAN SELECT
+// ==============================
+function selectPlan(el, value){
+
+    document.querySelectorAll(".plan-btn").forEach(btn=>{
+        btn.classList.remove("active");
+    });
+
+    el.classList.add("active");
+
+    selectedPlan = Number(value);
+}
+
+
+// ==============================
+// 🔹 LIVE USDT CALCULATOR (ONLY ONE)
+// ==============================
+document.getElementById('stakeAmount').addEventListener('input', async (e) => {
+
+    const val = e.target.value;
+    const estLabel = document.getElementById('usdtEstimate');
+      
+    if (val >= 2500 && contract) {
+        try {
+            const dmxWei = ethers.utils.parseEther(val);
+            const usdtNeeded = await contract.getUSDTFromDMX(dmxWei);
+            const formattedUSDT = parseFloat(ethers.utils.formatEther(usdtNeeded)).toFixed(2);
+            estLabel.innerText = `≈ ${formattedUSDT} USDT Required`;
+        } catch (err) {   
+            estLabel.innerText = "Calculating price...";   
+        }
+    } else {
+        estLabel.innerText = val > 0 ? "Min 2500 DMX required" : "";
+    }
+});
+
+
+// ==============================
+// 🔹 OPEN STAKE MODAL
+// ==============================
+async function openStakeBox(){
+
+    if(!contract || !signer){
+        alert("Connect Wallet");
+        return;
+    }
+
+    const amount = document.getElementById("stakeAmount").value;
+
+    if(!amount || amount < 2500){
+        alert("Minimum 2500 DMX");
+        return;
+    }
+
+    if(!selectedPlan){
+        alert("Select Plan");
+        return;
+    }
+
+    const modal = document.getElementById("stakeModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
+    document.getElementById("stakeModalAmount").innerText =
+        amount + " DMX";
+
+    const usdt = await contract.getUSDTFromDMX(
+        ethers.utils.parseEther(amount)
+    );
+
+    document.getElementById("stakeModalUSDT").innerText =
+        "≈ " + Number(ethers.utils.formatEther(usdt)).toFixed(2) + " USDT";
+
+    document.getElementById("stakeModalPlan").innerText =
+        "Duration: " + (selectedPlan / 86400) + " Days";
+}
+
+
+// ==============================
+// 🔹 CLOSE MODAL
+// ==============================
+function closeStakeBox(){
+    const modal = document.getElementById("stakeModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+}
+
+
+// ==============================
+// 🔹 CONFIRM STAKE (FINAL SAFE)
+// ==============================
+async function confirmStake(){
+
+    const amount = document.getElementById("stakeAmount").value;
+
+    if(!selectedType){
+        alert("Select DMX or USDT");
+        return;
+    }
+
+    try{
+
+        if(selectedType === "DMX"){
+
+            await txWrap(contract.stakeDMX(
+                ethers.utils.parseEther(amount),
+                selectedPlan,
+                userAddress
+            ));
+
+        }else{
+
+            await txWrap(contract.stakeUSDT(
+                ethers.utils.parseEther(amount),
+                selectedPlan,
+                userAddress
+            ));
+
+        }
+
+        alert("Stake Successful 🚀");
+
+    }catch(e){
+
+        console.log("Stake error:", e);
+        alert("Transaction Failed");
+
+    }
+
+    closeStakeBox();
+}
       
       
     function updateTimer(expiry) {    
@@ -966,7 +1016,7 @@ async function confirmStake(){
     const now = Math.floor(Date.now() / 1000);  
     let diff = expiry - now;  
   
-    // ✅ अगर negative வந்தாலும் safe  
+    // ✅  negative safe  
     if(diff <= 0){  
         el.innerText = "Expired";  
         badge.innerText = "LOCKED";  
@@ -1988,24 +2038,7 @@ function viewClaimHistory(){
     window.open(bscUrl, "_blank");    
 }    
     
-    // 1. LIVE CALCULATOR LOGIC    
-document.getElementById('stakeAmount').addEventListener('input', async (e) => {    
-    const val = e.target.value;    
-    const estLabel = document.getElementById('usdtEstimate');    
-        
-    if (val >= 2500 && contract) {    
-        try {    
-            const dmxWei = ethers.utils.parseEther(val);    
-            const usdtNeeded = await contract.getUSDTFromDMX(dmxWei);    
-            const formattedUSDT = parseFloat(ethers.utils.formatEther(usdtNeeded)).toFixed(2);    
-            estLabel.innerText = `≈ ${formattedUSDT} USDT Required`;    
-        } catch (err) {     
-            estLabel.innerText = "Calculating price...";     
-        }    
-    } else {    
-        estLabel.innerText = val > 0 ? "Min 2500 DMX required" : "";    
-    }    
-});    
+    
     
 // 2. BUTTON STATE HELPER    
 function setButtonState(isLoading) {    
