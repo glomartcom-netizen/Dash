@@ -860,26 +860,49 @@ async function claimUSDT(){
 let selectedPlan = 0;
 let selectedType = "";
 
-function setPlan(p){
-    selectedPlan = p;
+// ❌ REMOVE THIS (not needed)
+// function setPlan(p){
+//     selectedPlan = p;
+// }
+
+// ✅ ONLY THIS FUNCTION USE
+function selectPlan(el, value){
+
+    document.querySelectorAll(".plan-btn").forEach(btn=>{
+        btn.classList.remove("active");
+    });
+
+    el.classList.add("active");
+
+    selectedPlan = Number(value);
 }
 
+
+// =======================
+// LIVE USDT ESTIMATE
+// =======================
 document.getElementById("stakeAmount").addEventListener("input", async (e)=>{
     if(!contract) return;
 
     try{
         const val = e.target.value || 0;
+
         const usdt = await contract.getUSDTFromDMX(
             ethers.utils.parseEther(val.toString())
         );
 
         document.getElementById("usdtEstimate").innerText =
             "≈ " + Number(ethers.utils.formatEther(usdt)).toFixed(2) + " USDT";
+
     }catch{
         document.getElementById("usdtEstimate").innerText = "";
     }
 });
 
+
+// =======================
+// OPEN MODAL
+// =======================
 async function openStakeBox(type){
 
     if(!contract || !signer){
@@ -919,32 +942,44 @@ async function openStakeBox(type){
         "Duration: " + (selectedPlan / 86400) + " Days";
 }
 
+
+// =======================
+// CLOSE MODAL
+// =======================
 function closeStakeBox(){
     const modal = document.getElementById("stakeModal");
     modal.classList.add("hidden");
     modal.classList.remove("flex");
 }
 
+
+// =======================
+// CONFIRM STAKE
+// =======================
 async function confirmStake(){
 
     const amount = document.getElementById("stakeAmount").value;
 
     if(selectedType === "DMX"){
+
         await txWrap(contract.stakeDMX(
             ethers.utils.parseEther(amount),
             selectedPlan,
             userAddress
         ));
+
     }else{
+
         await txWrap(contract.stakeUSDT(
             ethers.utils.parseEther(amount),
             selectedPlan,
             userAddress
         ));
+
     }
 
     closeStakeBox();
-    }  
+}
     
     
     function updateTimer(expiry) {  
@@ -2023,12 +2058,17 @@ function setButtonState(isLoading) {
     } 
     
 function selectPlan(el, value){
+
+    // remove old active
     document.querySelectorAll(".plan-btn").forEach(btn=>{
         btn.classList.remove("active");
     });
 
+    // highlight selected
     el.classList.add("active");
-    document.getElementById("stakeDuration").value = value;
+
+    // 🔥 MAIN FIX
+    selectedPlan = Number(value);
 }
        
 </script>    
