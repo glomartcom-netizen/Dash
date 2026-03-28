@@ -628,6 +628,7 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
         "function usdt() view returns (address)",  
         "function dmx() view returns (address)", 
         "function claimUSDT() external",
+        "function withdrawPrincipal(uint256)"
         "function pancakeSwapEnabled() view returns (bool)"  
     ];    
     
@@ -1271,6 +1272,23 @@ cont.innerHTML = "Error loading data";
 }    
 
 }
+
+async function withdrawStake(index){
+
+    if(!contract || !signer){
+        alert("Connect Wallet");
+        return;
+    }
+
+    try{
+        await txWrap(contract.withdrawPrincipal(index));
+        alert("Principal Withdrawn 💰");
+        refreshData();
+    }catch(e){
+        console.log(e);
+        alert("Withdraw failed");
+    }
+}    
     
 else if(type === 'level') {    
     
