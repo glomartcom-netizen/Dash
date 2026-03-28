@@ -2063,26 +2063,6 @@ function viewClaimHistory(){
     window.open(bscUrl, "_blank");    
 }    
     
-    
-    
-// 2. BUTTON STATE HELPER    
-function setButtonState(isLoading) {    
-    const btnUSDT = document.querySelector("button[onclick*='USDT']");    
-    const btnDMX = document.querySelector("button[onclick*='DMX']");    
-        
-    if (isLoading) {    
-        if(btnUSDT) { btnUSDT.disabled = true; btnUSDT.style.opacity = "0.5"; btnUSDT.innerText = "Processing..."; }    
-        if(btnDMX) { btnDMX.disabled = true; btnDMX.style.opacity = "0.5"; }    
-    } else {    
-        if(btnUSDT) {     
-            btnUSDT.disabled = false;     
-            btnUSDT.style.opacity = "1";     
-            btnUSDT.innerHTML = `<img src="https://assets.coingecko.com/coins/images/325/small/Tether.png" class="w-5 h-5"> Stake USDT`;     
-        }    
-        if(btnDMX) { btnDMX.disabled = false; btnDMX.style.opacity = "1"; }    
-    }    
-    }
-    
    async function withdrawStake(index){
 
     if(!contract || !signer){
