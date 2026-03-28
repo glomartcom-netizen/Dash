@@ -961,6 +961,8 @@ function closeStakeBox(){
 // ==============================
 async function confirmStake(){
 
+    if (window.txPending) return;
+
     const amount = document.getElementById("stakeAmount").value;
 
     if(!selectedType){
@@ -968,20 +970,63 @@ async function confirmStake(){
         return;
     }
 
+    if(!amount || amount < 2500){
+        alert("Minimum 2500 DMX");
+        return;
+    }
+
     try{
+
+        window.txPending = true;
+
+        const amountWei = ethers.utils.parseEther(amount);
+
+        // ✅ GAS CHECK (IMPORTANT)
+        const balance = await provider.getBalance(userAddress);
+        if(balance.lt(ethers.utils.parseEther("0.003"))){
+            alert("Not enough BNB for gas fees");
+            window.txPending = false;
+            return;
+        }
 
         if(selectedType === "DMX"){
 
+            const token = new ethers.Contract(DMX_ADDR, TOKEN_ABI, signer);
+
+            const allowance = await token.allowance(userAddress, STAKE_ADDR);
+
+            if(allowance.lt(amountWei)){
+                const approveTx = await token.approve(
+                    STAKE_ADDR,
+                    ethers.constants.MaxUint256
+                );
+                await approveTx.wait();
+            }
+
             await txWrap(contract.stakeDMX(
-                ethers.utils.parseEther(amount),
+                amountWei,
                 selectedPlan,
                 userAddress
             ));
 
         }else{
 
+            const requiredUSDT = await contract.getUSDTFromDMX(amountWei);
+
+            const usdt = new ethers.Contract(USDT_ADDR, TOKEN_ABI, signer);
+
+            const allowance = await usdt.allowance(userAddress, STAKE_ADDR);
+
+            if(allowance.lt(requiredUSDT)){
+                const approveTx = await usdt.approve(
+                    STAKE_ADDR,
+                    ethers.constants.MaxUint256
+                );
+                await approveTx.wait();
+            }
+
             await txWrap(contract.stakeUSDT(
-                ethers.utils.parseEther(amount),
+                amountWei,
                 selectedPlan,
                 userAddress
             ));
@@ -992,9 +1037,19 @@ async function confirmStake(){
 
     }catch(e){
 
-        console.log("Stake error:", e);
-        alert("Transaction Failed");
+        console.error(e);
 
+        // ✅ USER FRIENDLY ERROR
+        if(e.code === 4001){
+            alert("Transaction Rejected by User");
+        }else if(e.message && e.message.includes("insufficient funds")){
+            alert("Not enough balance");
+        }else{
+            alert("Transaction Failed - Check gas / balance");
+        }
+
+    }finally{
+        window.txPending = false;
     }
 
     closeStakeBox();
@@ -1419,128 +1474,7 @@ cont.innerHTML = "Error loading data";
 }        
         
 }            
-        
-      
-    async function performStake(type) {  
-  
-    // =========================  
-    // 🔹 BASIC SAFETY  
-    // =========================  
-    if (window.txPending) return;  
-  
-    if (!userAddress) {  
-        window.appKitModal.open();  
-        return;  
-    }  
-  
-    // ✅ GAS CHECK  
-    const balance = await provider.getBalance(userAddress);  
-    if(balance.lt(ethers.utils.parseEther("0.003"))){  
-        alert("Not enough BNB for gas fees");  
-        return;  
-    }  
-  
-    const amountInput = document.getElementById('stakeAmount').value;  
-    const duration = document.getElementById('stakeDuration').value;  
-    const ref = document.getElementById("refAddress").value;  
-  
-    // =========================  
-    // 🔹 INPUT VALIDATION  
-    // =========================  
-  
-    if (!amountInput || isNaN(amountInput)) {  
-        return alert("Enter a valid amount");  
-    }  
-  
-    const amount = parseFloat(amountInput);  
-  
-    if (amount < 2500) {  
-        return alert("Minimum 2500 DMX required");  
-    }  
-  
-    if (!duration) {  
-        return alert("Select staking plan");  
-    }  
-  
-    if (!ethers.utils.isAddress(ref)) {  
-        return alert("Invalid referral address");  
-    }  
-  
-    // =========================  
-    // 🔹 START TX  
-    // =========================  
-  
-    setButtonState(true);   
-    window.txPending = true;  
-  
-    try {  
-  
-        const dmxWei = ethers.utils.parseEther(amount.toString());  
-  
-        if (type === "DMX") {  
-  
-            const token = new ethers.Contract(DMX_ADDR, TOKEN_ABI, signer);  
-  
-            const allowance = await token.allowance(userAddress, STAKE_ADDR);  
-  
-            if (allowance.lt(dmxWei)) {  
-                const approveTx = await token.approve(  
-                    STAKE_ADDR,  
-                    ethers.constants.MaxUint256  
-                );  
-                await approveTx.wait();  
-            }  
-  
-            const stakeTx = await contract.stakeDMX(dmxWei, duration, ref);  
-            await stakeTx.wait();  
-        }   
-        else if (type === "USDT") {  
-  
-            const requiredUSDT = await contract.getUSDTFromDMX(dmxWei);  
-  
-            const usdtToken = new ethers.Contract(USDT_ADDR, TOKEN_ABI, signer);  
-  
-            const allowance = await usdtToken.allowance(userAddress, STAKE_ADDR);  
-  
-            if (allowance.lt(requiredUSDT)) {  
-                const approveTx = await usdtToken.approve(  
-                    STAKE_ADDR,  
-                    ethers.constants.MaxUint256  
-                );  
-                await approveTx.wait();  
-            }  
-  
-            const stakeTx = await contract.stakeUSDT(dmxWei, duration, ref);  
-            await stakeTx.wait();  
-        }  
-  
-        // =========================  
-        // 🔹 SUCCESS  
-        // =========================  
-  
-        alert("Staking Successful 🚀");  
-  
-        refreshData();  
-  
-        document.getElementById('stakeAmount').value = "";  
-  
-    } catch (error) {  
-  
-        console.error("Stake error:", error);  
-  
-        // ✅ USER FRIENDLY ERRORS  
-        if(error.code === 4001){  
-            alert("Transaction Rejected by User");  
-        }else{  
-            alert("Transaction Failed - Check balance / gas");  
-        }  
-  
-    } finally {  
-  
-        setButtonState(false);   
-        window.txPending = false;  
-    }  
-}  
+         
     
 async function buyDMX(){  
   
