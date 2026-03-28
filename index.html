@@ -35,43 +35,43 @@ animation: claimGlow 1.5s infinite;
     
 /* PLAN BUTTON */
 .plan-btn{
-transition: all 0.2s ease;
-border-radius: 12px;
+    transition: all 0.2s ease;
+    border-radius: 12px;
 }
 
+/* HOVER */
 .plan-btn:hover{
-transform: scale(1.03);
+    transform: scale(1.03);
 }
 
 /* ACTIVE PLAN */
 .plan-btn.active{
-background: linear-gradient(135deg,#fbbf24,#d97706);
-box-shadow: 0 0 12px rgba(251,191,36,0.5);
+    background: linear-gradient(135deg,#f59e0b,#d97706);
+    box-shadow: 0 0 8px rgba(251,191,36,0.4);
 }
 
-/* TEXT VISIBILITY FIX */
+/* TEXT */
 .plan-btn div:first-child{
-color:#fbbf24;
-font-weight:700;
+    color:#fbbf24;
+    font-weight:700;
 }
 
 .plan-btn div:last-child{
-color:#9ca3af;
+    color:#9ca3af;
 }
 
 /* ACTIVE TEXT */
 .plan-btn.active div{
-color:black !important;
+    color:#000 !important;
 }
-
 
 /* BUTTON HOVER CLEAN */
 #btnStakeUSDT:hover{
-box-shadow: 0 0 10px rgba(16,185,129,0.5);
+    box-shadow: 0 0 8px rgba(16,185,129,0.4);
 }
 
 #btnStakeDMX:hover{
-box-shadow: 0 0 10px rgba(251,191,36,0.5);
+    box-shadow: 0 0 8px rgba(249,115,22,0.4);
 }
      
 /* ===== BRAND BUTTONS ===== */  
@@ -294,95 +294,96 @@ Team Volume
 </p>    
 </div>     
 </div>    
-    <!-- STAKING -->    
+<!-- STAKING (FINAL CLEAN VERSION) -->
 <div class="glass-card p-5 border border-amber-500/20">
 
 <h3 class="text-sm text-amber-400 font-black uppercase mb-4 flex items-center gap-2">
 <i class="fa-solid fa-layer-group"></i> Live Staking
 </h3>
 
-<div class="space-y-4">
-
 <!-- AMOUNT -->
-<div>
-<label class="text-[11px] text-gray-400 font-bold uppercase">
-Stake Amount
-</label>
-
 <input type="number" id="stakeAmount"
-placeholder="Minimum 2500 DMX"
-class="input-dark mt-1">
+placeholder="Enter Amount (Min 2500 DMX)"
+class="input-dark w-full text-center mb-3">
 
-<!-- ONLY ESTIMATE (MIN REMOVED) -->
-<div class="flex justify-end text-[11px] mt-1">
+<p id="usdtEstimate" class="text-xs text-green-400 text-center mb-3"></p>
 
-<span id="usdtEstimate" class="text-emerald-400 font-bold"></span>
-
-</div>
-</div>
-
-<!-- PLAN SELECT -->
-<div>
-<label class="text-[11px] text-gray-400 font-bold uppercase">
-Select Plan
-</label>
-
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
+<!-- PLAN -->
+<div class="grid grid-cols-3 gap-2 mt-2">
 
 <button onclick="selectPlan(this,'7776000')" 
 class="plan-btn p-3 rounded-xl bg-white/5 text-center">
 
-<div class="text-sm font-bold">90 Days</div>
-<div class="text-[12px]">0.20% Daily</div>
+<div>90 Days</div>
+<div>0.20% Daily</div>
 
 </button>
 
 <button onclick="selectPlan(this,'15552000')" 
 class="plan-btn p-3 rounded-xl bg-white/5 text-center">
 
-<div class="text-sm font-bold">180 Days</div>
-<div class="text-[12px]">0.25% Daily</div>
+<div>180 Days</div>
+<div>0.25% Daily</div>
 
 </button>
 
 <button onclick="selectPlan(this,'31536000')" 
 class="plan-btn p-3 rounded-xl bg-white/5 text-center">
 
-<div class="text-sm font-bold">365 Days</div>
-<div class="text-[12px]">0.30% Daily</div>
+<div>365 Days</div>
+<div>0.30% Daily</div>
 
 </button>
 
 </div>
 
-<input type="hidden" id="stakeDuration">
-</div>
-  
-        <div id="stakeButtons" class="flex gap-3 mt-3 -mx-2">
+<!-- ACTION -->
+<div class="grid grid-cols-2 gap-3">
 
-<button id="btnStakeUSDT" onclick="performStake('USDT')"   
-class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white  
-bg-gradient-to-r from-emerald-500 to-green-700  
-shadow-lg hover:shadow-emerald-500/40 transition">
-
-<img src="https://assets.coingecko.com/coins/images/325/small/Tether.png" class="w-5 h-5">   
-USDT 
-
+<button onclick="openStakeBox('DMX')"
+class="bg-orange-500 py-3 rounded-xl text-white font-bold">
+Stake DMX
 </button>
 
-<button id="btnStakeDMX" onclick="performStake('DMX')"   
-class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white  
-bg-gradient-to-r from-orange-500 to-red-500  
-shadow-lg hover:shadow-orange-500/40 transition">
-
-<img src="https://i.ibb.co/HpqwGFqt/logo.png" class="w-5 h-5">   
-DMX
-
+<button onclick="openStakeBox('USDT')"
+class="bg-green-600 py-3 rounded-xl text-white font-bold">
+Stake USDT
 </button>
 
 </div>
-</div>  
-</div>    
+
+</div>
+
+
+<!-- STAKE MODAL -->
+<div id="stakeModal" class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center">
+
+<div class="bg-[#0b1220] p-6 rounded-2xl w-[90%] max-w-md border border-amber-500">
+
+<h2 class="text-lg font-bold text-amber-400 text-center mb-4">
+Confirm Stake
+</h2>
+
+<p id="stakeModalAmount" class="text-xl text-white text-center">0 DMX</p>
+<p id="stakeModalUSDT" class="text-sm text-green-400 text-center mt-1">≈ 0 USDT</p>
+<p id="stakeModalPlan" class="text-xs text-gray-400 text-center mt-1"></p>
+
+<div class="flex gap-3 mt-4">
+
+<button onclick="confirmStake()"
+class="flex-1 bg-green-600 py-3 rounded-xl text-white font-bold">
+Confirm
+</button>
+
+<button onclick="closeStakeBox()"
+class="flex-1 bg-gray-600 py-3 rounded-xl text-white font-bold">
+Cancel
+</button>
+
+</div>
+
+</div>
+</div>
       
     <!-- PROGRESS -->  
   
@@ -854,6 +855,97 @@ async function claimDMX(){
 async function claimUSDT(){
     await txWrap(contract.claimUSDT());
 }
+    
+
+let selectedPlan = 0;
+let selectedType = "";
+
+function setPlan(p){
+    selectedPlan = p;
+}
+
+document.getElementById("stakeAmount").addEventListener("input", async (e)=>{
+    if(!contract) return;
+
+    try{
+        const val = e.target.value || 0;
+        const usdt = await contract.getUSDTFromDMX(
+            ethers.utils.parseEther(val.toString())
+        );
+
+        document.getElementById("usdtEstimate").innerText =
+            "≈ " + Number(ethers.utils.formatEther(usdt)).toFixed(2) + " USDT";
+    }catch{
+        document.getElementById("usdtEstimate").innerText = "";
+    }
+});
+
+async function openStakeBox(type){
+
+    if(!contract || !signer){
+        alert("Connect Wallet");
+        return;
+    }
+
+    const amount = document.getElementById("stakeAmount").value;
+
+    if(!amount || amount < 2500){
+        alert("Minimum 2500 DMX");
+        return;
+    }
+
+    if(!selectedPlan){
+        alert("Select Plan");
+        return;
+    }
+
+    selectedType = type;
+
+    const modal = document.getElementById("stakeModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+
+    document.getElementById("stakeModalAmount").innerText =
+        amount + " DMX";
+
+    const usdt = await contract.getUSDTFromDMX(
+        ethers.utils.parseEther(amount)
+    );
+
+    document.getElementById("stakeModalUSDT").innerText =
+        "≈ " + Number(ethers.utils.formatEther(usdt)).toFixed(2) + " USDT";
+
+    document.getElementById("stakeModalPlan").innerText =
+        "Duration: " + (selectedPlan / 86400) + " Days";
+}
+
+function closeStakeBox(){
+    const modal = document.getElementById("stakeModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+}
+
+async function confirmStake(){
+
+    const amount = document.getElementById("stakeAmount").value;
+
+    if(selectedType === "DMX"){
+        await txWrap(contract.stakeDMX(
+            ethers.utils.parseEther(amount),
+            selectedPlan,
+            userAddress
+        ));
+    }else{
+        await txWrap(contract.stakeUSDT(
+            ethers.utils.parseEther(amount),
+            selectedPlan,
+            userAddress
+        ));
+    }
+
+    closeStakeBox();
+    }  
+    
     
     function updateTimer(expiry) {  
 
@@ -1931,18 +2023,12 @@ function setButtonState(isLoading) {
     } 
     
 function selectPlan(el, value){
+    document.querySelectorAll(".plan-btn").forEach(btn=>{
+        btn.classList.remove("active");
+    });
 
-// remove active from all
-document.querySelectorAll(".plan-btn").forEach(btn=>{
-btn.classList.remove("active");
-});
-
-// add active to selected
-el.classList.add("active");
-
-// set value
-document.getElementById("stakeDuration").value = value;
-
+    el.classList.add("active");
+    document.getElementById("stakeDuration").value = value;
 }
        
 </script>    
