@@ -1194,35 +1194,59 @@ cont.innerHTML = "Loading...";
 try {      
       
 if(type === 'stakes') {      
-      
+
+// ✅ SAFETY CHECK
+if(!contract || !userAddress){
+    cont.innerHTML = "Connect Wallet";
+    return;
+}
+
 const data = await contract.getStakeHistory(userAddress);      
-      
-cont.innerHTML = data.length ? data.map(s => {      
-      
-const amount = f(s.amountDMX);      
-      
-const d = new Date(s.start * 1000);      
-      
-const date = d.toLocaleDateString();      
-const time = d.toLocaleTimeString();      
-      
+
+cont.innerHTML = data.length ? data.map((s, i) => {      
+
+const amount = f(s.amountDMX || 0);      
+
+const start = new Date(Number(s.start || 0) * 1000);      
+const end = new Date(Number(s.end || 0) * 1000);      
+
+const now = Math.floor(Date.now() / 1000);      
+const remaining = Number(s.end || 0) - now;      
+
+const days = Math.max(0, Math.floor(remaining / 86400));      
+
+const isFinished = remaining <= 0 && Number(s.amountDMX) > 0;      
+
 return `      
 <div class="p-3 bg-white/5 rounded-xl mt-2">      
-      
+
 <div class="text-amber-400 font-bold text-sm">      
 ${parseFloat(amount).toFixed(2)} DMX      
 </div>      
-      
+
 <div class="text-xs text-gray-400">      
-${date} | ${time}      
+Start: ${start.toLocaleDateString()}      
 </div>      
-      
+
+<div class="text-xs text-gray-400">      
+End: ${end.toLocaleDateString()}      
+</div>      
+
+<div class="text-xs text-cyan-400 font-bold mt-1">      
+${isFinished ? "Completed ✅" : days + " Days Left"}      
+</div>      
+
+${isFinished ? `<button onclick="withdrawStake(${i})"
+class="mt-2 w-full bg-purple-600 py-2 rounded-lg text-xs font-bold">
+💰 Withdraw Principal
+</button>` : ""}
+
 </div>      
 `;      
-      
+
 }).reverse().join('') : "No Stakes";      
-      
-}      
+
+}
       
 else if(type === 'level') {      
       
