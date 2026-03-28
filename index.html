@@ -1180,57 +1180,95 @@ async function updatePrice(){
 
 }
         
-    if(type === 'stakes') {
+    async function showTab(type) {    
+
+const cont = document.getElementById('tabContent');    
+const f = ethers.utils.formatEther;    
+
+// safety
+if(!cont) return;
+
+document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));    
+document.getElementById('tab' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('active');    
+
+cont.innerHTML = "Loading...";    
+
+try {    
+
+// =======================
+// ✅ STAKES TAB (SAFE)
+// =======================
+if(type === 'stakes') {    
 
 if(!contract || !userAddress){
     cont.innerHTML = "Connect Wallet";
     return;
 }
 
-const data = await contract.getStakeHistory(userAddress);
+const data = await contract.getStakeHistory(userAddress);    
 
-cont.innerHTML = data.length ? data.map((s, i) => {
+cont.innerHTML = data.length ? data.map((s, i) => {    
 
-const amount = f(s.amountDMX);
+const amount = f(s.amountDMX);    
 
-const start = new Date(Number(s.start) * 1000);
-const end = new Date(Number(s.end) * 1000);
+const start = new Date(Number(s.start) * 1000);    
+const end = new Date(Number(s.end) * 1000);    
 
-const now = Math.floor(Date.now() / 1000);
-const remaining = Number(s.end) - now;
+const now = Math.floor(Date.now() / 1000);    
+const remaining = Number(s.end) - now;    
 
-const days = Math.max(0, Math.floor(remaining / 86400));
+const days = Math.max(0, Math.floor(remaining / 86400));    
 
-const isFinished = remaining <= 0 && Number(s.amountDMX) > 0;
+const isFinished = remaining <= 0 && Number(s.amountDMX) > 0;    
 
-return `
-<div class="p-3 bg-white/5 rounded-xl mt-2">
+return `    
+<div class="p-3 bg-white/5 rounded-xl mt-2">    
 
-<div class="text-amber-400 font-bold text-sm">
-${parseFloat(amount).toFixed(2)} DMX
-</div>
+<div class="text-amber-400 font-bold text-sm">    
+${parseFloat(amount).toFixed(2)} DMX    
+</div>    
 
-<div class="text-xs text-gray-400">
-Start: ${start.toLocaleDateString()}
-</div>
+<div class="text-xs text-gray-400">    
+Start: ${start.toLocaleDateString()}    
+</div>    
 
-<div class="text-xs text-gray-400">
-End: ${end.toLocaleDateString()}
-</div>
+<div class="text-xs text-gray-400">    
+End: ${end.toLocaleDateString()}    
+</div>    
 
-<div class="text-xs text-cyan-400 font-bold mt-1">
-${isFinished ? "Completed ✅" : days + " Days Left"}
-</div>
+<div class="text-xs text-cyan-400 font-bold mt-1">    
+${isFinished ? "Completed ✅" : days + " Days Left"}    
+</div>    
 
 ${isFinished ? `<button onclick="withdrawStake(${i})"
 class="mt-2 w-full bg-purple-600 py-2 rounded-lg text-xs font-bold">
 Withdraw Principal
 </button>` : ""}
 
-</div>
-`;
+</div>    
+`;    
 
-}).reverse().join('') : "No Stakes";
+}).reverse().join('') : "No Stakes";    
+
+}    
+
+// =======================
+// OTHER TABS SAFE
+// =======================
+else if(type === 'level') {
+    cont.innerHTML = "Level data loading...";
+}
+
+else {
+    cont.innerHTML = "Downline loading...";
+}
+
+} catch(e) {    
+
+console.error("Tab error:", e);    
+cont.innerHTML = "Error loading data";    
+
+}    
 
 }
     
