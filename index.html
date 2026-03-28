@@ -293,8 +293,9 @@ Team Volume
 0.00 DMX    
 </p>    
 </div>     
-</div>    
-<!-- STAKING (FINAL CLEAN VERSION) -->
+</div> 
+    
+<!-- STAKING -->
 <div class="glass-card p-5 border border-amber-500/20">
 
 <h3 class="text-sm text-amber-400 font-black uppercase mb-4 flex items-center gap-2">
@@ -313,74 +314,69 @@ class="input-dark w-full text-center mb-3">
 
 <button onclick="selectPlan(this,'7776000')" 
 class="plan-btn p-3 rounded-xl bg-white/5 text-center">
-
 <div>90 Days</div>
 <div>0.20% Daily</div>
-
 </button>
 
 <button onclick="selectPlan(this,'15552000')" 
 class="plan-btn p-3 rounded-xl bg-white/5 text-center">
-
 <div>180 Days</div>
 <div>0.25% Daily</div>
-
 </button>
 
 <button onclick="selectPlan(this,'31536000')" 
 class="plan-btn p-3 rounded-xl bg-white/5 text-center">
-
 <div>365 Days</div>
 <div>0.30% Daily</div>
-
 </button>
 
 </div>
 
-<!-- ACTION -->
-<div class="grid grid-cols-2 gap-3">
+<!-- SINGLE BUTTON -->
+<button onclick="openStakeBox()"
+class="w-full mt-4 py-3 rounded-xl text-black font-bold 
+bg-gradient-to-r from-yellow-400 to-amber-500 
+shadow-lg hover:shadow-yellow-500/40 transition">
 
-<button onclick="openStakeBox('DMX')"
-class="bg-orange-500 py-3 rounded-xl text-white font-bold">
-Stake DMX
-</button>
+🚀 Stake Now
 
-<button onclick="openStakeBox('USDT')"
-class="bg-green-600 py-3 rounded-xl text-white font-bold">
-Stake USDT
 </button>
 
 </div>
-
-</div>
-
 
 <!-- STAKE MODAL -->
-<div id="stakeModal" class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center">
+<div id="stakeModal" 
+class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center">
 
-<div class="bg-[#0b1220] p-6 rounded-2xl w-[90%] max-w-md border border-amber-500">
+<div class="bg-[#0b1220] p-6 rounded-2xl w-[90%] max-w-md border border-amber-500 shadow-xl">
 
-<h2 class="text-lg font-bold text-amber-400 text-center mb-4">
-Confirm Stake
+<h2 class="text-lg font-black text-amber-400 text-center mb-4">
+CONFIRM STAKE
 </h2>
 
 <p id="stakeModalAmount" class="text-xl text-white text-center">0 DMX</p>
 <p id="stakeModalUSDT" class="text-sm text-green-400 text-center mt-1">≈ 0 USDT</p>
 <p id="stakeModalPlan" class="text-xs text-gray-400 text-center mt-1"></p>
 
-<div class="flex gap-3 mt-4">
+<!-- TYPE SELECT -->
+<div class="grid grid-cols-2 gap-4 mt-4">
 
-<button onclick="confirmStake()"
-class="flex-1 bg-green-600 py-3 rounded-xl text-white font-bold">
-Confirm
+<button onclick="selectedType='DMX'; confirmStake()"
+class="bg-orange-500 py-3 rounded-xl font-bold text-white hover:scale-105 transition">
+Stake DMX
 </button>
 
-<button onclick="closeStakeBox()"
-class="flex-1 bg-gray-600 py-3 rounded-xl text-white font-bold">
-Cancel
+<button onclick="selectedType='USDT'; confirmStake()"
+class="bg-green-600 py-3 rounded-xl font-bold text-white hover:scale-105 transition">
+Stake USDT
 </button>
 
 </div>
+
+<button onclick="closeStakeBox()"
+class="mt-4 w-full bg-gray-700 py-2 rounded-lg text-xs">
+Close
+</button>
 
 </div>
 </div>
@@ -860,12 +856,7 @@ async function claimUSDT(){
 let selectedPlan = 0;
 let selectedType = "";
 
-// ❌ REMOVE THIS (not needed)
-// function setPlan(p){
-//     selectedPlan = p;
-// }
-
-// ✅ ONLY THIS FUNCTION USE
+// PLAN SELECT
 function selectPlan(el, value){
 
     document.querySelectorAll(".plan-btn").forEach(btn=>{
@@ -877,10 +868,7 @@ function selectPlan(el, value){
     selectedPlan = Number(value);
 }
 
-
-// =======================
-// LIVE USDT ESTIMATE
-// =======================
+// LIVE USDT
 document.getElementById("stakeAmount").addEventListener("input", async (e)=>{
     if(!contract) return;
 
@@ -899,11 +887,8 @@ document.getElementById("stakeAmount").addEventListener("input", async (e)=>{
     }
 });
 
-
-// =======================
 // OPEN MODAL
-// =======================
-async function openStakeBox(type){
+async function openStakeBox(){
 
     if(!contract || !signer){
         alert("Connect Wallet");
@@ -921,8 +906,6 @@ async function openStakeBox(type){
         alert("Select Plan");
         return;
     }
-
-    selectedType = type;
 
     const modal = document.getElementById("stakeModal");
     modal.classList.remove("hidden");
@@ -942,20 +925,14 @@ async function openStakeBox(type){
         "Duration: " + (selectedPlan / 86400) + " Days";
 }
 
-
-// =======================
 // CLOSE MODAL
-// =======================
 function closeStakeBox(){
     const modal = document.getElementById("stakeModal");
     modal.classList.add("hidden");
     modal.classList.remove("flex");
 }
 
-
-// =======================
-// CONFIRM STAKE
-// =======================
+// CONFIRM
 async function confirmStake(){
 
     const amount = document.getElementById("stakeAmount").value;
