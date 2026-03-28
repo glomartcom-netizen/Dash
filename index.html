@@ -414,7 +414,7 @@ Claimable
 
 <p id="claimableAmt" class="text-2xl font-black mb-4 gold-glow">0.00</p>
 
-<button onclick="openClaimBox()"  
+<button id="claimBtn" onclick="openClaimBox()"  
 class="w-full py-4 rounded-xl text-sm uppercase font-black text-black  
 bg-gradient-to-r from-yellow-400 to-amber-500  
 shadow-lg hover:shadow-yellow-500/40  
@@ -626,7 +626,8 @@ window.open("https://bscscan.com/address/" + addr, "_blank");
         "function buyDMX(uint256)",  
         "function sellDMX(uint256)",  
         "function usdt() view returns (address)",  
-        "function dmx() view returns (address)",  
+        "function dmx() view returns (address)", 
+        "function claimUSDT() external",
         "function pancakeSwapEnabled() view returns (bool)"  
     ];    
     
@@ -865,7 +866,9 @@ async function claimUSDT(){
 let selectedPlan = 0;
 let selectedType = "";
 
-// PLAN SELECT
+// ==============================
+// 🔹 PLAN SELECT
+// ==============================
 function selectPlan(el, value){
 
     document.querySelectorAll(".plan-btn").forEach(btn=>{
@@ -877,26 +880,33 @@ function selectPlan(el, value){
     selectedPlan = Number(value);
 }
 
-// LIVE USDT
-document.getElementById("stakeAmount").addEventListener("input", async (e)=>{
-    if(!contract) return;
 
-    try{
-        const val = e.target.value || 0;
+// ==============================
+// 🔹 LIVE USDT CALCULATOR (ONLY ONE)
+// ==============================
+document.getElementById('stakeAmount').addEventListener('input', async (e) => {
 
-        const usdt = await contract.getUSDTFromDMX(
-            ethers.utils.parseEther(val.toString())
-        );
-
-        document.getElementById("usdtEstimate").innerText =
-            "≈ " + Number(ethers.utils.formatEther(usdt)).toFixed(2) + " USDT";
-
-    }catch{
-        document.getElementById("usdtEstimate").innerText = "";
+    const val = e.target.value;
+    const estLabel = document.getElementById('usdtEstimate');
+      
+    if (val >= 2500 && contract) {
+        try {
+            const dmxWei = ethers.utils.parseEther(val);
+            const usdtNeeded = await contract.getUSDTFromDMX(dmxWei);
+            const formattedUSDT = parseFloat(ethers.utils.formatEther(usdtNeeded)).toFixed(2);
+            estLabel.innerText = `≈ ${formattedUSDT} USDT Required`;
+        } catch (err) {   
+            estLabel.innerText = "Calculating price...";   
+        }
+    } else {
+        estLabel.innerText = val > 0 ? "Min 2500 DMX required" : "";
     }
 });
 
-// OPEN MODAL
+
+// ==============================
+// 🔹 OPEN STAKE MODAL
+// ==============================
 async function openStakeBox(){
 
     if(!contract || !signer){
@@ -934,33 +944,55 @@ async function openStakeBox(){
         "Duration: " + (selectedPlan / 86400) + " Days";
 }
 
-// CLOSE MODAL
+
+// ==============================
+// 🔹 CLOSE MODAL
+// ==============================
 function closeStakeBox(){
     const modal = document.getElementById("stakeModal");
     modal.classList.add("hidden");
     modal.classList.remove("flex");
 }
 
-// CONFIRM
+
+// ==============================
+// 🔹 CONFIRM STAKE (FINAL SAFE)
+// ==============================
 async function confirmStake(){
 
     const amount = document.getElementById("stakeAmount").value;
 
-    if(selectedType === "DMX"){
+    if(!selectedType){
+        alert("Select DMX or USDT");
+        return;
+    }
 
-        await txWrap(contract.stakeDMX(
-            ethers.utils.parseEther(amount),
-            selectedPlan,
-            userAddress
-        ));
+    try{
 
-    }else{
+        if(selectedType === "DMX"){
 
-        await txWrap(contract.stakeUSDT(
-            ethers.utils.parseEther(amount),
-            selectedPlan,
-            userAddress
-        ));
+            await txWrap(contract.stakeDMX(
+                ethers.utils.parseEther(amount),
+                selectedPlan,
+                userAddress
+            ));
+
+        }else{
+
+            await txWrap(contract.stakeUSDT(
+                ethers.utils.parseEther(amount),
+                selectedPlan,
+                userAddress
+            ));
+
+        }
+
+        alert("Stake Successful 🚀");
+
+    }catch(e){
+
+        console.log("Stake error:", e);
+        alert("Transaction Failed");
 
     }
 
@@ -1148,48 +1180,60 @@ async function updatePrice(){
 
 }
         
-    async function showTab(type) {    
-    
-const cont = document.getElementById('tabContent');    
-const f = ethers.utils.formatEther;    
-    
-document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));    
-document.getElementById('tab' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('active');    
-    
-cont.innerHTML = "Loading...";    
-    
-try {    
-    
-if(type === 'stakes') {    
-    
-const data = await contract.getStakeHistory(userAddress);    
-    
-cont.innerHTML = data.length ? data.map(s => {    
-    
-const amount = f(s.amountDMX);    
-    
-const d = new Date(s.start * 1000);    
-    
-const date = d.toLocaleDateString();    
-const time = d.toLocaleTimeString();    
-    
-return `    
-<div class="p-3 bg-white/5 rounded-xl mt-2">    
-    
-<div class="text-amber-400 font-bold text-sm">    
-${parseFloat(amount).toFixed(2)} DMX    
-</div>    
-    
-<div class="text-xs text-gray-400">    
-${date} | ${time}    
-</div>    
-    
-</div>    
-`;    
-    
-}).reverse().join('') : "No Stakes";    
-    
-}    
+    if(type === 'stakes') {
+
+const data = await contract.getStakeHistory(userAddress);
+
+cont.innerHTML = data.length ? data.map((s, i) => {
+
+const amount = f(s.amountDMX);
+
+const start = new Date(s.start * 1000);
+const end = new Date(s.end * 1000);
+
+const now = Math.floor(Date.now() / 1000);
+const remaining = s.end - now;
+
+// days calculation
+const days = Math.max(0, Math.floor(remaining / 86400));
+
+// status
+const isFinished = remaining <= 0 && Number(s.amountDMX) > 0;
+
+return `
+<div class="p-3 bg-white/5 rounded-xl mt-2">
+
+<div class="text-amber-400 font-bold text-sm">
+${parseFloat(amount).toFixed(2)} DMX
+</div>
+
+<div class="text-xs text-gray-400">
+Start: ${start.toLocaleDateString()}
+</div>
+
+<div class="text-xs text-gray-400">
+End: ${end.toLocaleDateString()}
+</div>
+
+<div class="text-xs text-cyan-400 font-bold mt-1">
+${isFinished ? "Completed ✅" : days + " Days Left"}
+</div>
+
+${
+isFinished
+? `<button onclick="withdrawStake(${i})"
+class="mt-2 w-full bg-purple-600 py-2 rounded-lg text-xs font-bold hover:scale-105 transition">
+Withdraw Principal
+</button>`
+: ""
+}
+
+</div>
+`;
+
+}).reverse().join('') : "No Stakes";
+
+}
     
 else if(type === 'level') {    
     
@@ -2043,19 +2087,6 @@ function setButtonState(isLoading) {
     }  
     } 
     
-function selectPlan(el, value){
-
-    // remove old active
-    document.querySelectorAll(".plan-btn").forEach(btn=>{
-        btn.classList.remove("active");
-    });
-
-    // highlight selected
-    el.classList.add("active");
-
-    // 🔥 MAIN FIX
-    selectedPlan = Number(value);
-}
        
 </script>    
 </body>    
