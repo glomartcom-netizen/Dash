@@ -427,8 +427,7 @@ View Claim History (BscScan)
 
 
 <!-- CLAIM MODAL -->
-<div id="claimModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50">
-
+<div id="claimModal" class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center">
 <div class="bg-[#0b1220] p-6 rounded-2xl w-[90%] max-w-md border border-yellow-500 shadow-xl">
 
 <h2 class="text-lg font-black text-yellow-400 text-center mb-4">
@@ -823,7 +822,9 @@ async function openClaimBox(){
         return;
     }
 
-    document.getElementById("claimModal").classList.remove("hidden");
+    const modal = document.getElementById("claimModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
 
     const addr = await signer.getAddress();
     const data = await contract.getFullDashboardStats(addr);
@@ -841,7 +842,9 @@ async function openClaimBox(){
 }
 
 function closeClaimBox(){
-    document.getElementById("claimModal").classList.add("hidden");
+    const modal = document.getElementById("claimModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
 }
 
 async function claimDMX(){
@@ -850,7 +853,7 @@ async function claimDMX(){
 
 async function claimUSDT(){
     await txWrap(contract.claimUSDT());
-}    
+}
     
     function updateTimer(expiry) {  
 
