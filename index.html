@@ -118,46 +118,72 @@ word-break: break-all;
 overflow-wrap: anywhere;    
 }    
     
-@media (max-width:640px){    
-    
-#myTotalStake,    
-#rewardPool{    
-font-size:16px;    
-}    
-    
-#dailyReward,    
-#directIncome,    
-#levelIncome,    
-#totalEarned{    
-font-size:16px;    
-}    
-    
-#directVolume,    
-#teamVolume{    
-font-size:15px;    
-}    
-    
-.glass-card p:first-child{    
-font-size:11px;    
-white-space:nowrap;    
-}    
-    
-.glass-card{    
-padding:12px;    
-}    
-    
-/* TAB CONTENT FONT SMALL */    
-#tabContent{    
-font-size:11px;    
-}    
-    
-/* TAB BUTTON SMALL */    
-.tab-btn{    
-font-size:9px;    
-padding:8px;    
-}    
-    
-}    
+/* GLOBAL FIX */
+*{
+  box-sizing: border-box;
+}
+
+@media (max-width:640px){
+
+  /* TEXT SIZE */
+  #myTotalStake,
+  #rewardPool{
+    font-size:16px;
+  }
+
+  #dailyReward,
+  #directIncome,
+  #levelIncome,
+  #totalEarned{
+    font-size:16px;
+  }
+
+  #directVolume,
+  #teamVolume{
+    font-size:15px;
+  }
+
+  /* CARD */
+  .glass-card p:first-child{
+    font-size:11px;
+    white-space:nowrap;
+  }
+
+  .glass-card{
+    padding:12px;
+  }
+
+  /* TAB */
+  #tabContent{
+    font-size:11px;
+  }
+
+  .tab-btn{
+    font-size:9px;
+    padding:8px;
+  }
+
+  /* 🔥 PHONE INPUT FIX */
+  #countrySelect{
+    width:35% !important;
+  }
+
+  #phoneNumber{
+    width:65% !important;
+  }
+
+  #countrySelect,
+  #phoneNumber{
+    display:block;
+  }
+
+  /* 🔥 SIDE GAP FIX */
+  main{
+    padding-left:8px !important;
+    padding-right:8px !important;
+  }
+
+}
 </style>
 </head>
 
