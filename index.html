@@ -788,8 +788,9 @@ clearInterval(reconnect);
 },1000);        
         
 });        
-</script>  <script>      
-          
+</script>  <script>  
+    
+const API = "http://187.77.128.251:3000";         
 const STAKE_ADDR = "PASTE_STAKING_CONTRACT_ADDRESS";      
 const DMX_ADDR = "PASTE_DMX_TOKEN_ADDRESS";      
 const LP = "PASTE_LP_PAIR_ADDRESS";      
@@ -2415,8 +2416,6 @@ const fullPhone = code + phone;
 
 // 🔥 TRY SERVER SAVE (SAFE)
 try{
-
-    const API = "http://187.77.128.251:3000";
 
 const res = await fetch(API + "/api/saveUser", {
     method: "POST",
