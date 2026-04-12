@@ -2416,18 +2416,20 @@ const fullPhone = code + phone;
 // 🔥 TRY SERVER SAVE (SAFE)
 try{
 
-    const res = await fetch("/api/saveUser", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            addr: userAddress,
-            name,
-            phone: fullPhone,
-            email
-        })
-    });
+    const API = "http://187.77.128.251:3000";
+
+const res = await fetch(API + "/api/saveUser", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        addr: userAddress,
+        name,
+        phone: fullPhone,
+        email
+    })
+});
 
     if(!res.ok){
         console.log("Server responded with error");
